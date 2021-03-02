@@ -36,8 +36,22 @@ public class RESTClient : MonoBehaviour
 	{
 		string response = "Request could not be completed properly";
 		bool success = false;
+		
+		string fullUrl = WEB_URL + "/get";
+		if (professionalId != "" && patientName != "")
+        	{
+			fullUrl += "/professionalpatient/" + professionalId + "/" + patientName;
+       		}
+		else if (professionalId != "")
+        	{
+			fullUrl += "/professionalid/" + professionalId;
+		}
+		else if (patientName != "")
+		{
+			fullUrl += "/patientname/" + patientName;
+		}
 
-		using (UnityWebRequest www = UnityWebRequest.Get(WEB_URL + "/get"))
+		using (UnityWebRequest www = UnityWebRequest.Get(fullUrl))
 		{
 			yield return www.SendWebRequest();
 
