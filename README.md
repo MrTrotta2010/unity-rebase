@@ -1,4 +1,4 @@
-# ReBase REST API
+# Unity ReBase
 Este projeto é uma API REST escrita em C# para uso no Unity, para comunicação com o ReBase, um banco de dados um banco de dados Apache Cassandra de sessões de reabilitação física.
 
 Sessões:
