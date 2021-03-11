@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 using System;
@@ -145,7 +145,8 @@ public class RESTClient
 			}
 			str_build.Append(letter);
 		}
-		return GetHashString(str_build.ToString());
+		sessionId = GetHashString(str_build.ToString());
+		return sessionId;
 	}
 
 	private byte[] GetHash(string inputString)
