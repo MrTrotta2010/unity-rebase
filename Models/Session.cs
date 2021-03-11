@@ -9,7 +9,8 @@ public class Session
 	private string device;
 	private string description;
 	private string professionalid;
-	private string patientname;
+	private string patientid;
+	private string movementlabel;
 
 	private string maincomplaint;
 	private string historyofcurrentdesease;
@@ -28,17 +29,19 @@ public class Session
 	private string artindexpattern;
 	private ArrayList registerList;
 
-	public Session(string title, string device, string description, string professionalid, string patientname,
-					int[] articulations, int patientage = 0, float patientheight = 0.0f, float patientweight = 0.0f,
-					string maincomplaint = "", string historyofcurrentdesease = "", string historyofpastdesease = "",
-					string diagnosis = "", string relateddeseases = "", string medications = "", string physicalevaluation = "",
+	public Session(string title = "", string device = "", string description = "", string professionalid = "",
+					string patientid = "", string movementlabel = "", int[] articulations = null, int patientage = 0,
+					float patientheight = 0.0f, float patientweight = 0.0f, string maincomplaint = "",
+					string historyofcurrentdesease = "", string historyofpastdesease = "", string diagnosis = "",
+					string relateddeseases = "", string medications = "", string physicalevaluation = "",
 					int patientsessionnumber = 0, int sessionduration = 0)
 	{
 		this.title = title;
 		this.device = device;
 		this.description = description;
 		this.professionalid = professionalid;
-		this.patientname = patientname;
+		this.patientid = patientid;
+		this.movementlabel = movementlabel;
 		this.maincomplaint = maincomplaint;
 		this.historyofcurrentdesease = historyofcurrentdesease;
 		this.historyofpastdesease = historyofpastdesease;
@@ -52,34 +55,32 @@ public class Session
 		this.patientsessionnumber = patientsessionnumber;
 		this.sessionduration = sessionduration;
 
-		try
-		{
-			artindexpattern = GetArtIndexPatternFromArray(articulations);
-		}
-		catch (IndexOutOfRangeException)
-		{
-			throw new IndexOutOfRangeException("Articulations can't be smaller than 1 or greater than 20");
-		}
-		catch (ArgumentException)
-		{
-			throw new ArgumentException("Duplicate articulation in list");
-		}
+		if (articulations == null)
+        {
+			artindexpattern = "";
+        }
+		else
+        {
+			SetArtIndexPattern(articulations);
+        }
 
 		numberofregisters = 0;
 		registerList = new ArrayList();
 	}
 
-	public Session(string title, string device, string description, string professionalid, string patientname,
-					string artindexpattern, int patientage = 0, float patientheight = 0.0f, float patientweight = 0.0f,
-					string maincomplaint = "", string historyofcurrentdesease = "", string historyofpastdesease = "",
-					string diagnosis = "", string relateddeseases = "", string medications = "", string physicalevaluation = "",
+	public Session(string title = "", string device = "", string description = "", string professionalid = "",
+					string patientid = "", string movementlabel = "", string artindexpattern = "", int patientage = 0,
+					float patientheight = 0.0f, float patientweight = 0.0f, string maincomplaint = "",
+					string historyofcurrentdesease = "", string historyofpastdesease = "", string diagnosis = "",
+					string relateddeseases = "", string medications = "", string physicalevaluation = "",
 					int patientsessionnumber = 0, int sessionduration = 0)
 	{
 		this.title = title;
 		this.device = device;
 		this.description = description;
 		this.professionalid = professionalid;
-		this.patientname = patientname;
+		this.patientid = patientid;
+		this.movementlabel = movementlabel;
 		this.maincomplaint = maincomplaint;
 		this.historyofcurrentdesease = historyofcurrentdesease;
 		this.historyofpastdesease = historyofpastdesease;
@@ -104,7 +105,8 @@ public class Session
 		device = session.GetDevice();
 		description = session.GetDescription();
 		professionalid = session.GetProfessionalID();
-		patientname = session.GetPatientName();
+		patientid = session.GetPatientID();
+		movementlabel = session.GetMovementLabel();
 		maincomplaint = session.GetMainComplaint();
 		historyofcurrentdesease = session.GetHistoryOfCurrentDesease();
 		historyofpastdesease = session.GetHistoryOfPastDesease();
@@ -123,17 +125,19 @@ public class Session
 		numberofregisters = 0;
 	}
 
-	public void SetNewSession(string title, string device, string description, string professionalid, string patientname,
-								int[] articulations, int patientage = 0, float patientheight = 0.0f, float patientweight = 0.0f,
-								string maincomplaint = "", string historyofcurrentdesease = "", string historyofpastdesease = "",
-								string diagnosis = "", string relateddeseases = "", string medications = "", string physicalevaluation = "",
+	public void SetNewSession(string title = "", string device = "", string description = "", string professionalid = "",
+								string patientid = "", string movementlabel = "", int[] articulations = null, int patientage = 0,
+								float patientheight = 0.0f, float patientweight = 0.0f, string maincomplaint = "",
+								string historyofcurrentdesease = "", string historyofpastdesease = "", string diagnosis = "",
+								string relateddeseases = "", string medications = "", string physicalevaluation = "",
 								int patientsessionnumber = 0, int sessionduration = 0)
 	{
 		this.title = title;
 		this.device = device;
 		this.description = description;
 		this.professionalid = professionalid;
-		this.patientname = patientname;
+		this.patientid = patientid;
+		this.movementlabel = movementlabel;
 		this.maincomplaint = maincomplaint;
 		this.historyofcurrentdesease = historyofcurrentdesease;
 		this.historyofpastdesease = historyofpastdesease;
@@ -147,34 +151,32 @@ public class Session
 		this.patientsessionnumber = patientsessionnumber;
 		this.sessionduration = sessionduration;
 
-		try
+		if (articulations == null)
 		{
-			artindexpattern = GetArtIndexPatternFromArray(articulations);
+			artindexpattern = "";
 		}
-		catch (IndexOutOfRangeException)
+		else
 		{
-			throw new IndexOutOfRangeException("Articulations can't be smaller than 1 or greater than 20");
-		}
-		catch (ArgumentException)
-		{
-			throw new ArgumentException("Duplicate articulation in list");
+			SetArtIndexPattern(articulations);
 		}
 
 		numberofregisters = 0;
 		registerList.Clear();
 	}
 
-	public void SetNewSession(string title, string device, string description, string professionalid, string patientname,
-								string artindexpattern, int patientage = 0, float patientheight = 0.0f, float patientweight = 0.0f,
-								string maincomplaint = "", string historyofcurrentdesease = "", string historyofpastdesease = "",
-								string diagnosis = "", string relateddeseases = "", string medications = "", string physicalevaluation = "",
+	public void SetNewSession(string title = "", string device = "", string description = "", string professionalid = "",
+								string patientid = "", string movementlabel = "", string artindexpattern = "", int patientage = 0,
+								float patientheight = 0.0f, float patientweight = 0.0f, string maincomplaint = "",
+								string historyofcurrentdesease = "", string historyofpastdesease = "", string diagnosis = "",
+								string relateddeseases = "", string medications = "", string physicalevaluation = "",
 								int patientsessionnumber = 0, int sessionduration = 0)
 	{
 		this.title = title;
 		this.device = device;
 		this.description = description;
 		this.professionalid = professionalid;
-		this.patientname = patientname;
+		this.patientid = patientid;
+		this.movementlabel = movementlabel;
 		this.maincomplaint = maincomplaint;
 		this.historyofcurrentdesease = historyofcurrentdesease;
 		this.historyofpastdesease = historyofpastdesease;
@@ -298,14 +300,25 @@ public class Session
 		professionalid = value;
 	}
 
-	public string GetPatientName()
+	public string GetPatientID()
 	{
-		return patientname;
+		return patientid;
 	}
 
-	public void SetPatientName(string value)
+	public void SetPatientID(string value)
 	{
-		patientname = value;
+		patientid = value;
+	}
+	
+
+	public string GetMovementLabel()
+	{
+		return movementlabel;
+	}
+
+	public void SetMovementLabel(string value)
+	{
+		movementlabel = value;
 	}
 
 	public string GetHistoryOfCurrentDesease()
@@ -426,6 +439,22 @@ public class Session
 	public void SetArtIndexPattern(string value)
 	{
 		artindexpattern = value;
+	}
+
+	public void SetArtIndexPattern(int[] array)
+	{
+		try
+		{
+			artindexpattern = GetArtIndexPatternFromArray(array);
+		}
+		catch (IndexOutOfRangeException)
+		{
+			throw new IndexOutOfRangeException("Articulations can't be smaller than 1 or greater than 20");
+		}
+		catch (ArgumentException)
+		{
+			throw new ArgumentException("Duplicate articulation in list");
+		}
 	}
 
 	public int GetNumberOfRegisters()

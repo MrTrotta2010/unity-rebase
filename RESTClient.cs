@@ -3,47 +3,37 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System;
 using System.Text;
-using System.Collections.Generic;
+using System.Security.Cryptography;
 
-public class RESTClient : MonoBehaviour
+public class RESTClient
 {
-	private static RESTClient _instance;
+	private static readonly RESTClient instance = new RESTClient();
+	public static RESTClient Instance { get { return instance; } }
+
 	// private string WEB_URL = "http://ec2-3-16-40-77.us-east-2.compute.amazonaws.com:3000";
 	// private string WEB_URL = "http://192.168.0.113:3000";
 	// private string WEB_URL = "http://brainnvr.ddns.net:3000";
 	[SerializeField] private string WEB_URL = "http://200.145.46.239:3000";
+	private UnityWebRequest www;
+	private string sessionId;
 
-	public static RESTClient Instance
+	private RESTClient()
 	{
-		get
-		{
-			if (_instance == null)
-			{
-				_instance = FindObjectOfType<RESTClient>();
-				if (_instance == null)
-				{
-					GameObject go = new GameObject();
-					go.name = typeof(RESTClient).Name;
-					_instance = go.AddComponent<RESTClient>();
-					DontDestroyOnLoad(go);
-				}
-			}
-			return _instance;
-		}
+		GenerateNewSessionID();
 	}
 
-	public IEnumerator DownloadAllSessions(Action<bool, string> callback)
+	public IEnumerator DownloadAllSessions(Action<bool, string> callback, string professionalId = "", string patientName = "")
 	{
 		string response = "Request could not be completed properly";
 		bool success = false;
-		
+
 		string fullUrl = WEB_URL + "/get";
 		if (professionalId != "" && patientName != "")
-        	{
+        {
 			fullUrl += "/professionalpatient/" + professionalId + "/" + patientName;
-       		}
+        }
 		else if (professionalId != "")
-        	{
+        {
 			fullUrl += "/professionalid/" + professionalId;
 		}
 		else if (patientName != "")
@@ -51,29 +41,28 @@ public class RESTClient : MonoBehaviour
 			fullUrl += "/patientname/" + patientName;
 		}
 
-		using (UnityWebRequest www = UnityWebRequest.Get(fullUrl))
-		{
-			yield return www.SendWebRequest();
+		www = UnityWebRequest.Get(fullUrl);
+		yield return www.SendWebRequest();
 
-			if (www.isNetworkError || www.isHttpError)
-			{
-				success = false;
-				response = www.error;
-			}
-			else if (www.isDone)
-			{
-				while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
-				success = true;
-				response = www.downloadHandler.text;
-			}
-			www.Dispose();
+		if (www.isNetworkError || www.isHttpError)
+		{
+			success = false;
+			response = www.error;
 		}
+		else if (www.isDone)
+		{
+			while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
+			success = true;
+			response = www.downloadHandler.text;
+		}
+		www.Dispose();
+
 		callback(success, response);
 	}
 
 	public IEnumerator UploadSession(Session session, Action<bool, string> callback)
 	{
-		string json = TranslationUtility.SessionToJson(session, GenerateRandomID());
+		string json = TranslationUtility.SessionToJson(session, sessionId);
 		string response = "Request could not be completed properly";
 		bool success = false;
 
@@ -125,7 +114,7 @@ public class RESTClient : MonoBehaviour
 		}
 	}
 
-	private string GenerateRandomID()
+	public string GenerateNewSessionID()
 	{
 		char letter;
 		int shift;
@@ -156,6 +145,21 @@ public class RESTClient : MonoBehaviour
 			}
 			str_build.Append(letter);
 		}
-		return str_build.ToString();
+		return GetHashString(str_build.ToString());
+	}
+
+	private byte[] GetHash(string inputString)
+	{
+		using (HashAlgorithm algorithm = SHA256.Create())
+			return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
+	}
+
+	private string GetHashString(string inputString)
+	{
+		StringBuilder sb = new StringBuilder();
+		foreach (byte b in GetHash(inputString))
+			sb.Append(b.ToString("X2"));
+
+		return sb.ToString();
 	}
 }

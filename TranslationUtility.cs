@@ -1,24 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using UnityEngine;
 
 public class TranslationUtility
 {
-	public static string SessionToJson(Session session, string id)
+	public static string SessionToJson(Session session, string sessionID)
 	{
+		CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
 		string[] stringArray = (string[])session.GetRegisterList().ToArray(typeof(string));
 		if (stringArray == null)
 		{
 			stringArray = new string[] { "" };
 		}
 
-		return "{\"id\":\"" + id + "\"," +
+		return "{\"id\":\"" + sessionID + "\"," +
 			   "\"title\":\"" + session.GetTitle() + "\"," +
-			   "\"device\":\"" + session.GetDevice() + "\"," +
 			   "\"description\":\"" + session.GetDescription() + "\"," +
 			   "\"professionalid\":\"" + session.GetProfessionalID() + "\"," +
-			   "\"patientname\":\"" + session.GetPatientName() + "\"," +
+			   "\"patientid\":\"" + session.GetPatientID() + "\"," +
+			   "\"movementlabel\":\"" + session.GetMovementLabel() + "\"," +
 			   "\"maincomplaint\":\"" + session.GetMainComplaint() + "\"," +
 			   "\"historyofcurrentdesease\":\"" + session.GetHistoryOfCurrentDesease() + "\"," +
 			   "\"historyofpastdesease\":\"" + session.GetHistoryOfPastDesease() + "\"," +

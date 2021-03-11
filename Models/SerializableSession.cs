@@ -8,6 +8,7 @@ public class SerializableSession
 	public string description;
 	public string professionalid;
 	public string patientname;
+	public string movementlabel;
 
 	public string maincomplaint;
 	public string historyofcurrentdesease;
