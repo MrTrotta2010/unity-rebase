@@ -18,6 +18,7 @@ public class TranslationUtility
 
 		return "{\"id\":\"" + sessionID + "\"," +
 			   "\"title\":\"" + session.GetTitle() + "\"," +
+			   "\"device\":\"" + session.GetDevice() + "\"," +
 			   "\"description\":\"" + session.GetDescription() + "\"," +
 			   "\"professionalid\":\"" + session.GetProfessionalID() + "\"," +
 			   "\"patientid\":\"" + session.GetPatientID() + "\"," +
