@@ -34,6 +34,7 @@ public class TranslationUtility
 			   "\"patientheight\":" + session.GetPatientHeight() + "," +
 			   "\"patientweight\":" + session.GetPatientWeight() + "," +
 			   "\"patientsessionnumber\":" + session.GetPatientSessionNumber() + "," +
+			   "\"sessionduration\":" + session.GetSessionDuration() + "," +
 			   "\"numberofregisters\":" + session.GetNumberOfRegisters() + "," +
 			   "\"artindexpattern\":\"" + session.GetArtIndexPattern() + "\"," +
 			   "\"sessiondata\":\"" + Convert.ToBase64String((CompressionUtility.Compress(string.Join("/", stringArray)))) + "\"}";
