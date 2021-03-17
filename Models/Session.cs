@@ -24,7 +24,6 @@ public class Session
 	private float patientheight;
 	private float patientweight;
 	private int patientsessionnumber;
-	private int sessionduration;
 	private int numberofregisters;
 	private string artindexpattern;
 	private ArrayList registerList;
@@ -53,7 +52,6 @@ public class Session
 		this.patientheight = patientheight;
 		this.patientweight = patientweight;
 		this.patientsessionnumber = patientsessionnumber;
-		this.sessionduration = sessionduration;
 
 		if (articulations == null)
         {
@@ -92,7 +90,6 @@ public class Session
 		this.patientheight = patientheight;
 		this.patientweight = patientweight;
 		this.patientsessionnumber = patientsessionnumber;
-		this.sessionduration = sessionduration;
 		this.artindexpattern = artindexpattern;
 
 		numberofregisters = 0;
@@ -118,7 +115,6 @@ public class Session
 		patientheight = session.GetPatientHeight();
 		patientweight = session.GetPatientWeight();
 		patientsessionnumber = session.GetPatientSessionNumber();
-		sessionduration = session.GetSessionDuration();
 		artindexpattern = session.GetArtIndexPattern();
 
 		registerList = new ArrayList();
@@ -149,7 +145,6 @@ public class Session
 		this.patientheight = patientheight;
 		this.patientweight = patientweight;
 		this.patientsessionnumber = patientsessionnumber;
-		this.sessionduration = sessionduration;
 
 		if (articulations == null)
 		{
@@ -188,7 +183,6 @@ public class Session
 		this.patientheight = patientheight;
 		this.patientweight = patientweight;
 		this.patientsessionnumber = patientsessionnumber;
-		this.sessionduration = sessionduration;
 		this.artindexpattern = artindexpattern;
 
 		numberofregisters = 0;
@@ -419,16 +413,6 @@ public class Session
 	public void SetPatientSessionNumber(int value)
 	{
 		patientsessionnumber = value;
-	}
-
-	public int GetSessionDuration()
-	{
-		return sessionduration;
-	}
-
-	public void SetSessionDuration(int value)
-	{
-		sessionduration = value;
 	}
 
 	public string GetArtIndexPattern()
