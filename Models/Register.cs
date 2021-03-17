@@ -47,11 +47,11 @@ public class Register
 		}
 	}
 
-	public void SetArticulationCoordinates(int articulation, Vector3 coordinates)
+	public void SetArticulationRotations(int articulation, Vector3 rotations)
 	{
 		if (articulations.ContainsKey(articulation))
 		{
-			articulations[articulation] = coordinates;
+			articulations[articulation] = rotations;
 		}
 		else
 		{
@@ -59,7 +59,7 @@ public class Register
 		}
 	}
 	
-	public Vector3 GetArticulationCoordinates(int articulation)
+	public Vector3 GetArticulationRotations(int articulation)
 	{
 		try
 		{
