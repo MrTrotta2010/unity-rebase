@@ -7,7 +7,7 @@ public class SerializableSession
 	public string device;
 	public string description;
 	public string professionalid;
-	public string patientname;
+	public string patientid;
 	public string movementlabel;
 
 	public string maincomplaint;
