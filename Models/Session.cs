@@ -56,13 +56,13 @@ public class Session
 		this.sessionduration = sessionduration;
 
 		if (articulations == null)
-        {
+		{
 			artindexpattern = "";
-        }
+		}
 		else
-        {
+		{
 			SetArtIndexPattern(articulations);
-        }
+		}
 
 		numberofregisters = 0;
 		registerList = new ArrayList();
@@ -309,7 +309,7 @@ public class Session
 	{
 		patientid = value;
 	}
-	
+
 
 	public string GetMovementLabel()
 	{

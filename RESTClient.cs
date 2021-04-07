@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 using System;
@@ -11,9 +11,9 @@ public class RESTClient
 	public static RESTClient Instance { get { return instance; } }
 
 	// private string WEB_URL = "http://ec2-3-16-40-77.us-east-2.compute.amazonaws.com:3000";
-	// private string WEB_URL = "http://192.168.0.113:3000";
+	// private string WEB_URL = "http://192.168.0.115:3000";
 	// private string WEB_URL = "http://brainnvr.ddns.net:3000";
-	[SerializeField] private string WEB_URL = "http://200.145.46.239:3000";
+	private string WEB_URL = "http://200.145.46.239:3000";
 	private UnityWebRequest www;
 	private string sessionId;
 
@@ -22,7 +22,7 @@ public class RESTClient
 		GenerateNewSessionID();
 	}
 
-	public IEnumerator DownloadAllSessions(Action<bool, string> callback, string professionalId = "", string patientName = "")
+	public IEnumerator DownloadSessions(Action<bool, string> callback, string professionalId = "", string patientName = "")
 	{
 		string response = "Request could not be completed properly";
 		bool success = false;
@@ -42,6 +42,7 @@ public class RESTClient
 		}
 
 		www = UnityWebRequest.Get(fullUrl);
+		www.method = "GET";
 		yield return www.SendWebRequest();
 
 		if (www.isNetworkError || www.isHttpError)
@@ -62,14 +63,57 @@ public class RESTClient
 
 	public IEnumerator UploadSession(Session session, Action<bool, string> callback)
 	{
+		if (session.GetMovementLabel().Contains(","))
+        {
+			callback(false, "Caractere inválido no campo \"movementlabel\": ','");
+        }
+		else
+        {
+			string json = TranslationUtility.SessionToJson(session, sessionId);
+			string response = "Request could not be completed properly";
+			bool success = false;
+
+			using (UnityWebRequest www = UnityWebRequest.Post(WEB_URL + "/post", json))
+			{
+				www.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+				www.uploadHandler.contentType = "application/json";
+				www.method = "POST";
+
+				yield return www.SendWebRequest();
+
+				if (www.isNetworkError || www.isHttpError)
+				{
+					success = false;
+					response = www.error;
+				}
+				else if (www.isDone)
+				{
+					while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
+					response = www.downloadHandler.text;
+					success = true;
+					if (response != "{\"[applied]\":true}")
+					{
+						success = false;
+						response = "Failed to store session with duplicate ID. Try again!";
+					}
+				}
+				www.Dispose();
+			}
+			callback(success, response);
+        }
+	}
+
+	public IEnumerator UpdateSession(string id, string insertiondate, Session session, Action<bool, string> callback)
+	{
 		string json = TranslationUtility.SessionToJson(session, sessionId);
 		string response = "Request could not be completed properly";
 		bool success = false;
 
-		using (UnityWebRequest www = UnityWebRequest.Post(WEB_URL + "/post", json))
+		using (UnityWebRequest www = UnityWebRequest.Put(WEB_URL + "/patch/movement/" + id + "/" + session.GetMovementLabel() + "/" + insertiondate, json))
 		{
 			www.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
 			www.uploadHandler.contentType = "application/json";
+			www.method = "PATCH";
 
 			yield return www.SendWebRequest();
 
@@ -81,13 +125,38 @@ public class RESTClient
 			else if (www.isDone)
 			{
 				while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
-				response = www.downloadHandler.text;
 				success = true;
-				if (response != "{\"[applied]\":true}")
-				{
-					success = false;
-					response = "Failed to store session with duplicate ID. Try again!";
-				}
+				response = www.downloadHandler.text;
+			}
+			www.Dispose();
+		}
+		callback(success, response);
+	}
+
+	public IEnumerator UpdateSession(SerializableSession session, Action<bool, string> callback)
+	{
+		string json = JsonUtility.ToJson(session);
+		string response = "Request could not be completed properly";
+		bool success = false;
+
+		using (UnityWebRequest www = UnityWebRequest.Put(WEB_URL + "/patch/movement/" + session.id + "/" + session.movementlabel + "/" + session.insertiondate, json))
+		{
+			www.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+			www.uploadHandler.contentType = "application/json";
+			www.method = "PATCH";
+
+			yield return www.SendWebRequest();
+
+			if (www.isNetworkError || www.isHttpError)
+			{
+				success = false;
+				response = www.error;
+			}
+			else if (www.isDone)
+			{
+				while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
+				success = true;
+				response = www.downloadHandler.text;
 			}
 			www.Dispose();
 		}
@@ -98,6 +167,7 @@ public class RESTClient
 	{
 		using (UnityWebRequest www = UnityWebRequest.Delete(WEB_URL + "/deleteall"))
 		{
+			www.method = "DELETE";
 			yield return www.SendWebRequest();
 
 			if (www.isNetworkError || www.isHttpError)
@@ -108,6 +178,54 @@ public class RESTClient
 			}
 			else if (www.isDone)
 			{
+				www.Dispose();
+				callback(true, "");
+			}
+		}
+	}
+
+	public IEnumerator DeleteSession(string id, string movementlabel, string insertiondate, Action<bool, string> callback)
+	{
+		using (UnityWebRequest www = UnityWebRequest.Delete(WEB_URL + "/delete/movement/" + id + "/"+ movementlabel + "/" + insertiondate))
+		{
+			www.downloadHandler = new DownloadHandlerBuffer();
+			www.method = "DELETE";
+			yield return www.SendWebRequest();
+
+			if (www.isNetworkError || www.isHttpError)
+			{
+				string errorString = www.error;
+				www.Dispose();
+				callback(false, errorString);
+			}
+			else if (www.isDone)
+			{
+				while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
+				string response = www.downloadHandler.text;
+				www.Dispose();
+				callback(true, "");
+			}
+		}
+	}
+
+	public IEnumerator DeleteSession(SerializableSession session, Action<bool, string> callback)
+	{
+		using (UnityWebRequest www = UnityWebRequest.Delete(WEB_URL + "/delete/movement/" + session.id + "/"+ session.movementlabel + "/" + session.insertiondate))
+		{
+			www.downloadHandler = new DownloadHandlerBuffer();
+			www.method = "DELETE";
+			yield return www.SendWebRequest();
+
+			if (www.isNetworkError || www.isHttpError)
+			{
+				string errorString = www.error;
+				www.Dispose();
+				callback(false, errorString);
+			}
+			else if (www.isDone)
+			{
+				while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
+				string response = www.downloadHandler.text;
 				www.Dispose();
 				callback(true, "");
 			}
