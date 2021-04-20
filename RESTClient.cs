@@ -14,7 +14,7 @@ public class RESTClient
 	// private string WEB_URL = "http://192.168.0.115:3000";
 	// private string WEB_URL = "http://brainnvr.ddns.net:3000";
 	private string WEB_URL = "http://200.145.46.239:3000";
-	private UnityWebRequest www;
+	//private UnityWebRequest www;
 	private string sessionId;
 
 	private RESTClient()
@@ -38,10 +38,10 @@ public class RESTClient
 		}
 		else if (patientName != "")
 		{
-			fullUrl += "/patientname/" + patientName;
+			fullUrl += "/patientid/" + patientName;
 		}
 
-		www = UnityWebRequest.Get(fullUrl);
+		UnityWebRequest www = UnityWebRequest.Get(fullUrl);
 		www.method = "GET";
 		yield return www.SendWebRequest();
 
@@ -178,8 +178,9 @@ public class RESTClient
 			}
 			else if (www.isDone)
 			{
+				string response = www.downloadHandler.text;
 				www.Dispose();
-				callback(true, "");
+				callback(true, response);
 			}
 		}
 	}
@@ -203,7 +204,7 @@ public class RESTClient
 				while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
 				string response = www.downloadHandler.text;
 				www.Dispose();
-				callback(true, "");
+				callback(true, response);
 			}
 		}
 	}
@@ -227,7 +228,7 @@ public class RESTClient
 				while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
 				string response = www.downloadHandler.text;
 				www.Dispose();
-				callback(true, "");
+				callback(true, response);
 			}
 		}
 	}
