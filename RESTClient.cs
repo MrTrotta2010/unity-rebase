@@ -103,6 +103,40 @@ public class RESTClient
         }
 	}
 
+	public IEnumerator UploadSession(string sessionJson, Action<bool, string> callback)
+	{
+		string response = "Request could not be completed properly";
+		bool success = false;
+
+		using (UnityWebRequest www = UnityWebRequest.Post(WEB_URL + "/post", sessionJson))
+		{
+			www.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(sessionJson));
+			www.uploadHandler.contentType = "application/json";
+			www.method = "POST";
+
+			yield return www.SendWebRequest();
+
+			if (www.isNetworkError || www.isHttpError)
+			{
+				success = false;
+				response = www.error;
+			}
+			else if (www.isDone)
+			{
+				while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
+				response = www.downloadHandler.text;
+				success = true;
+				if (response != "{\"[applied]\":true}")
+				{
+					success = false;
+					response = "Failed to store session with duplicate ID. Try again!";
+				}
+			}
+			www.Dispose();
+		}
+		callback(success, response);
+	}
+
 	public IEnumerator UpdateSession(string id, string insertiondate, Session session, Action<bool, string> callback)
 	{
 		string json = TranslationUtility.SessionToJson(session, sessionId);
