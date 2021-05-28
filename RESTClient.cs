@@ -143,11 +143,11 @@ public class RESTClient
 		string response = "Request could not be completed properly";
 		bool success = false;
 
-		using (UnityWebRequest www = UnityWebRequest.Put(WEB_URL + "/patch/movement/" + id + "/" + session.GetMovementLabel() + "/" + insertiondate, json))
+		using (UnityWebRequest www = UnityWebRequest.Put(WEB_URL + "/put/movement/" + id + "/" + session.GetMovementLabel() + "/" + insertiondate, json))
 		{
 			www.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
 			www.uploadHandler.contentType = "application/json";
-			www.method = "PATCH";
+			www.method = "PUT";
 
 			yield return www.SendWebRequest();
 
@@ -173,11 +173,11 @@ public class RESTClient
 		string response = "Request could not be completed properly";
 		bool success = false;
 
-		using (UnityWebRequest www = UnityWebRequest.Put(WEB_URL + "/patch/movement/" + session.id + "/" + session.movementlabel + "/" + session.insertiondate, json))
+		using (UnityWebRequest www = UnityWebRequest.Put(WEB_URL + "/put/movement/" + session.id + "/" + session.movementlabel + "/" + session.insertiondate, json))
 		{
 			www.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
 			www.uploadHandler.contentType = "application/json";
-			www.method = "PATCH";
+			www.method = "PUT";
 
 			yield return www.SendWebRequest();
 
