@@ -14,6 +14,7 @@ public class RESTClient
 	// private string WEB_URL = "http://192.168.0.115:3000";
 	// private string WEB_URL = "http://brainnvr.ddns.net:3000";
 	private string WEB_URL = "http://200.145.46.239:3000";
+	private string SESSION_URI = "/session";
 	//private UnityWebRequest www;
 	private string sessionId;
 
@@ -22,24 +23,16 @@ public class RESTClient
 		GenerateNewSessionID();
 	}
 
-	public IEnumerator DownloadSessions(Action<bool, string> callback, string professionalId = "", string patientName = "")
+	public IEnumerator DownloadSessions(Action<bool, string> callback, string professionalId = "", string patientId = "")
 	{
 		string response = "Request could not be completed properly";
 		bool success = false;
 
-		string fullUrl = WEB_URL + "/get";
-		if (professionalId != "" && patientName != "")
-        {
-			fullUrl += "/professionalpatient/" + professionalId + "/" + patientName;
-        }
-		else if (professionalId != "")
-        {
-			fullUrl += "/professionalid/" + professionalId;
-		}
-		else if (patientName != "")
-		{
-			fullUrl += "/patientid/" + patientName;
-		}
+		string url = WEB_URL + SESSION_URI;
+
+		if (professionalId != "" && patientId != "") url += $"?professionalid={professionalId}&patientid={patientId}";
+		else if (professionalId != "") url += $"?professionalid={professionalId}";
+		else if (patientId != "") url += $"?patientid={patientId}";
 
 		UnityWebRequest www = UnityWebRequest.Get(fullUrl);
 		www.method = "GET";
