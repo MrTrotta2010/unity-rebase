@@ -10,9 +10,6 @@ public class RESTClient
 	private static readonly RESTClient instance = new RESTClient();
 	public static RESTClient Instance { get { return instance; } }
 
-	// private string WEB_URL = "http://ec2-3-16-40-77.us-east-2.compute.amazonaws.com:3000";
-	// private string WEB_URL = "http://192.168.0.115:3000";
-	// private string WEB_URL = "http://brainnvr.ddns.net:3000";
 	private string WEB_URL = "http://200.145.46.239:3000";
 	//private UnityWebRequest www;
 	private string sessionId;
@@ -45,7 +42,7 @@ public class RESTClient
 		www.method = "GET";
 		yield return www.SendWebRequest();
 
-		if (www.isNetworkError || www.isHttpError)
+		if (IsNetworkError(www) || IsHTTPError(www))
 		{
 			success = false;
 			response = www.error;
@@ -81,7 +78,7 @@ public class RESTClient
 
 				yield return www.SendWebRequest();
 
-				if (www.isNetworkError || www.isHttpError)
+				if (IsNetworkError(www) || IsHTTPError(www))
 				{
 					success = false;
 					response = www.error;
@@ -116,7 +113,7 @@ public class RESTClient
 
 			yield return www.SendWebRequest();
 
-			if (www.isNetworkError || www.isHttpError)
+			if (IsNetworkError(www) || IsHTTPError(www))
 			{
 				success = false;
 				response = www.error;
@@ -151,7 +148,7 @@ public class RESTClient
 
 			yield return www.SendWebRequest();
 
-			if (www.isNetworkError || www.isHttpError)
+			if (IsNetworkError(www) || IsHTTPError(www))
 			{
 				success = false;
 				response = www.error;
@@ -181,7 +178,7 @@ public class RESTClient
 
 			yield return www.SendWebRequest();
 
-			if (www.isNetworkError || www.isHttpError)
+			if (IsNetworkError(www) || IsHTTPError(www))
 			{
 				success = false;
 				response = www.error;
@@ -204,7 +201,7 @@ public class RESTClient
 			www.method = "DELETE";
 			yield return www.SendWebRequest();
 
-			if (www.isNetworkError || www.isHttpError)
+			if (IsNetworkError(www) || IsHTTPError(www))
 			{
 				string errorString = www.error;
 				www.Dispose();
@@ -227,7 +224,7 @@ public class RESTClient
 			www.method = "DELETE";
 			yield return www.SendWebRequest();
 
-			if (www.isNetworkError || www.isHttpError)
+			if (IsNetworkError(www) || IsHTTPError(www))
 			{
 				string errorString = www.error;
 				www.Dispose();
@@ -251,7 +248,7 @@ public class RESTClient
 			www.method = "DELETE";
 			yield return www.SendWebRequest();
 
-			if (www.isNetworkError || www.isHttpError)
+			if (IsNetworkError(www) || IsHTTPError(www))
 			{
 				string errorString = www.error;
 				www.Dispose();
@@ -315,5 +312,15 @@ public class RESTClient
 			sb.Append(b.ToString("X2"));
 
 		return sb.ToString();
+	}
+
+	private bool IsHTTPError(UnityWebRequest request)
+	{
+		return request.result == UnityWebRequest.Result.ProtocolError;
+	}
+
+	private bool IsNetworkError(UnityWebRequest request)
+	{
+		return request.result == UnityWebRequest.Result.ConnectionError;
 	}
 }
