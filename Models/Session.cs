@@ -198,15 +198,15 @@ public class Session
 
 	public void AddRegister(Register register)
 	{
-		if (artindexpattern == register.GetArticulationIndexPattern())
-		{
-			registerList.Add(register);
-			numberofregisters += 1;
-		}
-		else
-		{
-			throw new MismatchedArticulationsExcpetion("Articulation lists don't match", new int[] { }, register.GetArticulationList());
-		}
+		//if (artindexpattern == register.GetArticulationIndexPattern())
+		//{
+		registerList.Add(register);
+		numberofregisters += 1;
+		//}
+		//else
+		//{
+		//	throw new MismatchedArticulationsExcpetion("Articulation lists don't match", new int[] { }, register.GetArticulationList());
+		//}
 	}
 
 	private string GetArtIndexPatternFromArray(int[] array)

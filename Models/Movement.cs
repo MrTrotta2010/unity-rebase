@@ -165,15 +165,17 @@ public class Movement
 
 	public void AddRegister(Register register)
 	{
-		//if (artindexpattern == register.GetArticulationIndexPattern())
-		//{
-		articulationData.Add(register);
-		numberOfRegisters += 1;
-		//}
-		//else
-		//{
-		//	throw new ArtIndexPatternExcpetion("Articulation index patterns don't match", artindexpattern, register.GetArticulationIndexPattern());
-		//}
+		int[] registerArticulations = register.Articulations;
+
+		if (Articulation.CompareArticulationLists(articulations, registerArticulations))
+		{
+			articulationData.Add(register);
+			numberOfRegisters += 1;
+		}
+		else
+		{
+			throw new MismatchedArticulationsExcpetion("Articulation lists do not match", articulations, registerArticulations);
+		}
 	}
 
 	public string ToJson()
