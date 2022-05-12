@@ -10,10 +10,10 @@ public class TranslationUtility
 	{
 		CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
-		string[] stringArray = (string[])session.GetRegisterList().ToArray(typeof(string));
+		Register[] stringArray = session.GetRegisterList().ToArray();
 		if (stringArray == null)
 		{
-			stringArray = new string[] { "" };
+			stringArray = new Register[] { };
 		}
 
 		return "{\"id\":\"" + sessionID + "\"," +
@@ -36,8 +36,8 @@ public class TranslationUtility
 			   "\"patientsessionnumber\":" + session.GetPatientSessionNumber() + "," +
 			   "\"sessionduration\":" + session.GetSessionDuration() + "," +
 			   "\"numberofregisters\":" + session.GetNumberOfRegisters() + "," +
-			   "\"artindexpattern\":\"" + session.GetArtIndexPattern() + "\"," +
-			   "\"sessiondata\":\"" + Convert.ToBase64String((CompressionUtility.Compress(string.Join("/", stringArray)))) + "\"}";
+			   "\"artindexpattern\":\"" + session.GetArtIndexPattern() + "\",";
+			   //"\"sessiondata\":\"" + Convert.ToBase64String(CompressionUtility.Compress(string.Join<>("/", stringArray))) + "\"}";
 	}
 
 	public static SessionList ParseSessionList(string json)

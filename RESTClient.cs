@@ -19,43 +19,23 @@ public class RESTClient
 		GenerateNewSessionID();
 	}
 
-	public IEnumerator DownloadSessions(Action<bool, string> callback, string professionalId = "", string patientName = "")
+	public IEnumerator DownloadSessions(Action<string> callback, string professionalId = "", string patientId = "", string movementLabel = "",
+										int[] articulations = null, bool legacy = false, int page = 0, int limit = 0)
 	{
-		string response = "Request could not be completed properly";
-		bool success = false;
+		int[] artList = articulations ?? new int[] { };
 
-		string fullUrl = WEB_URL + "/get";
-		if (professionalId != "" && patientName != "")
-        {
-			fullUrl += "/professionalpatient/" + professionalId + "/" + patientName;
-        }
-		else if (professionalId != "")
-        {
-			fullUrl += "/professionalid/" + professionalId;
-		}
-		else if (patientName != "")
-		{
-			fullUrl += "/patientid/" + patientName;
-		}
+		string fullUrl = $"{WEB_URL}/session?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}&legacy={legacy}";
+		if (page > 0) fullUrl += $"&page={page}";
+		if (limit > 0) fullUrl += $"&limit={limit}";
 
-		UnityWebRequest www = UnityWebRequest.Get(fullUrl);
-		www.method = "GET";
-		yield return www.SendWebRequest();
+		UnityWebRequest request = UnityWebRequest.Get(fullUrl);
+		request.method = "GET";
+		yield return request.SendWebRequest();
 
-		if (IsNetworkError(www) || IsHTTPError(www))
-		{
-			success = false;
-			response = www.error;
-		}
-		else if (www.isDone)
-		{
-			while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
-			success = true;
-			response = www.downloadHandler.text;
-		}
-		www.Dispose();
+		string response = ParseAPIResponse(request);
+		request.Dispose();
 
-		callback(success, response);
+		callback(response);
 	}
 
 	public IEnumerator UploadSession(Session session, Action<bool, string> callback)
@@ -322,5 +302,13 @@ public class RESTClient
 	private bool IsNetworkError(UnityWebRequest request)
 	{
 		return request.result == UnityWebRequest.Result.ConnectionError;
+	}
+
+	private string ParseAPIResponse(UnityWebRequest request)
+	{
+		if (!request.isDone) return "";
+
+		while (!request.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
+		return request.downloadHandler.text;
 	}
 }

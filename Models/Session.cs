@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections;
+using System.Collections.Generic;
 
 [System.Serializable]
 public class Session
@@ -27,7 +28,7 @@ public class Session
 	private int sessionduration;
 	private int numberofregisters;
 	private string artindexpattern;
-	private ArrayList registerList;
+	private List<Register> registerList;
 
 	public Session(string title = "", string device = "", string description = "", string professionalid = "",
 					string patientid = "", string movementlabel = "", int[] articulations = null, int patientage = 0,
@@ -65,7 +66,7 @@ public class Session
 		}
 
 		numberofregisters = 0;
-		registerList = new ArrayList();
+		registerList = new List<Register>();
 	}
 
 	public Session(string title = "", string device = "", string description = "", string professionalid = "",
@@ -96,7 +97,7 @@ public class Session
 		this.artindexpattern = artindexpattern;
 
 		numberofregisters = 0;
-		registerList = new ArrayList();
+		registerList = new List<Register>();
 	}
 
 	public Session(Session session)
@@ -121,7 +122,7 @@ public class Session
 		sessionduration = session.GetSessionDuration();
 		artindexpattern = session.GetArtIndexPattern();
 
-		registerList = new ArrayList();
+		registerList = new List<Register>();
 		numberofregisters = 0;
 	}
 
@@ -199,11 +200,12 @@ public class Session
 	{
 		if (artindexpattern == register.GetArticulationIndexPattern())
 		{
-			numberofregisters = registerList.Add(register.ToString()) + 1;
+			registerList.Add(register);
+			numberofregisters += 1;
 		}
 		else
 		{
-			throw new ArtIndexPatternExcpetion("Articulation index patterns don't match", artindexpattern, register.GetArticulationIndexPattern());
+			throw new MismatchedArticulationsExcpetion("Articulation lists don't match", new int[] { }, register.GetArticulationList());
 		}
 	}
 
@@ -436,6 +438,18 @@ public class Session
 		return artindexpattern;
 	}
 
+	public int[] GetArticulationList()
+	{
+		List<int> articulationList = new List<int>();
+
+		foreach (string art in artindexpattern.Split(';'))
+		{
+			articulationList.Add(int.Parse(art.Replace("a", "")));
+		}
+
+		return articulationList.ToArray();
+	}
+
 	public void SetArtIndexPattern(string value)
 	{
 		artindexpattern = value;
@@ -462,14 +476,14 @@ public class Session
 		return numberofregisters;
 	}
 
-	public ArrayList GetRegisterList()
+	public List<Register> GetRegisterList()
 	{
 		return registerList;
 	}
 
-	public void SetRegisterList(ArrayList value)
+	public void SetRegisterList(List<Register> value)
 	{
-		registerList = new ArrayList(value);
+		registerList = new List<Register>(value);
 		numberofregisters = registerList.Count;
 	}
 
