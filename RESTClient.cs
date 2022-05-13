@@ -59,6 +59,24 @@ public class RESTClient
 		callback(response);
 	}
 
+	public IEnumerator InsertMovement(Action<string> callback, Movement movement)
+	{
+		string json = movement.ToJson();
+
+		using (UnityWebRequest request = UnityWebRequest.Post(WEB_URL + "/movement", json))
+		{
+			request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+			request.uploadHandler.contentType = "application/json";
+			request.method = "POST";
+
+			yield return request.SendWebRequest();
+
+			string response = ParseAPIResponse(request);
+			request.Dispose();
+			callback(response);
+		}
+	}
+
 	public IEnumerator UploadSession(Session session, Action<bool, string> callback)
 	{
 		if (session.GetMovementLabel().Contains(","))
