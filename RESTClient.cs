@@ -32,13 +32,15 @@ public class RESTClient
 		request.method = "GET";
 		yield return request.SendWebRequest();
 
-		string response = ParseAPIResponse(request);
+		long responseCode;
+		string response = GetAPIResponse(request, out responseCode);
+
 		request.Dispose();
 
 		callback(response);
 	}
 
-	public IEnumerator FetchMovements(Action<string> callback, string professionalId = "", string patientId = "", string movementLabel = "",
+	public IEnumerator FetchMovements(Action<TranslationUtility.FetchMovementResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
 										int[] articulations = null, bool legacy = false, int page = 0, int limit = 0)
 	{
 		int[] artList = articulations ?? new int[] { };
@@ -53,7 +55,10 @@ public class RESTClient
 		request.method = "GET";
 		yield return request.SendWebRequest();
 
-		string response = ParseAPIResponse(request);
+		long responseCode;
+		string responseStr = GetAPIResponse(request, out responseCode);
+
+		TranslationUtility.FetchMovementResponse response = TranslationUtility.ParseFetchMovementResponse(responseStr, responseCode);
 		request.Dispose();
 
 		callback(response);
@@ -71,7 +76,9 @@ public class RESTClient
 
 			yield return request.SendWebRequest();
 
-			string response = ParseAPIResponse(request);
+			long responseCode;
+			string response = GetAPIResponse(request, out responseCode);
+
 			request.Dispose();
 			callback(response);
 		}
@@ -343,14 +350,22 @@ public class RESTClient
 		return request.result == UnityWebRequest.Result.ConnectionError;
 	}
 
-	private string ParseAPIResponse(UnityWebRequest request)
+	private string GetAPIResponse(UnityWebRequest request, out long responseCode)
 	{
-		Debug.Log("Parse response");
-		if (IsNetworkError(request) || IsHTTPError(request)) return request.downloadHandler.text;
-		if (!request.isDone) return "";
-		Debug.Log("Finished request!");
+		if (IsNetworkError(request) || IsHTTPError(request))
+		{
+			responseCode = request.responseCode;
+			return request.downloadHandler.text;
+		}
+		if (!request.isDone)
+		{
+			responseCode = 0;
+			return "";
+		}
 
 		while (!request.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
+
+		responseCode = request.responseCode;
 		return request.downloadHandler.text;
 	}
 }

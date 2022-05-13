@@ -10,6 +10,7 @@ public class Movement
 	private string label;
 	private string device;
 	private int[] articulations;
+	private DateTime insertionDate;
 
 	private string sessionId;
     private string title;
@@ -129,6 +130,43 @@ public class Movement
 		numberOfRegisters = session.GetNumberOfRegisters();
 	}
 
+	public Movement(TranslationUtility.SerializableMovement movement)
+	{
+		label = movement.label;
+		device = movement.device;
+		
+		string[] splitArtIndexPatter = movement.artIndexPattern.Split(';');
+		articulations = new int[splitArtIndexPatter.Length];
+		for (int i = 0; i < splitArtIndexPatter.Length; i++)
+		{
+			articulations[i] = int.Parse(splitArtIndexPatter[i]);
+		}
+		ValidateArticulationList();
+
+		sessionId = movement.session.id;
+		title = movement.session.title;
+		description = movement.session.description;
+		professionalId = movement.session.professionalId;
+		patientSessionNumber = movement.session.patientSessionNumber;
+		sessionDuration = movement.session.duration;
+		numberOfRegisters = movement.session.numberOfRegisters;
+		appCode = movement.app.code;
+		appData = movement.app.data;
+		patientId = movement.patient.id;
+		patientAge = movement.patient.age;
+		patientHeight = movement.patient.height;
+		patientWeight = movement.patient.weight;
+		mainComplaint = movement.medicalData.mainComplaint;
+		historyOfCurrentDesease = movement.medicalData.historyOfCurrentDesease;
+		historyOfPastDesease = movement.medicalData.historyOfPastDesease;
+		diagnosis = movement.medicalData.diagnosis;
+		relatedDeseases = movement.medicalData.relatedDeseases;
+		medications = movement.medicalData.medications;
+		physicalEvaluation = movement.medicalData.physicalEvaluation;
+
+		articulationData = DataDictionaryToRegisterList(movement.articulationData);
+	}
+
 	public void SetNewSession(string label = "", string device = "", int[] articulations = null, string sessionId = "", string title = "", string description = "", string professionalId = "",
 								int patientSessionNumber = 0, int appCode = 0, string appData = "", string patientId = "", int patientAge = 0, float patientHeight = 0f, float patientWeight = 0f,
 								string mainComplaint = "", string historyOfCurrentDesease = "", string historyOfPastDesease = "", string diagnosis = "", string relatedDeseases = "",
@@ -181,10 +219,10 @@ public class Movement
 
 	public string ToJson()
 	{
-		return $"{{\"label\":\"{label}\"," +
+		return $"{{\"movement\":{{\"label\":\"{label}\"," +
 			$"\"device\":\"{device}\"," +
 			$"\"artIndexPattern\":\"{string.Join(";", articulations)}\"," +
-			"\"session\":{{" +
+			"\"session\":{" +
 			$"\"id\":\"{sessionId}\"," +
 			$"\"title\":\"{title}\"," +
 			$"\"description\":\"{description}\"," +
@@ -192,15 +230,15 @@ public class Movement
 			$"\"patientSessionNumber\":{patientSessionNumber}," +
 			$"\"duration\":{sessionDuration}," +
 			$"\"numberOfRegisters\":{numberOfRegisters}}}," +
-			"\"app\":{{" +
+			"\"app\":{" +
 			$"\"code\":{appCode}," +
 			$"\"data\":\"{appData}\"}}," +
-			"\"patient\":{{" +
+			"\"patient\":{" +
 			$"\"id\":\"{patientId}\"," +
 			$"\"age\":{patientAge}," +
 			$"\"height\":{patientHeight}," +
 			$"\"weight\":{patientWeight}}}," +
-			"\"medicalData\":{{" +
+			"\"medicalData\":{" +
 			$"\"mainComplaint\":\"{mainComplaint}\"," +
 			$"\"historyOfCurrentDesease\":\"{historyOfCurrentDesease}\"," +
 			$"\"historyOfPastDesease\":\"{historyOfPastDesease}\"," +
@@ -208,7 +246,7 @@ public class Movement
 			$"\"relatedDeseases\":\"{relatedDeseases}\"," +
 			$"\"medications\":\"{medications}\"," +
 			$"\"physicalEvaluation\":\"{physicalEvaluation}\"}}," +
-			$"\"articulationData\":{SerializeDataDictionary()}}}";
+			$"\"articulationData\":{SerializeDataDictionary()}}}}}";
 	}
 
 	private string SerializeDataDictionary()
@@ -241,6 +279,29 @@ public class Movement
 		}
 
 		return serializedDictionary.TrimEnd(',') + "}";
+	}
+
+	private List<Register> DataDictionaryToRegisterList(Dictionary<int, List<Vector3>> dictionary)
+	{
+		int length = 0;
+		foreach (int key in dictionary.Keys)
+		{
+			length = dictionary[key].Count;
+			break;
+		}
+
+		List<Register> registerList = new List<Register>();
+
+		for (int j = 0; j < length; j++)
+		{
+			Register register = new Register(articulations);
+			foreach (int articulation in dictionary.Keys)
+			{
+				register.SetArticulationRotations(articulation, dictionary[articulation][j]);
+			}
+			registerList.Add(register);
+		}
+		return registerList;
 	}
 
 	private void ValidateArticulationList()
