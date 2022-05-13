@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 
 [System.Serializable]
 public class Movement
@@ -182,28 +183,64 @@ public class Movement
 	{
 		return $"{{\"label\":\"{label}\"," +
 			$"\"device\":\"{device}\"," +
-			$"\"articulations\":[{string.Join(",", articulations)}]," +
-			$"\"sessionId\":\"{sessionId}\"," +
+			$"\"artIndexPattern\":\"{string.Join(";", articulations)}\"," +
+			"\"session\":{{" +
+			$"\"id\":\"{sessionId}\"," +
 			$"\"title\":\"{title}\"," +
 			$"\"description\":\"{description}\"," +
 			$"\"professionalId\":\"{professionalId}\"," +
 			$"\"patientSessionNumber\":{patientSessionNumber}," +
-			$"\"sessionDuration\":{sessionDuration}," +
-			$"\"numberOfRegisters\":{numberOfRegisters}," +
-			$"\"appCode\":{appCode}," +
-			$"\"appData\":\"{appData}\"," +
-			$"\"patientId\":\"{patientId}\"," +
-			$"\"patientAge\":{patientAge}," +
-			$"\"patientHeight\":{patientHeight}," +
-			$"\"patientWeight\":{patientWeight}," +
+			$"\"duration\":{sessionDuration}," +
+			$"\"numberOfRegisters\":{numberOfRegisters}}}," +
+			"\"app\":{{" +
+			$"\"code\":{appCode}," +
+			$"\"data\":\"{appData}\"}}," +
+			"\"patient\":{{" +
+			$"\"id\":\"{patientId}\"," +
+			$"\"age\":{patientAge}," +
+			$"\"height\":{patientHeight}," +
+			$"\"weight\":{patientWeight}}}," +
+			"\"medicalData\":{{" +
 			$"\"mainComplaint\":\"{mainComplaint}\"," +
 			$"\"historyOfCurrentDesease\":\"{historyOfCurrentDesease}\"," +
 			$"\"historyOfPastDesease\":\"{historyOfPastDesease}\"," +
 			$"\"diagnosis\":\"{diagnosis}\"," +
 			$"\"relatedDeseases\":\"{relatedDeseases}\"," +
 			$"\"medications\":\"{medications}\"," +
-			$"\"physicalEvaluation\":\"{physicalEvaluation}\"}}";
-			// articulationData
+			$"\"physicalEvaluation\":\"{physicalEvaluation}\"}}," +
+			$"\"articulationData\":{SerializeDataDictionary()}}}";
+	}
+
+	private string SerializeDataDictionary()
+	{
+		Dictionary<int, List<Vector3>> aritulationDataDict = new Dictionary<int, List<Vector3>>();
+
+		foreach (int articulation in articulations)
+		{
+			aritulationDataDict.Add(articulation, new List<Vector3>());
+		}
+		foreach (Register register in articulationData)
+		{
+			foreach (int articulation in aritulationDataDict.Keys)
+			{
+				aritulationDataDict[articulation].Add(register.GetArticulationRotations(articulation));
+			}
+		}
+
+		string serializedDictionary = "{";
+		foreach (KeyValuePair<int, List<Vector3>> items in aritulationDataDict)
+		{
+			serializedDictionary += $"\"{items.Key}\":[";
+			for (int i = 0; i < items.Value.Count; i++)
+			{
+				Vector3 coordinates = items.Value[i];
+				serializedDictionary += $"[{coordinates.x},{coordinates.y},{coordinates.z}]";
+				if (i < items.Value.Count - 1) serializedDictionary += ",";
+			}
+			serializedDictionary += "],";
+		}
+
+		return serializedDictionary.TrimEnd(',') + "}";
 	}
 
 	private void ValidateArticulationList()
