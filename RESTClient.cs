@@ -10,7 +10,7 @@ public class RESTClient
 	private static readonly RESTClient instance = new RESTClient();
 	public static RESTClient Instance { get { return instance; } }
 
-	private string WEB_URL = "http://200.145.46.239:3000";
+	private string WEB_URL = "http://200.145.46.239:3030";
 	//private UnityWebRequest www;
 	private string sessionId;
 
@@ -27,6 +27,27 @@ public class RESTClient
 		string fullUrl = $"{WEB_URL}/session?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}&legacy={legacy}";
 		if (page > 0) fullUrl += $"&page={page}";
 		if (limit > 0) fullUrl += $"&limit={limit}";
+
+		UnityWebRequest request = UnityWebRequest.Get(fullUrl);
+		request.method = "GET";
+		yield return request.SendWebRequest();
+
+		string response = ParseAPIResponse(request);
+		request.Dispose();
+
+		callback(response);
+	}
+
+	public IEnumerator FetchMovements(Action<string> callback, string professionalId = "", string patientId = "", string movementLabel = "",
+										int[] articulations = null, bool legacy = false, int page = 0, int limit = 0)
+	{
+		int[] artList = articulations ?? new int[] { };
+
+		string fullUrl = $"{WEB_URL}/movement?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}&legacy={legacy}";
+		if (page > 0) fullUrl += $"&page={page}";
+		if (limit > 0) fullUrl += $"&limit={limit}";
+
+		Debug.Log($"Endpoint: {fullUrl}");
 
 		UnityWebRequest request = UnityWebRequest.Get(fullUrl);
 		request.method = "GET";
@@ -306,7 +327,10 @@ public class RESTClient
 
 	private string ParseAPIResponse(UnityWebRequest request)
 	{
+		Debug.Log("Parse response");
+		if (IsNetworkError(request) || IsHTTPError(request)) return request.downloadHandler.text;
 		if (!request.isDone) return "";
+		Debug.Log("Finished request!");
 
 		while (!request.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
 		return request.downloadHandler.text;
