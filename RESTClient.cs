@@ -49,8 +49,6 @@ public class RESTClient
 		if (page > 0) fullUrl += $"&page={page}";
 		if (limit > 0) fullUrl += $"&limit={limit}";
 
-		Debug.Log($"Endpoint: {fullUrl}");
-
 		UnityWebRequest request = UnityWebRequest.Get(fullUrl);
 		request.method = "GET";
 		yield return request.SendWebRequest();
@@ -58,18 +56,13 @@ public class RESTClient
 		long responseCode;
 		string responseStr = GetAPIResponse(request, out responseCode);
 
-		string aux = responseStr.Substring(responseStr.IndexOf("[") + 1).TrimEnd('}').TrimEnd(']');
-		Debug.Log(aux);
-		Movement m = TranslationUtility.ParseMovement(aux);
-		Debug.Log(m.ToJson());
-
 		TranslationUtility.FetchMovementResponse response = TranslationUtility.ParseFetchMovementResponse(responseStr, responseCode);
 		request.Dispose();
 
 		callback(response);
 	}
 
-	public IEnumerator InsertMovement(Action<string> callback, Movement movement)
+	public IEnumerator InsertMovement(Action<TranslationUtility.InsertMovementResponse> callback, Movement movement)
 	{
 		string json = movement.ToJson();
 
@@ -82,9 +75,11 @@ public class RESTClient
 			yield return request.SendWebRequest();
 
 			long responseCode;
-			string response = GetAPIResponse(request, out responseCode);
+			string responseStr = GetAPIResponse(request, out responseCode);
 
+			TranslationUtility.InsertMovementResponse response = TranslationUtility.ParseInsertMovementResponse(responseStr, responseCode);
 			request.Dispose();
+
 			callback(response);
 		}
 	}

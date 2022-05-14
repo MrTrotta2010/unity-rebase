@@ -93,7 +93,6 @@ public partial class TranslationUtility
 	public static Movement ParseMovement(string movementJson)
 	{
 		SerializableMovement auxMovement = JsonUtility.FromJson<SerializableMovement>(movementJson);
-		Debug.Log(auxMovement);
 		return new Movement(auxMovement);
 	}
 
@@ -104,8 +103,14 @@ public partial class TranslationUtility
 
 	public static FetchMovementResponse ParseFetchMovementResponse(string response, long responseCode)
 	{
-		Debug.Log($"Response: {response}");
 		FetchMovementResponse responseObj = JsonUtility.FromJson<FetchMovementResponse>(response);
+		responseObj.code = responseCode;
+		return responseObj;
+	}
+
+	public static InsertMovementResponse ParseInsertMovementResponse(string response, long responseCode)
+	{
+		InsertMovementResponse responseObj = JsonUtility.FromJson<InsertMovementResponse>(response);
 		responseObj.code = responseCode;
 		return responseObj;
 	}

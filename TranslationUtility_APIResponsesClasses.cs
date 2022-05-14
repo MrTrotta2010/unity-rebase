@@ -20,11 +20,11 @@ public partial class TranslationUtility
 
 	public class FetchMovementResponse : BaseResponse
 	{
-		public List<SerializableMovement> movements;
+		public SerializableMovement[] movements;
 
 		public override string ToString()
 		{
-			string str = $"{{ code: {code}, status: {status}, movements: {(movements == null ? "NULL" : movements.Count.ToString())}";
+			string str = $"{{ code: {code}, status: {status}, movements: [{(movements == null ? "" : string.Join<SerializableMovement>(", ", movements))}]";
 			if (message != null) str += $", message: {message}";
 			if (error != null) str += $", error: [{string.Join(", ", error)}]";
 			if (warning != null) str += $", warning: [{string.Join(", ", warning)}]";
@@ -34,6 +34,15 @@ public partial class TranslationUtility
 
 	public class InsertMovementResponse : BaseResponse
 	{
-		public Movement movement;
+		public SerializableMovement created;
+
+		public override string ToString()
+		{
+			string str = $"{{ code: {code}, status: {status}, created: {created.ToString() ?? ""} }}";
+			if (message != null) str += $", message: {message}";
+			if (error != null) str += $", error: [{string.Join(", ", error)}]";
+			if (warning != null) str += $", warning: [{string.Join(", ", warning)}]";
+			return str + " }";
+		}
 	}
 }
