@@ -6,8 +6,10 @@ using UnityEngine;
 
 public partial class TranslationUtility
 {
+	[Serializable]
 	public class SerializableMovement
 	{
+		[Serializable]
 		public class SessionData
 		{
 			public string id;
@@ -18,11 +20,13 @@ public partial class TranslationUtility
 			public int duration;
 			public int numberOfRegisters;
 		}
+		[Serializable]
 		public class AppData
 		{
 			public int code;
 			public string data;
 		}
+		[Serializable]
 		public class PatientData
 		{
 			public string id;
@@ -30,6 +34,7 @@ public partial class TranslationUtility
 			public float height;
 			public float weight;
 		}
+		[Serializable]
 		public class MedicalData
 		{
 			public string mainComplaint;
@@ -40,6 +45,17 @@ public partial class TranslationUtility
 			public string medications;
 			public string physicalEvaluation;
 		}
+		[Serializable]
+		public class ArticulationData
+		{
+			public int articulation;
+			public float[] data;
+
+			public override string ToString()
+			{
+				return $"{{ articulation: {articulation}, data: [{(data != null ? string.Join(", ", data) : "")}] }}";
+			}
+		}
 
 		public string label;
 		public string device;
@@ -49,6 +65,11 @@ public partial class TranslationUtility
 		public AppData app;
 		public PatientData patient;
 		public MedicalData medicalData;
-		public Dictionary<int, List<Vector3>> articulationData;
+		public ArticulationData[] articulationData;
+
+		public override string ToString()
+		{
+			return $"{{ label: {label}, device: {device}, artIndexPattern: {artIndexPattern}, articulationData: [{string.Join<ArticulationData>(", ", articulationData)}] }}";
+		}
 	}
 }

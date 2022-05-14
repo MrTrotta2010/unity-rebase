@@ -132,39 +132,42 @@ public class Movement
 
 	public Movement(TranslationUtility.SerializableMovement movement)
 	{
-		label = movement.label;
-		device = movement.device;
-		
-		string[] splitArtIndexPatter = movement.artIndexPattern.Split(';');
-		articulations = new int[splitArtIndexPatter.Length];
-		for (int i = 0; i < splitArtIndexPatter.Length; i++)
+		if (movement.label != null) label = movement.label;
+		if (movement.device != null) device = movement.device;
+
+		if (movement.artIndexPattern != null)
 		{
-			articulations[i] = int.Parse(splitArtIndexPatter[i]);
+			string[] splitArtIndexPatter = movement.artIndexPattern.Split(';');
+			articulations = new int[splitArtIndexPatter.Length];
+			for (int i = 0; i < splitArtIndexPatter.Length; i++)
+			{
+				articulations[i] = int.Parse(splitArtIndexPatter[i]);
+			}
+			ValidateArticulationList();
 		}
-		ValidateArticulationList();
 
-		sessionId = movement.session.id;
-		title = movement.session.title;
-		description = movement.session.description;
-		professionalId = movement.session.professionalId;
-		patientSessionNumber = movement.session.patientSessionNumber;
-		sessionDuration = movement.session.duration;
-		numberOfRegisters = movement.session.numberOfRegisters;
-		appCode = movement.app.code;
-		appData = movement.app.data;
-		patientId = movement.patient.id;
-		patientAge = movement.patient.age;
-		patientHeight = movement.patient.height;
-		patientWeight = movement.patient.weight;
-		mainComplaint = movement.medicalData.mainComplaint;
-		historyOfCurrentDesease = movement.medicalData.historyOfCurrentDesease;
-		historyOfPastDesease = movement.medicalData.historyOfPastDesease;
-		diagnosis = movement.medicalData.diagnosis;
-		relatedDeseases = movement.medicalData.relatedDeseases;
-		medications = movement.medicalData.medications;
-		physicalEvaluation = movement.medicalData.physicalEvaluation;
+		if (movement.session != null && movement.session.id != null) sessionId = movement.session.id;
+		if (movement.session != null && movement.session.title != null) title = movement.session.title;
+		if (movement.session != null && movement.session.description != null) description = movement.session.description;
+		if (movement.session != null && movement.session.professionalId != null) professionalId = movement.session.professionalId;
+		if (movement.session != null) patientSessionNumber = movement.session.patientSessionNumber;
+		if (movement.session != null) sessionDuration = movement.session.duration;
+		if (movement.session != null) numberOfRegisters = movement.session.numberOfRegisters;
+		if (movement.app != null) appCode = movement.app.code;
+		if (movement.app != null && movement.app.data != null) appData = movement.app.data;
+		if (movement.patient != null && movement.patient.id != null) patientId = movement.patient.id;
+		if (movement.patient != null) patientAge = movement.patient.age;
+		if (movement.patient != null) patientHeight = movement.patient.height;
+		if (movement.patient != null) patientWeight = movement.patient.weight;
+		if (movement.medicalData != null && movement.medicalData.mainComplaint != null) mainComplaint = movement.medicalData.mainComplaint;
+		if (movement.medicalData != null && movement.medicalData.historyOfCurrentDesease != null) historyOfCurrentDesease = movement.medicalData.historyOfCurrentDesease;
+		if (movement.medicalData != null && movement.medicalData.historyOfPastDesease != null) historyOfPastDesease = movement.medicalData.historyOfPastDesease;
+		if (movement.medicalData != null && movement.medicalData.diagnosis != null) diagnosis = movement.medicalData.diagnosis;
+		if (movement.medicalData != null && movement.medicalData.relatedDeseases != null) relatedDeseases = movement.medicalData.relatedDeseases;
+		if (movement.medicalData != null && movement.medicalData.medications != null) medications = movement.medicalData.medications;
+		if (movement.medicalData != null && movement.medicalData.physicalEvaluation != null) physicalEvaluation = movement.medicalData.physicalEvaluation;
 
-		articulationData = DataDictionaryToRegisterList(movement.articulationData);
+		articulationData = ArticulationDataToRegisterList(movement.articulationData);
 	}
 
 	public void SetNewSession(string label = "", string device = "", int[] articulations = null, string sessionId = "", string title = "", string description = "", string professionalId = "",
@@ -246,10 +249,10 @@ public class Movement
 			$"\"relatedDeseases\":\"{relatedDeseases}\"," +
 			$"\"medications\":\"{medications}\"," +
 			$"\"physicalEvaluation\":\"{physicalEvaluation}\"}}," +
-			$"\"articulationData\":{SerializeDataDictionary()}}}}}";
+			$"\"articulationData\":{SerializeArticulationData()}}}}}";
 	}
 
-	private string SerializeDataDictionary()
+	private string SerializeArticulationData()
 	{
 		Dictionary<int, List<Vector3>> aritulationDataDict = new Dictionary<int, List<Vector3>>();
 
@@ -265,39 +268,48 @@ public class Movement
 			}
 		}
 
-		string serializedDictionary = "{";
+		string serializedList = "[";
 		foreach (KeyValuePair<int, List<Vector3>> items in aritulationDataDict)
 		{
-			serializedDictionary += $"\"{items.Key}\":[";
+			serializedList += $"{{\"articulation\":{items.Key},\"data\":[";
 			for (int i = 0; i < items.Value.Count; i++)
 			{
 				Vector3 coordinates = items.Value[i];
-				serializedDictionary += $"[{coordinates.x},{coordinates.y},{coordinates.z}]";
-				if (i < items.Value.Count - 1) serializedDictionary += ",";
+				serializedList += $"{coordinates.x},{coordinates.y},{coordinates.z}";
+				if (i < items.Value.Count - 1) serializedList += ",";
 			}
-			serializedDictionary += "],";
+			serializedList += "]},";
 		}
 
-		return serializedDictionary.TrimEnd(',') + "}";
+		return serializedList.TrimEnd(',') + "]";
 	}
 
-	private List<Register> DataDictionaryToRegisterList(Dictionary<int, List<Vector3>> dictionary)
+	private List<Register> ArticulationDataToRegisterList(TranslationUtility.SerializableMovement.ArticulationData[] articulationData)
 	{
 		int length = 0;
-		foreach (int key in dictionary.Keys)
+		foreach (TranslationUtility.SerializableMovement.ArticulationData dataObject in articulationData)
 		{
-			length = dictionary[key].Count;
+			length = dataObject.data.Length;
 			break;
 		}
 
 		List<Register> registerList = new List<Register>();
 
-		for (int j = 0; j < length; j++)
+		for (int j = 0; j < length; j += 3)
 		{
 			Register register = new Register(articulations);
-			foreach (int articulation in dictionary.Keys)
+			foreach (TranslationUtility.SerializableMovement.ArticulationData dataObject in articulationData)
 			{
-				register.SetArticulationRotations(articulation, dictionary[articulation][j]);
+
+				try
+				{
+					Vector3 rotations = new Vector3(dataObject.data[j], dataObject.data[j + 1], dataObject.data[j + 2]);
+					register.SetArticulationRotations(dataObject.articulation, rotations);
+				}
+				catch (ArgumentException)
+				{
+					continue;
+				}
 			}
 			registerList.Add(register);
 		}

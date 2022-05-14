@@ -58,6 +58,11 @@ public class RESTClient
 		long responseCode;
 		string responseStr = GetAPIResponse(request, out responseCode);
 
+		string aux = responseStr.Substring(responseStr.IndexOf("[") + 1).TrimEnd('}').TrimEnd(']');
+		Debug.Log(aux);
+		Movement m = TranslationUtility.ParseMovement(aux);
+		Debug.Log(m.ToJson());
+
 		TranslationUtility.FetchMovementResponse response = TranslationUtility.ParseFetchMovementResponse(responseStr, responseCode);
 		request.Dispose();
 

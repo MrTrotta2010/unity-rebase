@@ -90,9 +90,10 @@ public partial class TranslationUtility
 		session.sessiondata.translateddata = CompressionUtility.Decompress(translatedBytes);
 	}
 
-	public Movement ParseMovement(string movementJson)
+	public static Movement ParseMovement(string movementJson)
 	{
 		SerializableMovement auxMovement = JsonUtility.FromJson<SerializableMovement>(movementJson);
+		Debug.Log(auxMovement);
 		return new Movement(auxMovement);
 	}
 

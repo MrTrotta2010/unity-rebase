@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 
+[System.Serializable]
 public partial class TranslationUtility
 {
+	[System.Serializable]
 	public class BaseResponse
 	{
 		public int status;
