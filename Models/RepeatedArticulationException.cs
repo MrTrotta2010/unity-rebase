@@ -1,19 +1,22 @@
 ﻿using System;
 
-public class RepeatedArticulationException : Exception
+namespace ReBase
 {
-    public string Patterns { get; }
-    public RepeatedArticulationException() { }
-
-    public RepeatedArticulationException(string message)
-        : base(message) { }
-
-    public RepeatedArticulationException(string message, Exception inner)
-        : base(message, inner) { }
-
-    public RepeatedArticulationException(string message, int[] articulations)
-    : this(message)
+    public class RepeatedArticulationException : Exception
     {
-        Patterns = $"[{string.Join(", ", articulations)}]";
+        public string Patterns { get; }
+        public RepeatedArticulationException() { }
+
+        public RepeatedArticulationException(string message)
+            : base(message) { }
+
+        public RepeatedArticulationException(string message, Exception inner)
+            : base(message, inner) { }
+
+        public RepeatedArticulationException(string message, int[] articulations)
+        : this(message)
+        {
+            Patterns = $"[{string.Join(", ", articulations)}]";
+        }
     }
 }
