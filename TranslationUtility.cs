@@ -42,56 +42,6 @@ namespace ReBase
 			//"\"sessiondata\":\"" + Convert.ToBase64String(CompressionUtility.Compress(string.Join<>("/", stringArray))) + "\"}";
 		}
 
-		public static SessionList ParseSessionList(string json)
-		{
-			if (json != "[]")
-			{
-				string[] stringSessionList = (json.Trim('[', ']')).Split(new string[] { "},{" }, StringSplitOptions.None);
-				List<SerializableSession> list = new List<SerializableSession>(stringSessionList.Length);
-
-				for (int i = 0; i < stringSessionList.Length; i++)
-				{
-					if (stringSessionList[i][0] != '{')
-						stringSessionList[i] = "{" + stringSessionList[i];
-					if (stringSessionList[i][stringSessionList[i].Length - 1] != '}')
-						stringSessionList[i] += "}";
-
-					list.Add(JsonUtility.FromJson<SerializableSession>(stringSessionList[i]));
-				}
-
-				return new SessionList(list);
-			}
-			return null;
-		}
-
-		public static void TranslateSessionListData(SessionList sessionList)
-		{
-			foreach (SerializableSession session in sessionList.list)
-			{
-				Debug.Log(JsonUtility.ToJson(session));
-				byte[] translatedBytes = new byte[session.sessiondata.data.Count];
-
-				for (int i = 0; i < translatedBytes.Length; i++)
-					translatedBytes[i] = Convert.ToByte(Convert.ToInt32(session.sessiondata.data[i]));
-
-				string base64string = Encoding.UTF8.GetString(translatedBytes);
-				translatedBytes = Convert.FromBase64String(base64string);
-				session.sessiondata.translateddata = CompressionUtility.Decompress(translatedBytes);
-			}
-		}
-
-		public static void TranslateSessionData(SerializableSession session)
-		{
-			byte[] translatedBytes = new byte[session.sessiondata.data.Count];
-
-			for (int i = 0; i < translatedBytes.Length; i++)
-				translatedBytes[i] = Convert.ToByte(Convert.ToInt32(session.sessiondata.data[i]));
-
-			string base64string = Encoding.UTF8.GetString(translatedBytes);
-			translatedBytes = Convert.FromBase64String(base64string);
-			session.sessiondata.translateddata = CompressionUtility.Decompress(translatedBytes);
-		}
-
 		public static Movement ParseMovement(string movementJson)
 		{
 			SerializableMovement auxMovement = JsonUtility.FromJson<SerializableMovement>(movementJson);
