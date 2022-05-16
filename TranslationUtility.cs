@@ -98,23 +98,12 @@ namespace ReBase
 			return new Movement(auxMovement);
 		}
 
-		public static BaseResponse ParseAPIResponse(string response, int responseCode)
+		public static ReBaseResponse ParseAPIResponse(ReBaseResponse.ResponseType responseType, string response, long responseCode)
 		{
-			return JsonUtility.FromJson<BaseResponse>(response);
-		}
-
-		public static FetchMovementResponse ParseFetchMovementResponse(string response, long responseCode)
-		{
-			FetchMovementResponse responseObj = JsonUtility.FromJson<FetchMovementResponse>(response);
-			responseObj.code = responseCode;
-			return responseObj;
-		}
-
-		public static InsertMovementResponse ParseInsertMovementResponse(string response, long responseCode)
-		{
-			InsertMovementResponse responseObj = JsonUtility.FromJson<InsertMovementResponse>(response);
-			responseObj.code = responseCode;
-			return responseObj;
+			ReBaseResponse responseObject = JsonUtility.FromJson<ReBaseResponse>(response);
+			responseObject.responseType = responseType;
+			responseObject.code = responseCode;
+			return responseObject;
 		}
 	}
 }

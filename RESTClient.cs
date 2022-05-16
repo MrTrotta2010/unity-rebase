@@ -21,7 +21,7 @@ namespace ReBase
 			GenerateNewSessionID();
 		}
 
-		public IEnumerator DownloadSessions(Action<string> callback, string professionalId = "", string patientId = "", string movementLabel = "",
+		public IEnumerator DownloadSessions(Action<ReBaseResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
 											int[] articulations = null, bool legacy = false, int page = 0, int limit = 0)
 		{
 			int[] artList = articulations ?? new int[] { };
@@ -33,16 +33,14 @@ namespace ReBase
 			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
 			request.method = "GET";
 			yield return request.SendWebRequest();
-
-			long responseCode;
-			string response = GetAPIResponse(request, out responseCode);
-
+;
+			ReBaseResponse response = ParseAPIResponse(request, ReBaseResponse.ResponseType.FetchMovements);
 			request.Dispose();
 
 			callback(response);
 		}
 
-		public IEnumerator FetchMovements(Action<FetchMovementResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
+		public IEnumerator FetchMovements(Action<ReBaseResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
 											int[] articulations = null, bool legacy = false, int page = 0, int limit = 0)
 		{
 			int[] artList = articulations ?? new int[] { };
@@ -54,32 +52,60 @@ namespace ReBase
 			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
 			request.method = "GET";
 			yield return request.SendWebRequest();
-
-			long responseCode;
-			string responseStr = GetAPIResponse(request, out responseCode);
-
-			FetchMovementResponse response = TranslationUtility.ParseFetchMovementResponse(responseStr, responseCode);
+;
+			ReBaseResponse response = ParseAPIResponse(request, ReBaseResponse.ResponseType.FetchMovements);
 			request.Dispose();
 
 			callback(response);
 		}
 
-		public IEnumerator InsertMovement(Action<InsertMovementResponse> callback, Movement movement)
+		public IEnumerator InsertMovement(Action<ReBaseResponse> callback, Movement movement)
 		{
 			string json = movement.ToJson();
 
-			using (UnityWebRequest request = UnityWebRequest.Post(WEB_URL + "/movement", json))
+			using (UnityWebRequest request = UnityWebRequest.Post($"{WEB_URL}/movement", json))
 			{
 				request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
 				request.uploadHandler.contentType = "application/json";
 				request.method = "POST";
 
 				yield return request.SendWebRequest();
+;
+				ReBaseResponse response = ParseAPIResponse(request, ReBaseResponse.ResponseType.InsertMovement);
+				request.Dispose();
 
-				long responseCode;
-				string responseStr = GetAPIResponse(request, out responseCode);
+				callback(response);
+			}
+		}
 
-				InsertMovementResponse response = TranslationUtility.ParseInsertMovementResponse(responseStr, responseCode);
+		public IEnumerator UpdateMovement(Action<ReBaseResponse> callback, string id, Movement movement)
+		{
+			string json = movement.ToJson();
+
+			using (UnityWebRequest request = UnityWebRequest.Put($"{WEB_URL}/movement/{id}", json))
+			{
+				request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+				request.uploadHandler.contentType = "application/json";
+				request.method = "PUT";
+
+				yield return request.SendWebRequest();
+;
+				ReBaseResponse response = ParseAPIResponse(request, ReBaseResponse.ResponseType.UpdateMovement);
+				request.Dispose();
+
+				callback(response);
+			}
+		}
+
+		public IEnumerator DeleteMovement(Action<ReBaseResponse> callback, string id)
+		{
+			using (UnityWebRequest request = UnityWebRequest.Delete($"{WEB_URL}/movement/{id}"))
+			{
+				request.downloadHandler = new DownloadHandlerBuffer();
+				request.method = "DELETE";
+				yield return request.SendWebRequest();
+;
+				ReBaseResponse response = ParseAPIResponse(request, ReBaseResponse.ResponseType.DeleteMovement);
 				request.Dispose();
 
 				callback(response);
@@ -222,28 +248,6 @@ namespace ReBase
 			callback(success, response);
 		}
 
-		public IEnumerator DeleteAll(Action<bool, string> callback)
-		{
-			using (UnityWebRequest www = UnityWebRequest.Delete(WEB_URL + "/deleteall"))
-			{
-				www.method = "DELETE";
-				yield return www.SendWebRequest();
-
-				if (IsNetworkError(www) || IsHTTPError(www))
-				{
-					string errorString = www.error;
-					www.Dispose();
-					callback(false, errorString);
-				}
-				else if (www.isDone)
-				{
-					string response = www.downloadHandler.text;
-					www.Dispose();
-					callback(true, response);
-				}
-			}
-		}
-
 		public IEnumerator DeleteSession(string id, string movementlabel, string insertiondate, Action<bool, string> callback)
 		{
 			using (UnityWebRequest www = UnityWebRequest.Delete(WEB_URL + "/delete/movement/" + id + "/" + movementlabel + "/" + insertiondate))
@@ -352,23 +356,20 @@ namespace ReBase
 			return request.result == UnityWebRequest.Result.ConnectionError;
 		}
 
-		private string GetAPIResponse(UnityWebRequest request, out long responseCode)
+		private ReBaseResponse ParseAPIResponse(UnityWebRequest request, ReBaseResponse.ResponseType responseType)
 		{
 			if (IsNetworkError(request) || IsHTTPError(request))
 			{
-				responseCode = request.responseCode;
-				return request.downloadHandler.text;
+				return TranslationUtility.ParseAPIResponse(responseType, request.downloadHandler.text, request.responseCode);
 			}
 			if (!request.isDone)
 			{
-				responseCode = 0;
-				return "";
+				return new ReBaseResponse();
 			}
 
 			while (!request.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
 
-			responseCode = request.responseCode;
-			return request.downloadHandler.text;
+			return TranslationUtility.ParseAPIResponse(responseType, request.downloadHandler.text, request.responseCode);
 		}
 	}
 }

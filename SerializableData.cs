@@ -53,6 +53,7 @@ namespace ReBase
 			}
 		}
 
+		public string _id;
 		public string label;
 		public string device;
 		public string artIndexPattern;
@@ -63,9 +64,11 @@ namespace ReBase
 		public MedicalData medicalData;
 		public ArticulationData[] articulationData;
 
+		public string id { get => _id; set => _id = value; }
+
 		public override string ToString()
 		{
-			return $"{{ label: {label}, device: {device}, artIndexPattern: {artIndexPattern}, articulationData: [{string.Join<ArticulationData>(", ", articulationData)}] }}";
+			return $"{{ label: {label}, device: {device}, artIndexPattern: {artIndexPattern}, articulationData: [{(articulationData == null ? "" : string.Join<ArticulationData>(", ", articulationData))}] }}";
 		}
 	}
 }
