@@ -5,7 +5,7 @@ namespace ReBase
 	{
 		public enum ResponseType {
 			FetchMovements = 0,
-			ShowMovement = 1,
+			FindMovement = 1,
 			InsertMovement = 3,
 			UpdateMovement = 4,
 			DeleteMovement = 5
@@ -19,8 +19,10 @@ namespace ReBase
 		public string[] warning;
 
 		public SerializableMovement[] movements;
+		public SerializableMovement movement;
 		public SerializableMovement created;
 		public SerializableMovement updated;
+		public string deletedId;
 
 		public override string ToString()
 		{
@@ -32,13 +34,19 @@ namespace ReBase
 			switch (responseType)
 			{
 				case ResponseType.FetchMovements:
-					str += $", movements: [{(movements == null ? "" : string.Join<SerializableMovement>(", ", movements))}]";
+					if (movements != null && movements.Length > 0) str += $", movements: [{string.Join<SerializableMovement>(", ", movements)}]";
+					break;
+				case ResponseType.FindMovement:
+					if (movement != null && movement.id != null) str += $", movement: [{movement}]";
 					break;
 				case ResponseType.InsertMovement:
-					str += $", created: {created.ToString() ?? ""}";
+					if (created != null && created.id != null) str += $", created: {created}";
 					break;
 				case ResponseType.UpdateMovement:
-					str += $", updated: {updated.ToString() ?? ""}";
+					if (updated != null && updated.id != null) str += $", updated: {updated}";
+					break;
+				case ResponseType.DeleteMovement:
+					if (deletedId != null) str += $", deletedId: {deletedId}";
 					break;
 				default:
 					break;

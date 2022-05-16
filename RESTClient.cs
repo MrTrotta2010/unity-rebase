@@ -59,6 +59,18 @@ namespace ReBase
 			callback(response);
 		}
 
+		public IEnumerator FindMovement(Action<APIResponse> callback, string id)
+		{
+			UnityWebRequest request = UnityWebRequest.Get($"{WEB_URL}/movement/{id}");
+			request.method = "GET";
+			yield return request.SendWebRequest();
+
+			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FindMovement);
+			request.Dispose();
+
+			callback(response);
+		}
+
 		public IEnumerator InsertMovement(Action<APIResponse> callback, Movement movement)
 		{
 			string json = movement.ToJson();
