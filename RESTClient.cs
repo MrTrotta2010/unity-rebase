@@ -21,7 +21,7 @@ namespace ReBase
 			GenerateNewSessionID();
 		}
 
-		public IEnumerator DownloadSessions(Action<ReBaseResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
+		public IEnumerator DownloadSessions(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
 											int[] articulations = null, bool legacy = false, int page = 0, int limit = 0)
 		{
 			int[] artList = articulations ?? new int[] { };
@@ -34,13 +34,13 @@ namespace ReBase
 			request.method = "GET";
 			yield return request.SendWebRequest();
 ;
-			ReBaseResponse response = ParseAPIResponse(request, ReBaseResponse.ResponseType.FetchMovements);
+			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FetchMovements);
 			request.Dispose();
 
 			callback(response);
 		}
 
-		public IEnumerator FetchMovements(Action<ReBaseResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
+		public IEnumerator FetchMovements(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
 											int[] articulations = null, bool legacy = false, int page = 0, int limit = 0)
 		{
 			int[] artList = articulations ?? new int[] { };
@@ -53,13 +53,13 @@ namespace ReBase
 			request.method = "GET";
 			yield return request.SendWebRequest();
 ;
-			ReBaseResponse response = ParseAPIResponse(request, ReBaseResponse.ResponseType.FetchMovements);
+			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FetchMovements);
 			request.Dispose();
 
 			callback(response);
 		}
 
-		public IEnumerator InsertMovement(Action<ReBaseResponse> callback, Movement movement)
+		public IEnumerator InsertMovement(Action<APIResponse> callback, Movement movement)
 		{
 			string json = movement.ToJson();
 
@@ -71,14 +71,14 @@ namespace ReBase
 
 				yield return request.SendWebRequest();
 ;
-				ReBaseResponse response = ParseAPIResponse(request, ReBaseResponse.ResponseType.InsertMovement);
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.InsertMovement);
 				request.Dispose();
 
 				callback(response);
 			}
 		}
 
-		public IEnumerator UpdateMovement(Action<ReBaseResponse> callback, string id, Movement movement)
+		public IEnumerator UpdateMovement(Action<APIResponse> callback, string id, Movement movement)
 		{
 			string json = movement.ToJson();
 
@@ -90,14 +90,14 @@ namespace ReBase
 
 				yield return request.SendWebRequest();
 ;
-				ReBaseResponse response = ParseAPIResponse(request, ReBaseResponse.ResponseType.UpdateMovement);
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.UpdateMovement);
 				request.Dispose();
 
 				callback(response);
 			}
 		}
 
-		public IEnumerator DeleteMovement(Action<ReBaseResponse> callback, string id)
+		public IEnumerator DeleteMovement(Action<APIResponse> callback, string id)
 		{
 			using (UnityWebRequest request = UnityWebRequest.Delete($"{WEB_URL}/movement/{id}"))
 			{
@@ -105,7 +105,7 @@ namespace ReBase
 				request.method = "DELETE";
 				yield return request.SendWebRequest();
 ;
-				ReBaseResponse response = ParseAPIResponse(request, ReBaseResponse.ResponseType.DeleteMovement);
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.DeleteMovement);
 				request.Dispose();
 
 				callback(response);
@@ -356,7 +356,7 @@ namespace ReBase
 			return request.result == UnityWebRequest.Result.ConnectionError;
 		}
 
-		private ReBaseResponse ParseAPIResponse(UnityWebRequest request, ReBaseResponse.ResponseType responseType)
+		private APIResponse ParseAPIResponse(UnityWebRequest request, APIResponse.ResponseType responseType)
 		{
 			if (IsNetworkError(request) || IsHTTPError(request))
 			{
@@ -364,7 +364,7 @@ namespace ReBase
 			}
 			if (!request.isDone)
 			{
-				return new ReBaseResponse();
+				return new APIResponse();
 			}
 
 			while (!request.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos

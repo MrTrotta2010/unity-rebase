@@ -68,7 +68,7 @@ namespace ReBase
 
 		public override string ToString()
 		{
-			return $"{{ label: {label}, device: {device}, artIndexPattern: {artIndexPattern}, articulationData: [{(articulationData == null ? "" : string.Join<ArticulationData>(", ", articulationData))}] }}";
+			return $"{{ id: {_id}, label: {label}, device: {device}, artIndexPattern: {artIndexPattern}, articulationData: [{(articulationData == null ? "" : string.Join<ArticulationData>(", ", articulationData))}] }}";
 		}
 	}
 }

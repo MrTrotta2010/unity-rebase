@@ -98,9 +98,9 @@ namespace ReBase
 			return new Movement(auxMovement);
 		}
 
-		public static ReBaseResponse ParseAPIResponse(ReBaseResponse.ResponseType responseType, string response, long responseCode)
+		public static APIResponse ParseAPIResponse(APIResponse.ResponseType responseType, string response, long responseCode)
 		{
-			ReBaseResponse responseObject = JsonUtility.FromJson<ReBaseResponse>(response);
+			APIResponse responseObject = JsonUtility.FromJson<APIResponse>(response);
 			responseObject.responseType = responseType;
 			responseObject.code = responseCode;
 			return responseObject;
