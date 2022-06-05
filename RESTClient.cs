@@ -399,7 +399,6 @@ namespace ReBase
 			}
 
 			while (!request.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
-			Debug.Log("String response: " + request.downloadHandler.text);
 
 			return NewAPIResponse(responseType, request.downloadHandler.text, request.responseCode);
 		}
