@@ -15,8 +15,8 @@ namespace ReBase
 		private float _fps;
 		private float _duration;
 		private int _numberOfRegisters;
-		private DateTime _insertionDate;
-		private DateTime _updateDate;
+		private string _insertionDate;
+		private string _updateDate;
 
 		private string _sessionId;
 		private string _title;
@@ -48,8 +48,8 @@ namespace ReBase
 		public float duration { get => _duration; set => _duration = value; }
 		public int numberOfRegisters { get => _numberOfRegisters; set => _numberOfRegisters = value; }
 		public int[] articulations { get => _articulations; set => _articulations = value; }
-		public DateTime insertionDate { get => _insertionDate; }
-		public DateTime updateDate { get => _updateDate; }
+		public string insertionDate { get => _insertionDate; }
+		public string updateDate { get => _updateDate; }
 		public string sessionId { get => _sessionId; }
 		public string title { get => _title; set => _title = value; }
 		public string description { get => _description; set => _description = value; }

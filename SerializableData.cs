@@ -58,8 +58,8 @@ namespace ReBase
 		public float duration;
 		public int numberOfRegisters;
 		public string artIndexPattern;
-		public DateTime insertionDate;
-		public DateTime updateDate;
+		public string insertionDate;
+		public string updateDate;
 		public SessionData session;
 		public AppData app;
 		public PatientData patient;
