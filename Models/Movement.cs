@@ -7,66 +7,69 @@ namespace ReBase
 	[Serializable]
 	public class Movement
 	{
-		private string label;
-		private string device;
-		private int[] articulations;
-		private DateTime insertionDate;
+		private string _id;
+		private string _label;
+		private string _device;
+		private int[] _articulations;
+		private DateTime _insertionDate;
 
-		private string sessionId;
-		private string title;
-		private string description;
-		private string professionalId;
-		private int patientSessionNumber;
-		private int sessionDuration;
-		private int numberOfRegisters;
+		private string _sessionId;
+		private string _title;
+		private string _description;
+		private string _professionalId;
+		private int _patientSessionNumber;
+		private int _sessionDuration;
+		private int _numberOfRegisters;
 
-		private int appCode;
-		private string appData;
+		private int _appCode;
+		private string _appData;
 
-		private string patientId;
-		private int patientAge;
-		private float patientHeight;
-		private float patientWeight;
-		private string mainComplaint;
-		private string historyOfCurrentDesease;
-		private string historyOfPastDesease;
-		private string diagnosis;
-		private string relatedDeseases;
-		private string medications;
-		private string physicalEvaluation;
+		private string _patientId;
+		private int _patientAge;
+		private float _patientHeight;
+		private float _patientWeight;
+		private string _mainComplaint;
+		private string _historyOfCurrentDesease;
+		private string _historyOfPastDesease;
+		private string _diagnosis;
+		private string _relatedDeseases;
+		private string _medications;
+		private string _physicalEvaluation;
 
-		private List<Register> articulationData;
+		private List<Register> _articulationData;
 
-		public string Label { get => label; set => label = value; }
-		public string Device { get => device; set => device = value; }
-		public int[] Articulations { get => articulations; set => articulations = value; }
-		public string SessionId { get => sessionId; set => sessionId = value; }
-		public string Title { get => title; set => title = value; }
-		public string Description { get => description; set => description = value; }
-		public string ProfessionalId { get => professionalId; set => professionalId = value; }
-		public int PatientSessionNumber { get => patientSessionNumber; set => patientSessionNumber = value; }
-		public int SessionDuration { get => sessionDuration; set => sessionDuration = value; }
-		public int NumberOfRegisters { get => numberOfRegisters; set => numberOfRegisters = value; }
-		public int AppCode { get => appCode; set => appCode = value; }
-		public string AppData { get => appData; set => appData = value; }
-		public string PatientId { get => patientId; set => patientId = value; }
-		public int PatientAge { get => patientAge; set => patientAge = value; }
-		public float PatientHeight { get => patientHeight; set => patientHeight = value; }
-		public float PatientWeight { get => patientWeight; set => patientWeight = value; }
-		public string MainComplaint { get => mainComplaint; set => mainComplaint = value; }
-		public string HistoryOfCurrentDesease { get => historyOfCurrentDesease; set => historyOfCurrentDesease = value; }
-		public string HistoryOfPastDesease { get => historyOfPastDesease; set => historyOfPastDesease = value; }
-		public string Diagnosis { get => diagnosis; set => diagnosis = value; }
-		public string RelatedDeseases { get => relatedDeseases; set => relatedDeseases = value; }
-		public string Medications { get => medications; set => medications = value; }
-		public string PhysicalEvaluation { get => physicalEvaluation; set => physicalEvaluation = value; }
-		public List<Register> ArticulationData
+		public string id { get => _id; }
+		public string label { get => _label; set => _label = value; }
+		public string device { get => _device; set => _device = value; }
+		public int[] articulations { get => _articulations; set => _articulations = value; }
+		public DateTime insertionDate { get => _insertionDate; }
+		public string sessionId { get => _sessionId; }
+		public string title { get => _title; set => _title = value; }
+		public string description { get => _description; set => _description = value; }
+		public string professionalId { get => _professionalId; set => _professionalId = value; }
+		public int patientSessionNumber { get => _patientSessionNumber; set => _patientSessionNumber = value; }
+		public int sessionDuration { get => _sessionDuration; set => _sessionDuration = value; }
+		public int numberOfRegisters { get => _numberOfRegisters; set => _numberOfRegisters = value; }
+		public int appCode { get => _appCode; set => _appCode = value; }
+		public string appData { get => _appData; set => _appData = value; }
+		public string patientId { get => _patientId; set => _patientId = value; }
+		public int patientAge { get => _patientAge; set => _patientAge = value; }
+		public float patientHeight { get => _patientHeight; set => _patientHeight = value; }
+		public float patientWeight { get => _patientWeight; set => _patientWeight = value; }
+		public string mainComplaint { get => _mainComplaint; set => _mainComplaint = value; }
+		public string historyOfCurrentDesease { get => _historyOfCurrentDesease; set => _historyOfCurrentDesease = value; }
+		public string historyOfPastDesease { get => _historyOfPastDesease; set => _historyOfPastDesease = value; }
+		public string diagnosis { get => _diagnosis; set => _diagnosis = value; }
+		public string relatedDeseases { get => _relatedDeseases; set => _relatedDeseases = value; }
+		public string medications { get => _medications; set => _medications = value; }
+		public string physicalEvaluation { get => _physicalEvaluation; set => _physicalEvaluation = value; }
+		public List<Register> articulationData
 		{
-			get => articulationData;
+			get => _articulationData;
 			set
 			{
-				articulationData = value;
-				numberOfRegisters = articulationData.Count;
+				_articulationData = value;
+				numberOfRegisters = _articulationData.Count;
 			}
 		}
 
@@ -75,99 +78,100 @@ namespace ReBase
 						string mainComplaint = "", string historyOfCurrentDesease = "", string historyOfPastDesease = "", string diagnosis = "", string relatedDeseases = "",
 						string medications = "", string physicalEvaluation = "")
 		{
-			this.label = label;
-			this.device = device;
+			_label = label;
+			_device = device;
 
-			this.articulations = articulations ?? new int[] { };
+			_articulations = articulations ?? new int[] { };
 			ValidateArticulationList();
 
-			this.sessionId = sessionId;
-			this.title = title;
-			this.description = description;
-			this.professionalId = professionalId;
-			this.patientSessionNumber = patientSessionNumber;
-			this.appCode = appCode;
-			this.appData = appData;
-			this.patientId = patientId;
-			this.patientAge = patientAge;
-			this.patientHeight = patientHeight;
-			this.patientWeight = patientWeight;
-			this.mainComplaint = mainComplaint;
-			this.historyOfCurrentDesease = historyOfCurrentDesease;
-			this.historyOfPastDesease = historyOfPastDesease;
-			this.diagnosis = diagnosis;
-			this.relatedDeseases = relatedDeseases;
-			this.medications = medications;
-			this.physicalEvaluation = physicalEvaluation;
+			_sessionId = sessionId;
+			_title = title;
+			_description = description;
+			_professionalId = professionalId;
+			_patientSessionNumber = patientSessionNumber;
+			_appCode = appCode;
+			_appData = appData;
+			_patientId = patientId;
+			_patientAge = patientAge;
+			_patientHeight = patientHeight;
+			_patientWeight = patientWeight;
+			_mainComplaint = mainComplaint;
+			_historyOfCurrentDesease = historyOfCurrentDesease;
+			_historyOfPastDesease = historyOfPastDesease;
+			_diagnosis = diagnosis;
+			_relatedDeseases = relatedDeseases;
+			_medications = medications;
+			_physicalEvaluation = physicalEvaluation;
 
-			sessionDuration = 0;
-			numberOfRegisters = 0;
-			articulationData = new List<Register>();
+			_sessionDuration = 0;
+			_numberOfRegisters = 0;
+			_articulationData = new List<Register>();
 		}
 
 		public Movement(Session session)
 		{
-			title = session.GetTitle();
-			device = session.GetDevice();
-			description = session.GetDescription();
-			professionalId = session.GetProfessionalID();
-			patientId = session.GetPatientID();
-			label = session.GetMovementLabel();
-			mainComplaint = session.GetMainComplaint();
-			historyOfCurrentDesease = session.GetHistoryOfCurrentDesease();
-			historyOfPastDesease = session.GetHistoryOfPastDesease();
-			diagnosis = session.GetDiagnosis();
-			relatedDeseases = session.GetRelatedDeseases();
-			medications = session.GetMedications();
-			physicalEvaluation = session.GetPhysicalEvaluation();
-			patientAge = session.GetPatientAge();
-			patientHeight = session.GetPatientHeight();
-			patientWeight = session.GetPatientWeight();
-			patientSessionNumber = session.GetPatientSessionNumber();
-			sessionDuration = session.GetSessionDuration();
-			articulations = session.GetArticulationList();
-			articulationData = session.GetRegisterList();
-			numberOfRegisters = session.GetNumberOfRegisters();
+			_title = session.GetTitle();
+			_device = session.GetDevice();
+			_description = session.GetDescription();
+			_professionalId = session.GetProfessionalID();
+			_patientId = session.GetPatientID();
+			_label = session.GetMovementLabel();
+			_mainComplaint = session.GetMainComplaint();
+			_historyOfCurrentDesease = session.GetHistoryOfCurrentDesease();
+			_historyOfPastDesease = session.GetHistoryOfPastDesease();
+			_diagnosis = session.GetDiagnosis();
+			_relatedDeseases = session.GetRelatedDeseases();
+			_medications = session.GetMedications();
+			_physicalEvaluation = session.GetPhysicalEvaluation();
+			_patientAge = session.GetPatientAge();
+			_patientHeight = session.GetPatientHeight();
+			_patientWeight = session.GetPatientWeight();
+			_patientSessionNumber = session.GetPatientSessionNumber();
+			_sessionDuration = session.GetSessionDuration();
+			_articulations = session.GetArticulationList();
+			_articulationData = session.GetRegisterList();
+			_numberOfRegisters = session.GetNumberOfRegisters();
 		}
 
 		public Movement(SerializableMovement movement)
 		{
-			if (movement.label != null) label = movement.label;
-			if (movement.device != null) device = movement.device;
+			if (movement.id != null) _id = movement.id;
+			if (movement.label != null) _label = movement.label;
+			if (movement.device != null) _device = movement.device;
 
 			if (movement.artIndexPattern != null)
 			{
 				string[] splitArtIndexPatter = movement.artIndexPattern.Split(';');
-				articulations = new int[splitArtIndexPatter.Length];
+				_articulations = new int[splitArtIndexPatter.Length];
 				for (int i = 0; i < splitArtIndexPatter.Length; i++)
 				{
-					articulations[i] = int.Parse(splitArtIndexPatter[i]);
+					_articulations[i] = int.Parse(splitArtIndexPatter[i]);
 				}
 				ValidateArticulationList();
 			}
 
-			if (movement.session != null && movement.session.id != null) sessionId = movement.session.id;
-			if (movement.session != null && movement.session.title != null) title = movement.session.title;
-			if (movement.session != null && movement.session.description != null) description = movement.session.description;
-			if (movement.session != null && movement.session.professionalId != null) professionalId = movement.session.professionalId;
-			if (movement.session != null) patientSessionNumber = movement.session.patientSessionNumber;
-			if (movement.session != null) sessionDuration = movement.session.duration;
-			if (movement.session != null) numberOfRegisters = movement.session.numberOfRegisters;
-			if (movement.app != null) appCode = movement.app.code;
-			if (movement.app != null && movement.app.data != null) appData = movement.app.data;
-			if (movement.patient != null && movement.patient.id != null) patientId = movement.patient.id;
-			if (movement.patient != null) patientAge = movement.patient.age;
-			if (movement.patient != null) patientHeight = movement.patient.height;
-			if (movement.patient != null) patientWeight = movement.patient.weight;
-			if (movement.medicalData != null && movement.medicalData.mainComplaint != null) mainComplaint = movement.medicalData.mainComplaint;
-			if (movement.medicalData != null && movement.medicalData.historyOfCurrentDesease != null) historyOfCurrentDesease = movement.medicalData.historyOfCurrentDesease;
-			if (movement.medicalData != null && movement.medicalData.historyOfPastDesease != null) historyOfPastDesease = movement.medicalData.historyOfPastDesease;
-			if (movement.medicalData != null && movement.medicalData.diagnosis != null) diagnosis = movement.medicalData.diagnosis;
-			if (movement.medicalData != null && movement.medicalData.relatedDeseases != null) relatedDeseases = movement.medicalData.relatedDeseases;
-			if (movement.medicalData != null && movement.medicalData.medications != null) medications = movement.medicalData.medications;
-			if (movement.medicalData != null && movement.medicalData.physicalEvaluation != null) physicalEvaluation = movement.medicalData.physicalEvaluation;
+			if (movement.session != null && movement.session.id != null) _sessionId = movement.session.id;
+			if (movement.session != null && movement.session.title != null) _title = movement.session.title;
+			if (movement.session != null && movement.session.description != null) _description = movement.session.description;
+			if (movement.session != null && movement.session.professionalId != null) _professionalId = movement.session.professionalId;
+			if (movement.session != null) _patientSessionNumber = movement.session.patientSessionNumber;
+			if (movement.session != null) _sessionDuration = movement.session.duration;
+			if (movement.session != null) _numberOfRegisters = movement.session.numberOfRegisters;
+			if (movement.app != null) _appCode = movement.app.code;
+			if (movement.app != null && movement.app.data != null) _appData = movement.app.data;
+			if (movement.patient != null && movement.patient.id != null) _patientId = movement.patient.id;
+			if (movement.patient != null) _patientAge = movement.patient.age;
+			if (movement.patient != null) _patientHeight = movement.patient.height;
+			if (movement.patient != null) _patientWeight = movement.patient.weight;
+			if (movement.medicalData != null && movement.medicalData.mainComplaint != null) _mainComplaint = movement.medicalData.mainComplaint;
+			if (movement.medicalData != null && movement.medicalData.historyOfCurrentDesease != null) _historyOfCurrentDesease = movement.medicalData.historyOfCurrentDesease;
+			if (movement.medicalData != null && movement.medicalData.historyOfPastDesease != null) _historyOfPastDesease = movement.medicalData.historyOfPastDesease;
+			if (movement.medicalData != null && movement.medicalData.diagnosis != null) _diagnosis = movement.medicalData.diagnosis;
+			if (movement.medicalData != null && movement.medicalData.relatedDeseases != null) _relatedDeseases = movement.medicalData.relatedDeseases;
+			if (movement.medicalData != null && movement.medicalData.medications != null) _medications = movement.medicalData.medications;
+			if (movement.medicalData != null && movement.medicalData.physicalEvaluation != null) _physicalEvaluation = movement.medicalData.physicalEvaluation;
 
-			articulationData = ArticulationDataToRegisterList(movement.articulationData);
+			_articulationData = ArticulationDataToRegisterList(movement.articulationData);
 		}
 
 		public void SetNewSession(string label = "", string device = "", int[] articulations = null, string sessionId = "", string title = "", string description = "", string professionalId = "",
@@ -175,80 +179,113 @@ namespace ReBase
 									string mainComplaint = "", string historyOfCurrentDesease = "", string historyOfPastDesease = "", string diagnosis = "", string relatedDeseases = "",
 									string medications = "", string physicalEvaluation = "")
 		{
-			this.label = label;
-			this.device = device;
+			_label = label;
+			_device = device;
 
-			this.articulations = articulations ?? new int[] { };
+			_articulations = articulations ?? new int[] { };
 			ValidateArticulationList();
 
-			this.sessionId = sessionId;
-			this.title = title;
-			this.description = description;
-			this.professionalId = professionalId;
-			this.patientSessionNumber = patientSessionNumber;
-			this.appCode = appCode;
-			this.appData = appData;
-			this.patientId = patientId;
-			this.patientAge = patientAge;
-			this.patientHeight = patientHeight;
-			this.patientWeight = patientWeight;
-			this.mainComplaint = mainComplaint;
-			this.historyOfCurrentDesease = historyOfCurrentDesease;
-			this.historyOfPastDesease = historyOfPastDesease;
-			this.diagnosis = diagnosis;
-			this.relatedDeseases = relatedDeseases;
-			this.medications = medications;
-			this.physicalEvaluation = physicalEvaluation;
+			_sessionId = sessionId;
+			_title = title;
+			_description = description;
+			_professionalId = professionalId;
+			_patientSessionNumber = patientSessionNumber;
+			_appCode = appCode;
+			_appData = appData;
+			_patientId = patientId;
+			_patientAge = patientAge;
+			_patientHeight = patientHeight;
+			_patientWeight = patientWeight;
+			_mainComplaint = mainComplaint;
+			_historyOfCurrentDesease = historyOfCurrentDesease;
+			_historyOfPastDesease = historyOfPastDesease;
+			_diagnosis = diagnosis;
+			_relatedDeseases = relatedDeseases;
+			_medications = medications;
+			_physicalEvaluation = physicalEvaluation;
 
-			sessionDuration = 0;
-			numberOfRegisters = 0;
-			articulationData.Clear();
+			_sessionDuration = 0;
+			_numberOfRegisters = 0;
+			_articulationData.Clear();
 		}
 
 		public void AddRegister(Register register)
 		{
 			int[] registerArticulations = register.Articulations;
 
-			if (Articulation.CompareArticulationLists(articulations, registerArticulations))
+			if (Articulation.CompareArticulationLists(_articulations, registerArticulations))
 			{
-				articulationData.Add(register);
-				numberOfRegisters += 1;
+				_articulationData.Add(register);
+				_numberOfRegisters += 1;
 			}
 			else
 			{
-				throw new MismatchedArticulationsExcpetion("Articulation lists do not match", articulations, registerArticulations);
+				throw new MismatchedArticulationsExcpetion("Articulation lists do not match", _articulations, registerArticulations);
 			}
 		}
 
 		public string ToJson()
 		{
-			return $"{{\"movement\":{{\"label\":\"{label}\"," +
-				$"\"device\":\"{device}\"," +
-				$"\"artIndexPattern\":\"{string.Join(";", articulations)}\"," +
+			return $"{{\"movement\":{{\"label\":\"{_label}\"," +
+				$"\"device\":\"{_device}\"," +
+				$"\"artIndexPattern\":\"{string.Join(";", _articulations)}\"," +
 				"\"session\":{" +
-				$"\"id\":\"{sessionId}\"," +
-				$"\"title\":\"{title}\"," +
-				$"\"description\":\"{description}\"," +
-				$"\"professionalId\":\"{professionalId}\"," +
-				$"\"patientSessionNumber\":{patientSessionNumber}," +
-				$"\"duration\":{sessionDuration}," +
-				$"\"numberOfRegisters\":{numberOfRegisters}}}," +
+				$"\"id\":\"{_sessionId}\"," +
+				$"\"title\":\"{_title}\"," +
+				$"\"description\":\"{_description}\"," +
+				$"\"professionalId\":\"{_professionalId}\"," +
+				$"\"patientSessionNumber\":{_patientSessionNumber}," +
+				$"\"duration\":{_sessionDuration}," +
+				$"\"numberOfRegisters\":{_numberOfRegisters}}}," +
 				"\"app\":{" +
-				$"\"code\":{appCode}," +
-				$"\"data\":\"{appData}\"}}," +
+				$"\"code\":{_appCode}," +
+				$"\"data\":\"{_appData}\"}}," +
 				"\"patient\":{" +
-				$"\"id\":\"{patientId}\"," +
-				$"\"age\":{patientAge}," +
-				$"\"height\":{patientHeight}," +
-				$"\"weight\":{patientWeight}}}," +
+				$"\"id\":\"{_patientId}\"," +
+				$"\"age\":{_patientAge}," +
+				$"\"height\":{_patientHeight}," +
+				$"\"weight\":{_patientWeight}}}," +
 				"\"medicalData\":{" +
-				$"\"mainComplaint\":\"{mainComplaint}\"," +
-				$"\"historyOfCurrentDesease\":\"{historyOfCurrentDesease}\"," +
-				$"\"historyOfPastDesease\":\"{historyOfPastDesease}\"," +
-				$"\"diagnosis\":\"{diagnosis}\"," +
-				$"\"relatedDeseases\":\"{relatedDeseases}\"," +
-				$"\"medications\":\"{medications}\"," +
-				$"\"physicalEvaluation\":\"{physicalEvaluation}\"}}," +
+				$"\"mainComplaint\":\"{_mainComplaint}\"," +
+				$"\"historyOfCurrentDesease\":\"{_historyOfCurrentDesease}\"," +
+				$"\"historyOfPastDesease\":\"{_historyOfPastDesease}\"," +
+				$"\"diagnosis\":\"{_diagnosis}\"," +
+				$"\"relatedDeseases\":\"{_relatedDeseases}\"," +
+				$"\"medications\":\"{_medications}\"," +
+				$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}," +
+				$"\"articulationData\":{SerializeArticulationData()}}}}}";
+		}
+
+		public override string ToString()
+		{
+			return $"{{\"movement\":{{\"id\":\"{_id}\"," +
+				$"\"label\":\"{_label}\"," +
+				$"\"device\":\"{_device}\"," +
+				$"\"artIndexPattern\":\"{string.Join(";", _articulations)}\"," +
+				"\"session\":{" +
+				$"\"id\":\"{_sessionId}\"," +
+				$"\"title\":\"{_title}\"," +
+				$"\"description\":\"{_description}\"," +
+				$"\"professionalId\":\"{_professionalId}\"," +
+				$"\"patientSessionNumber\":{_patientSessionNumber}," +
+				$"\"duration\":{_sessionDuration}," +
+				$"\"numberOfRegisters\":{_numberOfRegisters}}}," +
+				"\"app\":{" +
+				$"\"code\":{_appCode}," +
+				$"\"data\":\"{_appData}\"}}," +
+				"\"patient\":{" +
+				$"\"id\":\"{_patientId}\"," +
+				$"\"age\":{_patientAge}," +
+				$"\"height\":{_patientHeight}," +
+				$"\"weight\":{_patientWeight}}}," +
+				"\"medicalData\":{" +
+				$"\"mainComplaint\":\"{_mainComplaint}\"," +
+				$"\"historyOfCurrentDesease\":\"{_historyOfCurrentDesease}\"," +
+				$"\"historyOfPastDesease\":\"{_historyOfPastDesease}\"," +
+				$"\"diagnosis\":\"{_diagnosis}\"," +
+				$"\"relatedDeseases\":\"{_relatedDeseases}\"," +
+				$"\"medications\":\"{_medications}\"," +
+				$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}," +
 				$"\"articulationData\":{SerializeArticulationData()}}}}}";
 		}
 
@@ -256,11 +293,11 @@ namespace ReBase
 		{
 			Dictionary<int, List<Vector3>> aritulationDataDict = new Dictionary<int, List<Vector3>>();
 
-			foreach (int articulation in articulations)
+			foreach (int articulation in _articulations)
 			{
 				aritulationDataDict.Add(articulation, new List<Vector3>());
 			}
-			foreach (Register register in articulationData)
+			foreach (Register register in _articulationData)
 			{
 				foreach (int articulation in aritulationDataDict.Keys)
 				{
@@ -297,7 +334,7 @@ namespace ReBase
 
 			for (int j = 0; j < length; j += 3)
 			{
-				Register register = new Register(articulations);
+				Register register = new Register(_articulations);
 				foreach (SerializableMovement.ArticulationData dataObject in articulationData)
 				{
 
@@ -318,10 +355,10 @@ namespace ReBase
 
 		private void ValidateArticulationList()
 		{
-			foreach (int articulationA in articulations)
+			foreach (int articulationA in _articulations)
 			{
 				int count = 0;
-				foreach (int articulationB in articulations)
+				foreach (int articulationB in _articulations)
 				{
 					if (articulationA < 1 || articulationA > 20) throw new IndexOutOfRangeException("Articulations can't be smaller than 1 or greater than 20");
 					if (articulationA == articulationB)
@@ -329,7 +366,7 @@ namespace ReBase
 						count++;
 						if (count > 1)
 						{
-							throw new RepeatedArticulationException("Repeated articulation in list", articulations);
+							throw new RepeatedArticulationException("Repeated articulation in list", _articulations);
 						}
 					}
 				}

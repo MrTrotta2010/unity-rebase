@@ -109,6 +109,25 @@ namespace ReBase
 			}
 		}
 
+		public IEnumerator UpdateMovement(Action<APIResponse> callback, Movement movement)
+		{
+			string json = movement.ToJson();
+
+			using (UnityWebRequest request = UnityWebRequest.Put($"{WEB_URL}/movement/{movement.id}", json))
+			{
+				request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+				request.uploadHandler.contentType = "application/json";
+				request.method = "PUT";
+
+				yield return request.SendWebRequest();
+;
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.UpdateMovement);
+				request.Dispose();
+
+				callback(response);
+			}
+		}
+
 		public IEnumerator DeleteMovement(Action<APIResponse> callback, string id)
 		{
 			using (UnityWebRequest request = UnityWebRequest.Delete($"{WEB_URL}/movement/{id}"))
