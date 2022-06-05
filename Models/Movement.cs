@@ -186,7 +186,6 @@ namespace ReBase
 				return $"{{\"movement\":{{\"label\":\"{_label}\"," +
 					$"\"device\":\"{_device}\"," +
 					$"\"artIndexPattern\":\"{string.Join(";", _articulations)}\"," +
-					$"\"fps\":\"{_fps}\"," +
 					"\"session\":{" +
 					$"\"title\":\"{_title}\"," +
 					$"\"description\":\"{_description}\"," +

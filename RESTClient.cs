@@ -92,7 +92,7 @@ namespace ReBase
 
 		public IEnumerator UpdateMovement(Action<APIResponse> callback, string id, Movement movement)
 		{
-			string json = movement.ToJson();
+			string json = movement.ToJson(update: true);
 
 			using (UnityWebRequest request = UnityWebRequest.Put($"{WEB_URL}/movement/{id}", json))
 			{
@@ -111,7 +111,7 @@ namespace ReBase
 
 		public IEnumerator UpdateMovement(Action<APIResponse> callback, Movement movement)
 		{
-			string json = movement.ToJson();
+			string json = movement.ToJson(update: true);
 
 			using (UnityWebRequest request = UnityWebRequest.Put($"{WEB_URL}/movement/{movement.id}", json))
 			{
@@ -399,6 +399,7 @@ namespace ReBase
 			}
 
 			while (!request.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
+			Debug.Log("String response: " + request.downloadHandler.text);
 
 			return NewAPIResponse(responseType, request.downloadHandler.text, request.responseCode);
 		}

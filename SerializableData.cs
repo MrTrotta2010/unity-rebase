@@ -70,7 +70,7 @@ namespace ReBase
 
 		public override string ToString()
 		{
-			return $"{{ id: {_id}, label: {label}, title: {session.title}, description: {session.description}, device: {device}, artIndexPattern: {artIndexPattern}, articulationData: [{(articulationData == null ? "" : string.Join<ArticulationData>(", ", articulationData))}] }}";
+			return $"{{ id: {_id}, label: {label}, title: {session.title}, description: {session.description}, device: {device}, fps: {fps}, duration: {duration}, numberOfRegisters: {numberOfRegisters}, insertionDate: {insertionDate}, updateDate: {updateDate} artIndexPattern: {artIndexPattern}, articulationData: [{(articulationData == null ? "" : string.Join<ArticulationData>(", ", articulationData))}] }}";
 		}
 	}
 }
