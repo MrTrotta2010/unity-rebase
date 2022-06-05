@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections;
+using System.Globalization;
 using System.Collections.Generic;
 
 namespace ReBase
@@ -497,6 +498,40 @@ namespace ReBase
 		public void SetMainComplaint(string value)
 		{
 			maincomplaint = value;
+		}
+
+		public string SessionToJson(string sessionID)
+		{
+			CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
+			Register[] stringArray = GetRegisterList().ToArray();
+			if (stringArray == null)
+			{
+				stringArray = new Register[] { };
+			}
+
+			return "{\"id\":\"" + sessionID + "\"," +
+				   "\"title\":\"" + GetTitle() + "\"," +
+				   "\"device\":\"" + GetDevice() + "\"," +
+				   "\"description\":\"" + GetDescription() + "\"," +
+				   "\"professionalid\":\"" + GetProfessionalID() + "\"," +
+				   "\"patientid\":\"" + GetPatientID() + "\"," +
+				   "\"movementlabel\":\"" + GetMovementLabel() + "\"," +
+				   "\"maincomplaint\":\"" + GetMainComplaint() + "\"," +
+				   "\"historyofcurrentdesease\":\"" + GetHistoryOfCurrentDesease() + "\"," +
+				   "\"historyofpastdesease\":\"" + GetHistoryOfPastDesease() + "\"," +
+				   "\"diagnosis\":\"" + GetDiagnosis() + "\"," +
+				   "\"relateddeseases\":\"" + GetRelatedDeseases() + "\"," +
+				   "\"medications\":\"" + GetMedications() + "\"," +
+				   "\"physicalevaluation\":\"" + GetPhysicalEvaluation() + "\"," +
+				   "\"patientage\":" + GetPatientAge() + "," +
+				   "\"patientheight\":" + GetPatientHeight() + "," +
+				   "\"patientweight\":" + GetPatientWeight() + "," +
+				   "\"patientsessionnumber\":" + GetPatientSessionNumber() + "," +
+				   "\"sessionduration\":" + GetSessionDuration() + "," +
+				   "\"numberofregisters\":" + GetNumberOfRegisters() + "," +
+				   "\"artindexpattern\":\"" + GetArtIndexPattern() + "\",";
+			//"\"sessiondata\":\"" + Convert.ToBase64String(CompressionUtility.Compress(string.Join<>("/", stringArray))) + "\"}";
 		}
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -135,43 +136,13 @@ namespace ReBase
 
 		public Movement(SerializableMovement movement)
 		{
-			if (movement.id != null) _id = movement.id;
-			if (movement.label != null) _label = movement.label;
-			if (movement.device != null) _device = movement.device;
+			ConvertSerializableMovement(movement);
+		}
 
-			if (movement.artIndexPattern != null)
-			{
-				string[] splitArtIndexPatter = movement.artIndexPattern.Split(';');
-				_articulations = new int[splitArtIndexPatter.Length];
-				for (int i = 0; i < splitArtIndexPatter.Length; i++)
-				{
-					_articulations[i] = int.Parse(splitArtIndexPatter[i]);
-				}
-				ValidateArticulationList();
-			}
-
-			if (movement.session != null && movement.session.id != null) _sessionId = movement.session.id;
-			if (movement.session != null && movement.session.title != null) _title = movement.session.title;
-			if (movement.session != null && movement.session.description != null) _description = movement.session.description;
-			if (movement.session != null && movement.session.professionalId != null) _professionalId = movement.session.professionalId;
-			if (movement.session != null) _patientSessionNumber = movement.session.patientSessionNumber;
-			if (movement.session != null) _sessionDuration = movement.session.duration;
-			if (movement.session != null) _numberOfRegisters = movement.session.numberOfRegisters;
-			if (movement.app != null) _appCode = movement.app.code;
-			if (movement.app != null && movement.app.data != null) _appData = movement.app.data;
-			if (movement.patient != null && movement.patient.id != null) _patientId = movement.patient.id;
-			if (movement.patient != null) _patientAge = movement.patient.age;
-			if (movement.patient != null) _patientHeight = movement.patient.height;
-			if (movement.patient != null) _patientWeight = movement.patient.weight;
-			if (movement.medicalData != null && movement.medicalData.mainComplaint != null) _mainComplaint = movement.medicalData.mainComplaint;
-			if (movement.medicalData != null && movement.medicalData.historyOfCurrentDesease != null) _historyOfCurrentDesease = movement.medicalData.historyOfCurrentDesease;
-			if (movement.medicalData != null && movement.medicalData.historyOfPastDesease != null) _historyOfPastDesease = movement.medicalData.historyOfPastDesease;
-			if (movement.medicalData != null && movement.medicalData.diagnosis != null) _diagnosis = movement.medicalData.diagnosis;
-			if (movement.medicalData != null && movement.medicalData.relatedDeseases != null) _relatedDeseases = movement.medicalData.relatedDeseases;
-			if (movement.medicalData != null && movement.medicalData.medications != null) _medications = movement.medicalData.medications;
-			if (movement.medicalData != null && movement.medicalData.physicalEvaluation != null) _physicalEvaluation = movement.medicalData.physicalEvaluation;
-
-			_articulationData = ArticulationDataToRegisterList(movement.articulationData);
+		public Movement(string movementJson)
+		{
+			SerializableMovement auxMovement = JsonUtility.FromJson<SerializableMovement>(movementJson);
+			ConvertSerializableMovement(auxMovement);
 		}
 
 		public void SetNewSession(string label = "", string device = "", int[] articulations = null, string sessionId = "", string title = "", string description = "", string professionalId = "",
@@ -226,6 +197,8 @@ namespace ReBase
 
 		public string ToJson()
 		{
+			CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
 			return $"{{\"movement\":{{\"label\":\"{_label}\"," +
 				$"\"device\":\"{_device}\"," +
 				$"\"artIndexPattern\":\"{string.Join(";", _articulations)}\"," +
@@ -258,6 +231,8 @@ namespace ReBase
 
 		public override string ToString()
 		{
+			CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
 			return $"{{\"movement\":{{\"id\":\"{_id}\"," +
 				$"\"label\":\"{_label}\"," +
 				$"\"device\":\"{_device}\"," +
@@ -287,6 +262,47 @@ namespace ReBase
 				$"\"medications\":\"{_medications}\"," +
 				$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}," +
 				$"\"articulationData\":{SerializeArticulationData()}}}}}";
+		}
+
+		private void ConvertSerializableMovement(SerializableMovement movement)
+		{
+			if (movement.id != null) _id = movement.id;
+			if (movement.label != null) _label = movement.label;
+			if (movement.device != null) _device = movement.device;
+
+			if (movement.artIndexPattern != null)
+			{
+				string[] splitArtIndexPatter = movement.artIndexPattern.Split(';');
+				_articulations = new int[splitArtIndexPatter.Length];
+				for (int i = 0; i < splitArtIndexPatter.Length; i++)
+				{
+					_articulations[i] = int.Parse(splitArtIndexPatter[i]);
+				}
+				ValidateArticulationList();
+			}
+
+			if (movement.session != null && movement.session.id != null) _sessionId = movement.session.id;
+			if (movement.session != null && movement.session.title != null) _title = movement.session.title;
+			if (movement.session != null && movement.session.description != null) _description = movement.session.description;
+			if (movement.session != null && movement.session.professionalId != null) _professionalId = movement.session.professionalId;
+			if (movement.session != null) _patientSessionNumber = movement.session.patientSessionNumber;
+			if (movement.session != null) _sessionDuration = movement.session.duration;
+			if (movement.session != null) _numberOfRegisters = movement.session.numberOfRegisters;
+			if (movement.app != null) _appCode = movement.app.code;
+			if (movement.app != null && movement.app.data != null) _appData = movement.app.data;
+			if (movement.patient != null && movement.patient.id != null) _patientId = movement.patient.id;
+			if (movement.patient != null) _patientAge = movement.patient.age;
+			if (movement.patient != null) _patientHeight = movement.patient.height;
+			if (movement.patient != null) _patientWeight = movement.patient.weight;
+			if (movement.medicalData != null && movement.medicalData.mainComplaint != null) _mainComplaint = movement.medicalData.mainComplaint;
+			if (movement.medicalData != null && movement.medicalData.historyOfCurrentDesease != null) _historyOfCurrentDesease = movement.medicalData.historyOfCurrentDesease;
+			if (movement.medicalData != null && movement.medicalData.historyOfPastDesease != null) _historyOfPastDesease = movement.medicalData.historyOfPastDesease;
+			if (movement.medicalData != null && movement.medicalData.diagnosis != null) _diagnosis = movement.medicalData.diagnosis;
+			if (movement.medicalData != null && movement.medicalData.relatedDeseases != null) _relatedDeseases = movement.medicalData.relatedDeseases;
+			if (movement.medicalData != null && movement.medicalData.medications != null) _medications = movement.medicalData.medications;
+			if (movement.medicalData != null && movement.medicalData.physicalEvaluation != null) _physicalEvaluation = movement.medicalData.physicalEvaluation;
+
+			_articulationData = ArticulationDataToRegisterList(movement.articulationData);
 		}
 
 		private string SerializeArticulationData()

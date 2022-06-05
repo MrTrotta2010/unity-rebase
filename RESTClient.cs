@@ -151,7 +151,7 @@ namespace ReBase
 			}
 			else
 			{
-				string json = TranslationUtility.SessionToJson(session, sessionId);
+				string json = session.SessionToJson(sessionId);
 				string response = "Request could not be completed properly";
 				bool success = false;
 
@@ -221,7 +221,7 @@ namespace ReBase
 
 		public IEnumerator UpdateSession(string id, string insertiondate, Session session, Action<bool, string> callback)
 		{
-			string json = TranslationUtility.SessionToJson(session, sessionId);
+			string json = session.SessionToJson(sessionId);
 			string response = "Request could not be completed properly";
 			bool success = false;
 
@@ -391,7 +391,7 @@ namespace ReBase
 		{
 			if (IsNetworkError(request) || IsHTTPError(request))
 			{
-				return TranslationUtility.ParseAPIResponse(responseType, request.downloadHandler.text, request.responseCode);
+				return NewAPIResponse(responseType, request.downloadHandler.text, request.responseCode);
 			}
 			if (!request.isDone)
 			{
@@ -400,7 +400,15 @@ namespace ReBase
 
 			while (!request.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
 
-			return TranslationUtility.ParseAPIResponse(responseType, request.downloadHandler.text, request.responseCode);
+			return NewAPIResponse(responseType, request.downloadHandler.text, request.responseCode);
+		}
+
+		private APIResponse NewAPIResponse(APIResponse.ResponseType responseType, string response, long responseCode)
+		{
+			APIResponse responseObject = JsonUtility.FromJson<APIResponse>(response);
+			responseObject.responseType = responseType;
+			responseObject.code = responseCode;
+			return responseObject;
 		}
 	}
 }
