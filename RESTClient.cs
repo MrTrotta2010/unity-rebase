@@ -41,11 +41,11 @@ namespace ReBase
 		}
 
 		public IEnumerator FetchMovements(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
-											int[] articulations = null, bool legacy = false, int page = 0, int limit = 0)
+											int[] articulations = null, int page = 0, int limit = 0)
 		{
 			int[] artList = articulations ?? new int[] { };
 
-			string fullUrl = $"{WEB_URL}/movement?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}&legacy={legacy}";
+			string fullUrl = $"{WEB_URL}/movement?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}";
 			if (page > 0) fullUrl += $"&page={page}";
 			if (limit > 0) fullUrl += $"&limit={limit}";
 
