@@ -12,15 +12,17 @@ namespace ReBase
 		private string _label;
 		private string _device;
 		private int[] _articulations;
+		private float _fps;
+		private float _duration;
+		private int _numberOfRegisters;
 		private DateTime _insertionDate;
+		private DateTime _updateDate;
 
 		private string _sessionId;
 		private string _title;
 		private string _description;
 		private string _professionalId;
 		private int _patientSessionNumber;
-		private int _sessionDuration;
-		private int _numberOfRegisters;
 
 		private int _appCode;
 		private string _appData;
@@ -42,15 +44,17 @@ namespace ReBase
 		public string id { get => _id; }
 		public string label { get => _label; set => _label = value; }
 		public string device { get => _device; set => _device = value; }
+		public float fps { get => _fps; set => _fps = value; }
+		public float duration { get => _duration; set => _duration = value; }
+		public int numberOfRegisters { get => _numberOfRegisters; set => _numberOfRegisters = value; }
 		public int[] articulations { get => _articulations; set => _articulations = value; }
 		public DateTime insertionDate { get => _insertionDate; }
+		public DateTime updateDate { get => _updateDate; }
 		public string sessionId { get => _sessionId; }
 		public string title { get => _title; set => _title = value; }
 		public string description { get => _description; set => _description = value; }
 		public string professionalId { get => _professionalId; set => _professionalId = value; }
 		public int patientSessionNumber { get => _patientSessionNumber; set => _patientSessionNumber = value; }
-		public int sessionDuration { get => _sessionDuration; set => _sessionDuration = value; }
-		public int numberOfRegisters { get => _numberOfRegisters; set => _numberOfRegisters = value; }
 		public int appCode { get => _appCode; set => _appCode = value; }
 		public string appData { get => _appData; set => _appData = value; }
 		public string patientId { get => _patientId; set => _patientId = value; }
@@ -74,13 +78,14 @@ namespace ReBase
 			}
 		}
 
-		public Movement(string label = "", string device = "", int[] articulations = null, string sessionId = "", string title = "", string description = "", string professionalId = "",
+		public Movement(string label = "", string device = "", float fps = 30f, int[] articulations = null, string sessionId = "", string title = "", string description = "", string professionalId = "",
 						int patientSessionNumber = 0, int appCode = 0, string appData = "", string patientId = "", int patientAge = 0, float patientHeight = 0f, float patientWeight = 0f,
 						string mainComplaint = "", string historyOfCurrentDesease = "", string historyOfPastDesease = "", string diagnosis = "", string relatedDeseases = "",
 						string medications = "", string physicalEvaluation = "")
 		{
 			_label = label;
 			_device = device;
+			_fps = fps;
 
 			_articulations = articulations ?? new int[] { };
 			ValidateArticulationList();
@@ -104,34 +109,9 @@ namespace ReBase
 			_medications = medications;
 			_physicalEvaluation = physicalEvaluation;
 
-			_sessionDuration = 0;
+			_duration = 0f;
 			_numberOfRegisters = 0;
 			_articulationData = new List<Register>();
-		}
-
-		public Movement(Session session)
-		{
-			_title = session.GetTitle();
-			_device = session.GetDevice();
-			_description = session.GetDescription();
-			_professionalId = session.GetProfessionalID();
-			_patientId = session.GetPatientID();
-			_label = session.GetMovementLabel();
-			_mainComplaint = session.GetMainComplaint();
-			_historyOfCurrentDesease = session.GetHistoryOfCurrentDesease();
-			_historyOfPastDesease = session.GetHistoryOfPastDesease();
-			_diagnosis = session.GetDiagnosis();
-			_relatedDeseases = session.GetRelatedDeseases();
-			_medications = session.GetMedications();
-			_physicalEvaluation = session.GetPhysicalEvaluation();
-			_patientAge = session.GetPatientAge();
-			_patientHeight = session.GetPatientHeight();
-			_patientWeight = session.GetPatientWeight();
-			_patientSessionNumber = session.GetPatientSessionNumber();
-			_sessionDuration = session.GetSessionDuration();
-			_articulations = session.GetArticulationList();
-			_articulationData = session.GetRegisterList();
-			_numberOfRegisters = session.GetNumberOfRegisters();
 		}
 
 		public Movement(SerializableMovement movement)
@@ -145,13 +125,14 @@ namespace ReBase
 			ConvertSerializableMovement(auxMovement);
 		}
 
-		public void SetNewSession(string label = "", string device = "", int[] articulations = null, string sessionId = "", string title = "", string description = "", string professionalId = "",
+		public void SetNewSession(string label = "", string device = "", float fps = 30f, int[] articulations = null, string sessionId = "", string title = "", string description = "", string professionalId = "",
 									int patientSessionNumber = 0, int appCode = 0, string appData = "", string patientId = "", int patientAge = 0, float patientHeight = 0f, float patientWeight = 0f,
 									string mainComplaint = "", string historyOfCurrentDesease = "", string historyOfPastDesease = "", string diagnosis = "", string relatedDeseases = "",
 									string medications = "", string physicalEvaluation = "")
 		{
 			_label = label;
 			_device = device;
+			_fps = fps;
 
 			_articulations = articulations ?? new int[] { };
 			ValidateArticulationList();
@@ -175,7 +156,7 @@ namespace ReBase
 			_medications = medications;
 			_physicalEvaluation = physicalEvaluation;
 
-			_sessionDuration = 0;
+			_duration = 0f;
 			_numberOfRegisters = 0;
 			_articulationData.Clear();
 		}
@@ -188,6 +169,7 @@ namespace ReBase
 			{
 				_articulationData.Add(register);
 				_numberOfRegisters += 1;
+				_duration = _numberOfRegisters / _fps;
 			}
 			else
 			{
@@ -195,21 +177,51 @@ namespace ReBase
 			}
 		}
 
-		public string ToJson()
+		public string ToJson(bool update = false)
 		{
 			CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
+			if (update)
+			{
+				return $"{{\"movement\":{{\"label\":\"{_label}\"," +
+					$"\"device\":\"{_device}\"," +
+					$"\"artIndexPattern\":\"{string.Join(";", _articulations)}\"," +
+					$"\"fps\":\"{_fps}\"," +
+					"\"session\":{" +
+					$"\"title\":\"{_title}\"," +
+					$"\"description\":\"{_description}\"," +
+					$"\"professionalId\":\"{_professionalId}\"," +
+					$"\"patientSessionNumber\":{_patientSessionNumber}}}," +
+					"\"app\":{" +
+					$"\"code\":{_appCode}," +
+					$"\"data\":\"{_appData}\"}}," +
+					"\"patient\":{" +
+					$"\"id\":\"{_patientId}\"," +
+					$"\"age\":{_patientAge}," +
+					$"\"height\":{_patientHeight}," +
+					$"\"weight\":{_patientWeight}}}," +
+					"\"medicalData\":{" +
+					$"\"mainComplaint\":\"{_mainComplaint}\"," +
+					$"\"historyOfCurrentDesease\":\"{_historyOfCurrentDesease}\"," +
+					$"\"historyOfPastDesease\":\"{_historyOfPastDesease}\"," +
+					$"\"diagnosis\":\"{_diagnosis}\"," +
+					$"\"relatedDeseases\":\"{_relatedDeseases}\"," +
+					$"\"medications\":\"{_medications}\"," +
+					$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}," +
+					$"\"articulationData\":{SerializeArticulationData()}}}}}";
+			}
 			return $"{{\"movement\":{{\"label\":\"{_label}\"," +
 				$"\"device\":\"{_device}\"," +
 				$"\"artIndexPattern\":\"{string.Join(";", _articulations)}\"," +
+				$"\"fps\":\"{_fps}\"," +
+				$"\"duration\":{_duration}," +
+				$"\"numberOfRegisters\":{_numberOfRegisters}," +
 				"\"session\":{" +
 				$"\"id\":\"{_sessionId}\"," +
 				$"\"title\":\"{_title}\"," +
 				$"\"description\":\"{_description}\"," +
 				$"\"professionalId\":\"{_professionalId}\"," +
-				$"\"patientSessionNumber\":{_patientSessionNumber}," +
-				$"\"duration\":{_sessionDuration}," +
-				$"\"numberOfRegisters\":{_numberOfRegisters}}}," +
+				$"\"patientSessionNumber\":{_patientSessionNumber}}}," +
 				"\"app\":{" +
 				$"\"code\":{_appCode}," +
 				$"\"data\":\"{_appData}\"}}," +
@@ -237,14 +249,16 @@ namespace ReBase
 				$"\"label\":\"{_label}\"," +
 				$"\"device\":\"{_device}\"," +
 				$"\"artIndexPattern\":\"{string.Join(";", _articulations)}\"," +
+				$"\"insertionDate\":\"{_insertionDate}\"," +
+				$"\"updateDate\":\"{_updateDate}\"," +
+				$"\"duration\":{_duration}," +
+				$"\"numberOfRegisters\":{_numberOfRegisters}," +
 				"\"session\":{" +
 				$"\"id\":\"{_sessionId}\"," +
 				$"\"title\":\"{_title}\"," +
 				$"\"description\":\"{_description}\"," +
 				$"\"professionalId\":\"{_professionalId}\"," +
-				$"\"patientSessionNumber\":{_patientSessionNumber}," +
-				$"\"duration\":{_sessionDuration}," +
-				$"\"numberOfRegisters\":{_numberOfRegisters}}}," +
+				$"\"patientSessionNumber\":{_patientSessionNumber}}}," +
 				"\"app\":{" +
 				$"\"code\":{_appCode}," +
 				$"\"data\":\"{_appData}\"}}," +
@@ -269,6 +283,11 @@ namespace ReBase
 			if (movement.id != null) _id = movement.id;
 			if (movement.label != null) _label = movement.label;
 			if (movement.device != null) _device = movement.device;
+			if (movement.insertionDate != null) _insertionDate = movement.insertionDate;
+			if (movement.updateDate != null) _updateDate = movement.updateDate;
+			_fps = movement.fps;
+			_duration = movement.duration;
+			_numberOfRegisters = movement.numberOfRegisters;
 
 			if (movement.artIndexPattern != null)
 			{
@@ -281,26 +300,36 @@ namespace ReBase
 				ValidateArticulationList();
 			}
 
-			if (movement.session != null && movement.session.id != null) _sessionId = movement.session.id;
-			if (movement.session != null && movement.session.title != null) _title = movement.session.title;
-			if (movement.session != null && movement.session.description != null) _description = movement.session.description;
-			if (movement.session != null && movement.session.professionalId != null) _professionalId = movement.session.professionalId;
-			if (movement.session != null) _patientSessionNumber = movement.session.patientSessionNumber;
-			if (movement.session != null) _sessionDuration = movement.session.duration;
-			if (movement.session != null) _numberOfRegisters = movement.session.numberOfRegisters;
-			if (movement.app != null) _appCode = movement.app.code;
-			if (movement.app != null && movement.app.data != null) _appData = movement.app.data;
-			if (movement.patient != null && movement.patient.id != null) _patientId = movement.patient.id;
-			if (movement.patient != null) _patientAge = movement.patient.age;
-			if (movement.patient != null) _patientHeight = movement.patient.height;
-			if (movement.patient != null) _patientWeight = movement.patient.weight;
-			if (movement.medicalData != null && movement.medicalData.mainComplaint != null) _mainComplaint = movement.medicalData.mainComplaint;
-			if (movement.medicalData != null && movement.medicalData.historyOfCurrentDesease != null) _historyOfCurrentDesease = movement.medicalData.historyOfCurrentDesease;
-			if (movement.medicalData != null && movement.medicalData.historyOfPastDesease != null) _historyOfPastDesease = movement.medicalData.historyOfPastDesease;
-			if (movement.medicalData != null && movement.medicalData.diagnosis != null) _diagnosis = movement.medicalData.diagnosis;
-			if (movement.medicalData != null && movement.medicalData.relatedDeseases != null) _relatedDeseases = movement.medicalData.relatedDeseases;
-			if (movement.medicalData != null && movement.medicalData.medications != null) _medications = movement.medicalData.medications;
-			if (movement.medicalData != null && movement.medicalData.physicalEvaluation != null) _physicalEvaluation = movement.medicalData.physicalEvaluation;
+			if (movement.session != null)
+			{
+				if (movement.session.id != null) _sessionId = movement.session.id;
+				if (movement.session != null && movement.session.title != null) _title = movement.session.title;
+				if (movement.session != null && movement.session.description != null) _description = movement.session.description;
+				if (movement.session != null && movement.session.professionalId != null) _professionalId = movement.session.professionalId;
+				_patientSessionNumber = movement.session.patientSessionNumber;
+			}
+			if (movement.app != null)
+			{
+				_appCode = movement.app.code;
+				if (movement.app.data != null) _appData = movement.app.data;
+			}
+			if (movement.patient != null)
+			{
+				if (movement.patient.id != null) _patientId = movement.patient.id;
+				if (movement.patient != null) _patientAge = movement.patient.age;
+				if (movement.patient != null) _patientHeight = movement.patient.height;
+				if (movement.patient != null) _patientWeight = movement.patient.weight;
+			}
+			if (movement.medicalData != null)
+			{
+				if (movement.medicalData.mainComplaint != null) _mainComplaint = movement.medicalData.mainComplaint;
+				if (movement.medicalData != null && movement.medicalData.historyOfCurrentDesease != null) _historyOfCurrentDesease = movement.medicalData.historyOfCurrentDesease;
+				if (movement.medicalData != null && movement.medicalData.historyOfPastDesease != null) _historyOfPastDesease = movement.medicalData.historyOfPastDesease;
+				if (movement.medicalData != null && movement.medicalData.diagnosis != null) _diagnosis = movement.medicalData.diagnosis;
+				if (movement.medicalData != null && movement.medicalData.relatedDeseases != null) _relatedDeseases = movement.medicalData.relatedDeseases;
+				if (movement.medicalData != null && movement.medicalData.medications != null) _medications = movement.medicalData.medications;
+				if (movement.medicalData != null && movement.medicalData.physicalEvaluation != null) _physicalEvaluation = movement.medicalData.physicalEvaluation;
+			}
 
 			_articulationData = ArticulationDataToRegisterList(movement.articulationData);
 		}

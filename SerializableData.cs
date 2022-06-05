@@ -13,8 +13,6 @@ namespace ReBase
 			public string description;
 			public string professionalId;
 			public int patientSessionNumber;
-			public int duration;
-			public int numberOfRegisters;
 		}
 		[Serializable]
 		public class AppData
@@ -56,8 +54,12 @@ namespace ReBase
 		public string _id;
 		public string label;
 		public string device;
+		public float fps;
+		public float duration;
+		public int numberOfRegisters;
 		public string artIndexPattern;
 		public DateTime insertionDate;
+		public DateTime updateDate;
 		public SessionData session;
 		public AppData app;
 		public PatientData patient;
