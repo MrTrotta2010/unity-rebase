@@ -31,6 +31,7 @@ namespace ReBase
 		private int _patientAge;
 		private float _patientHeight;
 		private float _patientWeight;
+
 		private string _mainComplaint;
 		private string _historyOfCurrentDesease;
 		private string _historyOfPastDesease;

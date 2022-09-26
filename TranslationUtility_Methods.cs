@@ -75,7 +75,7 @@ public partial class TranslationUtility
 
 			string base64string = Encoding.UTF8.GetString(translatedBytes);
 			translatedBytes = Convert.FromBase64String(base64string);
-			session.sessiondata.translateddata = CompressionUtility.Decompress(translatedBytes);
+			//session.sessiondata.translateddata = CompressionUtility.Decompress(translatedBytes);
 		}
 	}
 
@@ -88,31 +88,12 @@ public partial class TranslationUtility
 
 		string base64string = Encoding.UTF8.GetString(translatedBytes);
 		translatedBytes = Convert.FromBase64String(base64string);
-		session.sessiondata.translateddata = CompressionUtility.Decompress(translatedBytes);
+		//session.sessiondata.translateddata = CompressionUtility.Decompress(translatedBytes);
 	}
 
 	public static Movement ParseMovement(string movementJson)
 	{
 		SerializableMovement auxMovement = JsonUtility.FromJson<SerializableMovement>(movementJson);
 		return new Movement(auxMovement);
-	}
-
-	public static BaseResponse ParseAPIResponse(string response, int responseCode)
-	{
-		return JsonUtility.FromJson<BaseResponse>(response);
-	}
-
-	public static FetchMovementResponse ParseFetchMovementResponse(string response, long responseCode)
-	{
-		FetchMovementResponse responseObj = JsonUtility.FromJson<FetchMovementResponse>(response);
-		responseObj.code = responseCode;
-		return responseObj;
-	}
-
-	public static InsertMovementResponse ParseInsertMovementResponse(string response, long responseCode)
-	{
-		InsertMovementResponse responseObj = JsonUtility.FromJson<InsertMovementResponse>(response);
-		responseObj.code = responseCode;
-		return responseObj;
 	}
 }
