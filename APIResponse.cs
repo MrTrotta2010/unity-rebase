@@ -8,7 +8,8 @@ namespace ReBase
 			FindMovement = 1,
 			InsertMovement = 3,
 			UpdateMovement = 4,
-			DeleteMovement = 5
+			DeleteMovement = 5,
+			FindSession = 6
 		}
 
 		public ResponseType responseType;
@@ -22,6 +23,7 @@ namespace ReBase
 		public SerializableMovement movement;
 		public SerializableMovement created;
 		public SerializableMovement updated;
+		public SerializableSession session;
 		public string deletedId;
 
 		public override string ToString()
