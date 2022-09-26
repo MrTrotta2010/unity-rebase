@@ -9,7 +9,10 @@ namespace ReBase
 			InsertMovement = 3,
 			UpdateMovement = 4,
 			DeleteMovement = 5,
-			FindSession = 6
+			FetchSessions = 6,
+			FindSession = 7,
+			UpdateSession = 8,
+			DeleteSession = 9
 		}
 
 		public ResponseType responseType;
@@ -23,6 +26,7 @@ namespace ReBase
 		public SerializableMovement movement;
 		public SerializableMovement created;
 		public SerializableMovement updated;
+		public SerializableSession[] sessions;
 		public SerializableSession session;
 		public string deletedId;
 
@@ -48,6 +52,18 @@ namespace ReBase
 					if (updated != null && updated.id != null) str += $", updated: {updated}";
 					break;
 				case ResponseType.DeleteMovement:
+					if (deletedId != null) str += $", deletedId: {deletedId}";
+					break;
+				case ResponseType.FetchSessions:
+					if (sessions != null && sessions.Length > 0) str += $", sessions: [{string.Join<SerializableSession>(", ", sessions)}]";
+					break;
+				case ResponseType.FindSession:
+					if (session != null && session.id != null) str += $", session: [{session}]";
+					break;
+				//case ResponseType.UpdateSession:
+				//	if (deletedId != null) str += $", deletedId: {deletedId}";
+				//	break;
+				case ResponseType.DeleteSession:
 					if (deletedId != null) str += $", deletedId: {deletedId}";
 					break;
 				default:
