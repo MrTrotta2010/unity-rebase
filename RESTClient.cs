@@ -149,7 +149,7 @@ namespace ReBase
 			callback(response);
 		}
 
-		public IEnumerator FetchSession(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
+		public IEnumerator FetchSessions(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
 											int[] articulations = null, int page = 0, int limit = 0)
 		{
 			int[] artList = articulations ?? new int[] { };

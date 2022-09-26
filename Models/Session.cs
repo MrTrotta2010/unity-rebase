@@ -109,14 +109,14 @@ namespace ReBase
 			if (movements != null) _movements = new List<Movement>(movements);
 		}
 
-		//public Session(SerializableSession movement)
-		//{
-		//	ConvertSerializableMovement(movement);
-		//}
+		public Session(SerializableSession movement)
+		{
+			ConvertSerializableSession(movement);
+		}
 
 		//public Session(LegacySerializableSession movement)
 		//{
-		//	ConvertSerializableMovement(movement);
+		//	ConvertSerializableSession(movement);
 		//}
 
 		//public Session(string sessionJson, bool legacySession = false)
@@ -132,6 +132,40 @@ namespace ReBase
 		//		ConvertSerializableSession(auxSession, legacySessio);
 		//	}
 		//}
+
+		private void ConvertSerializableSession(SerializableSession session)
+		{
+			if (session.id != null) _id = session.id;
+			if (session.title != "") _title = session.title;
+			if (session.description != "") _description = session.description;
+			if (session.professionalId != "") _professionalId = session.professionalId;
+			_patientSessionNumber = session.patientSessionNumber;
+
+			if (session.app != null)
+			{
+				_appCode = session.app.code;
+				if (session.app.data != null) _appData = session.app.data;
+			}
+			if (session.patient != null)
+			{
+				if (session.patient.id != null) _patientId = session.patient.id;
+				if (session.patient != null) _patientAge = session.patient.age;
+				if (session.patient != null) _patientHeight = session.patient.height;
+				if (session.patient != null) _patientWeight = session.patient.weight;
+			}
+			if (session.medicalData != null)
+			{
+				if (session.medicalData.mainComplaint != null) _mainComplaint = session.medicalData.mainComplaint;
+				if (session.medicalData != null && session.medicalData.historyOfCurrentDesease != null) _historyOfCurrentDesease = session.medicalData.historyOfCurrentDesease;
+				if (session.medicalData != null && session.medicalData.historyOfPastDesease != null) _historyOfPastDesease = session.medicalData.historyOfPastDesease;
+				if (session.medicalData != null && session.medicalData.diagnosis != null) _diagnosis = session.medicalData.diagnosis;
+				if (session.medicalData != null && session.medicalData.relatedDeseases != null) _relatedDeseases = session.medicalData.relatedDeseases;
+				if (session.medicalData != null && session.medicalData.medications != null) _medications = session.medicalData.medications;
+				if (session.medicalData != null && session.medicalData.physicalEvaluation != null) _physicalEvaluation = session.medicalData.physicalEvaluation;
+			}
+
+			_movements = new List<Movement>();
+		}
 
 		public string ToJson()
 		{
