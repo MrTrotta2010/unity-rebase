@@ -216,7 +216,7 @@ namespace ReBase
 		{
 			if (IsNetworkError(request) || IsHTTPError(request))
 			{
-				return NewAPIResponse(responseType, request.downloadHandler.text, request.responseCode);
+				return NewAPIResponse(APIResponse.ResponseType.APIError, request.downloadHandler.text, request.responseCode);
 			}
 			if (!request.isDone)
 			{

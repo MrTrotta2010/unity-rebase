@@ -12,7 +12,8 @@ namespace ReBase
 			FetchSessions = 6,
 			FindSession = 7,
 			UpdateSession = 8,
-			DeleteSession = 9
+			DeleteSession = 9,
+			APIError = 10
 		}
 
 		public ResponseType responseType;
