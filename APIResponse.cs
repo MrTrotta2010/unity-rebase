@@ -25,8 +25,6 @@ namespace ReBase
 
 		public SerializableMovement[] movements;
 		public SerializableMovement movement;
-		public SerializableMovement created;
-		public SerializableMovement updated;
 		public SerializableSession[] sessions;
 		public SerializableSession session;
 		public string deletedId;
@@ -43,14 +41,10 @@ namespace ReBase
 				case ResponseType.FetchMovements:
 					if (movements != null && movements.Length > 0) str += $", movements: [{string.Join<SerializableMovement>(", ", movements)}]";
 					break;
-				case ResponseType.FindMovement:
-					if (movement != null && movement.id != null) str += $", movement: [{movement}]";
-					break;
-				case ResponseType.InsertMovement:
-					if (created != null && created.id != null) str += $", created: {created}";
-					break;
-				case ResponseType.UpdateMovement:
-					if (updated != null && updated.id != null) str += $", updated: {updated}";
+                case ResponseType.FindMovement:
+                case ResponseType.InsertMovement:
+                case ResponseType.UpdateMovement:
+					if (movement != null && movement.id != null) str += $", movement: {movement}";
 					break;
 				case ResponseType.DeleteMovement:
 					if (deletedId != null) str += $", deletedId: {deletedId}";
@@ -64,9 +58,9 @@ namespace ReBase
 				//case ResponseType.UpdateSession:
 				//	if (deletedId != null) str += $", deletedId: {deletedId}";
 				//	break;
-				case ResponseType.DeleteSession:
-					if (deletedId != null) str += $", deletedId: {deletedId}";
-					break;
+				//case ResponseType.DeleteSession:
+				//	if (deletedId != null) str += $", deletedId: {deletedId}";
+				//	break;
 				default:
 					break;
 			}
