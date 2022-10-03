@@ -109,6 +109,58 @@ namespace ReBase
 			if (movements != null) _movements = new List<Movement>(movements);
 		}
 
+		public Session(Movement movement)
+		{
+			_id = movement.sessionId;
+			_title = movement.title;
+			_description = movement.description;
+			_professionalId = movement.professionalId;
+			_patientSessionNumber = movement.patientSessionNumber;
+			_appCode = movement.appCode;
+			_appData = movement.appData;
+			_patientId = movement.patientId;
+			_patientAge = movement.patientAge;
+			_patientHeight = movement.patientHeight;
+			_patientWeight = movement.patientWeight;
+			_mainComplaint = movement.mainComplaint;
+			_historyOfCurrentDesease = movement.historyOfCurrentDesease;
+			_historyOfPastDesease = movement.historyOfPastDesease;
+			_diagnosis = movement.diagnosis;
+			_relatedDeseases = movement.relatedDeseases;
+			_medications = movement.medications;
+			_physicalEvaluation = movement.physicalEvaluation;
+
+			_movements = new List<Movement>();
+			_movements.Add(movement);
+		}
+
+		public Session(SerializableMovement serializableMovement)
+		{
+			Movement movement = new Movement(serializableMovement);
+
+			_id = movement.sessionId;
+			_title = movement.title;
+			_description = movement.description;
+			_professionalId = movement.professionalId;
+			_patientSessionNumber = movement.patientSessionNumber;
+			_appCode = movement.appCode;
+			_appData = movement.appData;
+			_patientId = movement.patientId;
+			_patientAge = movement.patientAge;
+			_patientHeight = movement.patientHeight;
+			_patientWeight = movement.patientWeight;
+			_mainComplaint = movement.mainComplaint;
+			_historyOfCurrentDesease = movement.historyOfCurrentDesease;
+			_historyOfPastDesease = movement.historyOfPastDesease;
+			_diagnosis = movement.diagnosis;
+			_relatedDeseases = movement.relatedDeseases;
+			_medications = movement.medications;
+			_physicalEvaluation = movement.physicalEvaluation;
+
+			_movements = new List<Movement>();
+			_movements.Add(movement);
+		}
+
 		public Session(SerializableSession movement)
 		{
 			ConvertSerializableSession(movement);
