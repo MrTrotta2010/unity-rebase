@@ -15,25 +15,6 @@ namespace ReBase
 		private string WEB_URL = "http://200.145.46.239:3030";
 		//private UnityWebRequest www;
 
-		public IEnumerator DownloadSessions(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
-											int[] articulations = null, bool legacy = false, int page = 0, int limit = 0)
-		{
-			int[] artList = articulations ?? new int[] { };
-
-			string fullUrl = $"{WEB_URL}/session?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}&legacy={legacy}";
-			if (page > 0) fullUrl += $"&page={page}";
-			if (limit > 0) fullUrl += $"&limit={limit}";
-
-			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
-			request.method = "GET";
-			yield return request.SendWebRequest();
-
-			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FetchMovements);
-			request.Dispose();
-
-			callback(response);
-		}
-
 		public IEnumerator FetchMovements(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
 											int[] articulations = null, int page = 0, int limit = 0)
 		{
@@ -55,6 +36,8 @@ namespace ReBase
 
 		public IEnumerator FindMovement(Action<APIResponse> callback, string id)
 		{
+			if (id == default(string)) throw new MissingAttributeException("movement id");
+
 			UnityWebRequest request = UnityWebRequest.Get($"{WEB_URL}/movement/{id}");
 			request.method = "GET";
 			yield return request.SendWebRequest();
@@ -86,6 +69,8 @@ namespace ReBase
 
 		public IEnumerator UpdateMovement(Action<APIResponse> callback, string id, Movement movement)
 		{
+			if (id == default(string)) throw new MissingAttributeException("movement id");
+
 			string json = movement.ToJson(update: true);
 
 			using (UnityWebRequest request = UnityWebRequest.Put($"{WEB_URL}/movement/{id}", json))
@@ -105,6 +90,8 @@ namespace ReBase
 
 		public IEnumerator UpdateMovement(Action<APIResponse> callback, Movement movement)
 		{
+			if (movement.id == default(string)) throw new MissingAttributeException("movement id");
+
 			string json = movement.ToJson(update: true);
 
 			using (UnityWebRequest request = UnityWebRequest.Put($"{WEB_URL}/movement/{movement.id}", json))
@@ -124,6 +111,8 @@ namespace ReBase
 
 		public IEnumerator DeleteMovement(Action<APIResponse> callback, string id)
 		{
+			if (id == default(string)) throw new MissingAttributeException("movement id");
+
 			using (UnityWebRequest request = UnityWebRequest.Delete($"{WEB_URL}/movement/{id}"))
 			{
 				request.downloadHandler = new DownloadHandlerBuffer();
@@ -137,8 +126,29 @@ namespace ReBase
 			}
 		}
 
+		public IEnumerator FetchSessions(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
+											int[] articulations = null, bool legacy = false, int page = 0, int limit = 0)
+		{
+			int[] artList = articulations ?? new int[] { };
+
+			string fullUrl = $"{WEB_URL}/session?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}&legacy={legacy}";
+			if (page > 0) fullUrl += $"&page={page}";
+			if (limit > 0) fullUrl += $"&limit={limit}";
+
+			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
+			request.method = "GET";
+			yield return request.SendWebRequest();
+
+			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FetchMovements);
+			request.Dispose();
+
+			callback(response);
+		}
+
 		public IEnumerator FindSession(Action<APIResponse> callback, string id)
 		{
+			if (id == default(string)) throw new MissingAttributeException("session id");
+
 			UnityWebRequest request = UnityWebRequest.Get($"{WEB_URL}/session/{id}");
 			request.method = "GET";
 			yield return request.SendWebRequest();
@@ -149,27 +159,10 @@ namespace ReBase
 			callback(response);
 		}
 
-		public IEnumerator FetchSessions(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
-											int[] articulations = null, int page = 0, int limit = 0)
-		{
-			int[] artList = articulations ?? new int[] { };
-
-			string fullUrl = $"{WEB_URL}/session?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}";
-			if (page > 0) fullUrl += $"&page={page}";
-			if (limit > 0) fullUrl += $"&limit={limit}";
-
-			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
-			request.method = "GET";
-			yield return request.SendWebRequest();
-
-			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FetchSessions);
-			request.Dispose();
-
-			callback(response);
-		}
-
 		public IEnumerator UpdateSession(Action<APIResponse> callback, Session session)
 		{
+			if (session.id == default(string)) throw new MissingAttributeException("session id");
+
 			string json = session.ToJson();
 
 			using (UnityWebRequest request = UnityWebRequest.Put($"{WEB_URL}/session/{session.id}", json))
@@ -189,6 +182,8 @@ namespace ReBase
 
 		public IEnumerator DeleteSession(Action<APIResponse> callback, string id)
 		{
+			if (id == default(string)) throw new MissingAttributeException("session id");
+
 			using (UnityWebRequest request = UnityWebRequest.Delete($"{WEB_URL}/session/{id}"))
 			{
 				request.downloadHandler = new DownloadHandlerBuffer();
@@ -230,7 +225,6 @@ namespace ReBase
 
 		private APIResponse NewAPIResponse(APIResponse.ResponseType responseType, string response, long responseCode)
 		{
-			Debug.Log(response);
 			APIResponse responseObject;
 
 			try
