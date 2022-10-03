@@ -53,13 +53,13 @@ public class MovementExample : MonoBehaviour
         Debug.Log($"Inserted: {response}");
 
         movement.description = "Vamos atualizar pra ver o que acontece";
-        StartCoroutine(RESTClient.Instance.UpdateMovement(OnUpdated, response.created.id, movement));
+        StartCoroutine(RESTClient.Instance.UpdateMovement(OnUpdated, response.movement.id, movement));
 	}
 
     public void OnUpdated(APIResponse response)
 	{
         Debug.Log($"Updated: {response}");
-        StartCoroutine(RESTClient.Instance.DeleteMovement(OnDeleted, response.updated.id));
+        StartCoroutine(RESTClient.Instance.DeleteMovement(OnDeleted, response.movement.id));
 	}
 
     public void OnDeleted(APIResponse response)
