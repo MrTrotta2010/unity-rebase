@@ -230,8 +230,21 @@ namespace ReBase
 
 		private APIResponse NewAPIResponse(APIResponse.ResponseType responseType, string response, long responseCode)
 		{
-			APIResponse responseObject = JsonUtility.FromJson<APIResponse>(response);
-			responseObject.responseType = responseType;
+			Debug.Log(response);
+			APIResponse responseObject;
+
+			try
+            {
+				responseObject = JsonUtility.FromJson<APIResponse>(response);
+				responseObject.responseType = responseType;
+            }
+			catch (ArgumentException)
+            {
+				responseObject = new APIResponse();
+				responseObject.responseType = APIResponse.ResponseType.APIError;
+				responseObject.HTMLError = response;
+			}
+
 			responseObject.code = responseCode;
 			return responseObject;
 		}

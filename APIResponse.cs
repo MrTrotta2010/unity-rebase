@@ -20,6 +20,7 @@ namespace ReBase
 		public int status;
 		public long code;
 		public string message;
+		public string HTMLError;
 		public string[] error;
 		public string[] warning;
 
@@ -47,21 +48,18 @@ namespace ReBase
 					if (movement != null && movement.id != null) str += $", movement: {movement}";
 					break;
 				case ResponseType.DeleteMovement:
+				case ResponseType.DeleteSession:
 					if (deletedId != null) str += $", deletedId: {deletedId}";
 					break;
 				case ResponseType.FetchSessions:
 					if (sessions != null && sessions.Length > 0) str += $", sessions: [{string.Join<SerializableSession>(", ", sessions)}]";
 					break;
 				case ResponseType.FindSession:
-					if (session != null && session.id != null) str += $", session: [{session}]";
+                case ResponseType.UpdateSession:
+					if (session != null && session.id != null) str += $", session: {session}";
 					break;
-				//case ResponseType.UpdateSession:
-				//	if (deletedId != null) str += $", deletedId: {deletedId}";
-				//	break;
-				//case ResponseType.DeleteSession:
-				//	if (deletedId != null) str += $", deletedId: {deletedId}";
-				//	break;
-				default:
+                default:
+					if (HTMLError != null) str += $", HTMLError: \"{HTMLError}\"";
 					break;
 			}
 			return str + " }";
