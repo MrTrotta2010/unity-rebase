@@ -70,7 +70,7 @@ namespace ReBase
 
 		public override string ToString()
 		{
-			return $"{{ id: {_id}, label: {label}, title: {session.title}, description: {session.description}, device: {device}, fps: {fps}, duration: {duration}, numberOfRegisters: {numberOfRegisters}, insertionDate: {insertionDate}, updateDate: {updateDate} artIndexPattern: {artIndexPattern}, articulationData: [{(articulationData == null ? "" : string.Join<ArticulationData>(", ", articulationData))}] }}";
+			return $"{{ id: \"{_id}\", label: \"{label}\", title: \"{session.title}\", description: \"{session.description}\", sessionId: \"{session.id}\", device: \"{device}\", fps: {fps}, duration: {duration}, numberOfRegisters: {numberOfRegisters}, insertionDate: {insertionDate}, updateDate: {updateDate} artIndexPattern: \"{artIndexPattern}\", articulationData: [{(articulationData == null ? "" : string.Join<ArticulationData>(", ", articulationData))}] }}";
 		}
 	}
 
@@ -106,7 +106,7 @@ namespace ReBase
 
 		public override string ToString()
 		{
-			return $"{{\n\tid: {id},\n\ttitle: {title},\n\tdescription: {description},\n\tnumberOfMovements: {numberOfMovements},\n\tmovements: [\n\t\t{(movements == null ? "" : string.Join<MovementData>(",\n\t\t", movements))}]\n\t}}";
+			return $"{{\n\tid: \"{id}\",\n\ttitle: \"{title}\",\n\tdescription: {description},\n\tnumberOfMovements: {numberOfMovements},\n\tmovements: [\n\t\t{(movements == null ? "" : string.Join<MovementData>(",\n\t", movements))}]\n\t}}";
 		}
 	}
 }
