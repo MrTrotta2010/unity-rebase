@@ -174,7 +174,7 @@ namespace ReBase
 			}
 			else
 			{
-				throw new MismatchedArticulationsExcpetion("Articulation lists do not match", _articulations, registerArticulations);
+				throw new MismatchedArticulationsException("Articulation lists do not match", _articulations, registerArticulations);
 			}
 		}
 
