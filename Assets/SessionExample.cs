@@ -18,6 +18,7 @@ public class SessionExample : MonoBehaviour
         Movement movement = new Movement(
             title: "Teste de Sessão",
             description: "Eu sou o primeiro movimento da Sessão",
+            sessionId: "test1",
             label: "NewAPITest",
             fps: Application.targetFrameRate,
             professionalId: "MrTrotta2010",
@@ -43,7 +44,7 @@ public class SessionExample : MonoBehaviour
 
         if (insertedCount == 2)
         {
-            session = new Session(response.session);
+            session = new Session(response.movement);
             session.title = "Atualizando a Sessão";
             StartCoroutine(RESTClient.Instance.UpdateSession(OnUpdated, session));
             return;
@@ -52,6 +53,7 @@ public class SessionExample : MonoBehaviour
         Movement movement = new Movement(
             title: "Teste de Sessão",
             description: "Eu sou o segundo movimento da Sessão",
+            sessionId: "test1",
             label: "NewAPITest",
             fps: Application.targetFrameRate,
             professionalId: "MrTrotta2010",
@@ -73,7 +75,8 @@ public class SessionExample : MonoBehaviour
     public void OnUpdated(APIResponse response)
     {
         Debug.Log($"Updated: {response}");
-        StartCoroutine(RESTClient.Instance.DeleteSession(OnDeleted, response.updated.id));
+        string id = response.session.id ?? session.id;
+        StartCoroutine(RESTClient.Instance.DeleteSession(OnDeleted, id));
     }
 
     public void OnDeleted(APIResponse response)
