@@ -7,6 +7,9 @@ public class SessionExample : MonoBehaviour
 {
     private Session session;
     private int insertedCount = 0;
+    private string professionalId = "MrTrotta2010";
+    private string patientId = "007";
+    private string firstSessionId = "";
 
     void Awake()
     {
@@ -21,9 +24,10 @@ public class SessionExample : MonoBehaviour
             sessionId: "test1",
             label: "NewAPITest",
             fps: Application.targetFrameRate,
-            professionalId: "MrTrotta2010",
-            patientId: "007",
-            articulations: new int[] { 1, 2 }
+            professionalId: professionalId,
+            patientId: patientId,
+            articulations: new int[] { 1, 2 },
+            articulationData: null
         );
 
         movement.AddRegister(new Register(
@@ -44,9 +48,8 @@ public class SessionExample : MonoBehaviour
 
         if (insertedCount == 2)
         {
-            session = new Session(response.movement);
-            session.title = "Atualizando a Sessão";
-            StartCoroutine(RESTClient.Instance.UpdateSession(OnUpdated, session));
+            firstSessionId = response.movement.session.id;
+            StartCoroutine(RESTClient.Instance.FetchSessions(OnFetch, professionalId: professionalId, patientId: patientId));
             return;
         }
 
@@ -56,8 +59,8 @@ public class SessionExample : MonoBehaviour
             sessionId: "test1",
             label: "NewAPITest",
             fps: Application.targetFrameRate,
-            professionalId: "MrTrotta2010",
-            patientId: "007",
+            professionalId: professionalId,
+            patientId: patientId,
             articulations: new int[] { 1, 2 }
         );
 
@@ -72,6 +75,23 @@ public class SessionExample : MonoBehaviour
         StartCoroutine(RESTClient.Instance.InsertMovement(OnInserted, movement));
     }
 
+    public void OnFetch(APIResponse response)
+    {
+        Debug.Log($"Downloaded: {response}");
+
+        foreach (SerializableSession serializableSession in response.sessions)
+		{
+            if (serializableSession.id == firstSessionId)
+			{
+                session = new Session(serializableSession);
+                break;
+            }
+		}
+
+        session.title = "Atualizando a Sessão";
+        StartCoroutine(RESTClient.Instance.UpdateSession(OnUpdated, session));
+    }
+
     public void OnUpdated(APIResponse response)
     {
         Debug.Log($"Updated: {response}");
@@ -82,11 +102,63 @@ public class SessionExample : MonoBehaviour
     public void OnDeleted(APIResponse response)
     {
         Debug.Log($"Deleted: {response}");
-        StartCoroutine(RESTClient.Instance.FetchSessions(OnFetch, professionalId: session.professionalId, patientId: session.patientId));
+
+        session = new Session(
+            id: "test2",
+            title: "Teste de Sessão 2",
+            description: "Todos os movimentos da Sessão serão inseridos de uma vez",
+            professionalId: professionalId,
+            patientId: patientId,
+            movements: new Movement[2]
+            {
+                new Movement(
+                    label: "firstMovement",
+                    fps: Application.targetFrameRate,
+                    articulations: new int[] { 1, 2 },
+                    articulationData: new Register[1] {
+                        new Register(
+                            new Dictionary<int, Vector3>()
+                            {
+                                {  1, new Vector3(1f, 1f, 1f) },
+                                {  2, new Vector3(2f, 2f, 2f) }
+                            }
+                        )
+                    }
+                ),
+                new Movement(
+                    label: "secondMovement",
+                    fps: Application.targetFrameRate,
+                    articulations: new int[] { 1, 2 },
+                    articulationData: new Register[1] {
+                        new Register(
+                            new Dictionary<int, Vector3>()
+                            {
+                                {  1, new Vector3(1f, 1f, 1f) },
+                                {  2, new Vector3(2f, 2f, 2f) }
+                            }
+                        )
+                    }
+                )
+            }
+        );
+
+        StartCoroutine(RESTClient.Instance.InsertSession(OnBulkInsert, session));
     }
 
-    public void OnFetch(APIResponse response)
+    public void OnBulkInsert(APIResponse response)
+	{
+        Debug.Log($"Inserted: {response}");
+        StartCoroutine(RESTClient.Instance.FindSession(OnFind, session.id));
+    }
+
+    public void OnFind(APIResponse response)
     {
-        Debug.Log($"Downloaded: {response}");
+        Debug.Log($"Found: {response}");
+        StartCoroutine(RESTClient.Instance.DeleteSession(End, response.session.id));
+    }
+
+    public void End(APIResponse response)
+    {
+        Debug.Log($"Deleted: {response}");
     }
 }
