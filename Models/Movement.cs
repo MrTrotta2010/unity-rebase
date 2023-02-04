@@ -82,7 +82,7 @@ namespace ReBase
 		public Movement(string label = "", string device = "", float fps = 30f, int[] articulations = null, string sessionId = "", string title = "", string description = "", string professionalId = "",
 						int patientSessionNumber = 0, int appCode = 0, string appData = "", string patientId = "", int patientAge = 0, float patientHeight = 0f, float patientWeight = 0f,
 						string mainComplaint = "", string historyOfCurrentDesease = "", string historyOfPastDesease = "", string diagnosis = "", string relatedDeseases = "",
-						string medications = "", string physicalEvaluation = "")
+						string medications = "", string physicalEvaluation = "", Register[] articulationData = null)
 		{
 			_label = label;
 			_device = device;
@@ -112,7 +112,18 @@ namespace ReBase
 
 			_duration = 0f;
 			_numberOfRegisters = 0;
-			_articulationData = new List<Register>();
+
+			if (articulationData != null)
+			{
+				foreach (Register register in articulationData)
+					ValidateArticulationData(register.Articulations);
+
+				_articulationData = new List<Register>(articulationData);
+			}
+			else
+			{
+				_articulationData = new List<Register>();
+			}
 		}
 
 		public Movement(SerializableMovement movement)
@@ -126,56 +137,13 @@ namespace ReBase
 			ConvertSerializableMovement(auxMovement);
 		}
 
-		public void SetNewSession(string label = "", string device = "", float fps = 30f, int[] articulations = null, string sessionId = "", string title = "", string description = "", string professionalId = "",
-									int patientSessionNumber = 0, int appCode = 0, string appData = "", string patientId = "", int patientAge = 0, float patientHeight = 0f, float patientWeight = 0f,
-									string mainComplaint = "", string historyOfCurrentDesease = "", string historyOfPastDesease = "", string diagnosis = "", string relatedDeseases = "",
-									string medications = "", string physicalEvaluation = "")
-		{
-			_label = label;
-			_device = device;
-			_fps = fps;
-
-			_articulations = articulations ?? new int[] { };
-			ValidateArticulationList();
-
-			_sessionId = sessionId;
-			_title = title;
-			_description = description;
-			_professionalId = professionalId;
-			_patientSessionNumber = patientSessionNumber;
-			_appCode = appCode;
-			_appData = appData;
-			_patientId = patientId;
-			_patientAge = patientAge;
-			_patientHeight = patientHeight;
-			_patientWeight = patientWeight;
-			_mainComplaint = mainComplaint;
-			_historyOfCurrentDesease = historyOfCurrentDesease;
-			_historyOfPastDesease = historyOfPastDesease;
-			_diagnosis = diagnosis;
-			_relatedDeseases = relatedDeseases;
-			_medications = medications;
-			_physicalEvaluation = physicalEvaluation;
-
-			_duration = 0f;
-			_numberOfRegisters = 0;
-			_articulationData.Clear();
-		}
-
 		public void AddRegister(Register register)
 		{
-			int[] registerArticulations = register.Articulations;
+			ValidateArticulationData(register.Articulations);
 
-			if (Articulation.CompareArticulationLists(_articulations, registerArticulations))
-			{
-				_articulationData.Add(register);
-				_numberOfRegisters += 1;
-				_duration = _numberOfRegisters / _fps;
-			}
-			else
-			{
-				throw new MismatchedArticulationsException("Articulation lists do not match", _articulations, registerArticulations);
-			}
+			_articulationData.Add(register);
+			_numberOfRegisters += 1;
+			_duration = _numberOfRegisters / _fps;
 		}
 
 		public string ToJson(bool update = false)
@@ -276,6 +244,12 @@ namespace ReBase
 				$"\"medications\":\"{_medications}\"," +
 				$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}," +
 				$"\"articulationData\":{SerializeArticulationData()}}}}}";
+		}
+
+		private void ValidateArticulationData(int[] registerArticulations)
+		{
+			if (!Articulation.CompareArticulationLists(_articulations, registerArticulations))
+				throw new MismatchedArticulationsException("Articulation lists do not match", _articulations, registerArticulations);
 		}
 
 		private void ConvertSerializableMovement(SerializableMovement movement)

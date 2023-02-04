@@ -33,7 +33,7 @@ namespace ReBase
 		private List<Movement> _movements;
 
 
-		public string id { get => _id; }
+		public string id { get => _id; set => _id = value; }
 		public string title { get => _title; set => _title = value; }
 		public string description { get => _description; set => _description = value; }
 		public string professionalId { get => _professionalId; set => _professionalId = value; }
@@ -57,37 +57,12 @@ namespace ReBase
 			set => _movements = value;
 		}
 
-		public Session(string title = "", string description = "", string professionalId = "", List<Movement> movements = null, int patientSessionNumber = 0,
-						int appCode = 0, string appData = "", string patientId = "", int patientAge = 0, float patientHeight = 0f, float patientWeight = 0f,
-						string mainComplaint = "", string historyOfCurrentDesease = "", string historyOfPastDesease = "", string diagnosis = "",
-						string relatedDeseases = "", string medications = "", string physicalEvaluation = "")
-		{
-			_title = title;
-			_description = description;
-			_professionalId = professionalId;
-			_patientSessionNumber = patientSessionNumber;
-			_appCode = appCode;
-			_appData = appData;
-			_patientId = patientId;
-			_patientAge = patientAge;
-			_patientHeight = patientHeight;
-			_patientWeight = patientWeight;
-			_mainComplaint = mainComplaint;
-			_historyOfCurrentDesease = historyOfCurrentDesease;
-			_historyOfPastDesease = historyOfPastDesease;
-			_diagnosis = diagnosis;
-			_relatedDeseases = relatedDeseases;
-			_medications = medications;
-			_physicalEvaluation = physicalEvaluation;
-
-			if (movements != null) _movements = movements;
-		}
-
 		public Session(string title = "", string description = "", string professionalId = "", Movement[] movements = null, int patientSessionNumber = 0,
-						int appCode = 0, string appData = "", string patientId = "", int patientAge = 0, float patientHeight = 0f, float patientWeight = 0f,
-						string mainComplaint = "", string historyOfCurrentDesease = "", string historyOfPastDesease = "", string diagnosis = "",
-						string relatedDeseases = "", string medications = "", string physicalEvaluation = "")
+				int appCode = 0, string appData = "", string patientId = "", int patientAge = 0, float patientHeight = 0f, float patientWeight = 0f,
+				string mainComplaint = "", string historyOfCurrentDesease = "", string historyOfPastDesease = "", string diagnosis = "",
+				string relatedDeseases = "", string medications = "", string physicalEvaluation = "", string id = "")
 		{
+			_id = id;
 			_title = title;
 			_description = description;
 			_professionalId = professionalId;
@@ -166,12 +141,14 @@ namespace ReBase
 			ConvertSerializableSession(movement);
 		}
 
-		//public Session(LegacySerializableSession movement)
+		//public Session(
+		//SerializableSession movement)
 		//{
-		//	ConvertSerializableSession(movement);
+		//	ConvertSeri
+		//leSession(movement);
 		//}
 
-		//public Session(string sessionJson, bool legacySession = false)
+		//public Session(Legacy sessionJson, bool legacySession = false)
 		//{
 		//	if (legacySession)
 		//	{
@@ -219,7 +196,7 @@ namespace ReBase
 			_movements = new List<Movement>();
 		}
 
-		public string ToJson()
+		public string ToJson(bool update = false)
 		{
 			CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 
@@ -231,28 +208,54 @@ namespace ReBase
 			}
 			strMovements = $"{strMovements.TrimEnd(',')}]";
 
-			return $"{{\"session\":{{\"id\":\"{_id}\"," +
-				$"\"title\":\"{_title}\"," +
-				$"\"description\":\"{_description}\"," +
-				$"\"professionalId\":\"{_professionalId}\"," +
-				$"\"patientSessionNumber\":{_patientSessionNumber}," +
-				"\"app\":{" +
-				$"\"code\":{_appCode}," +
-				$"\"data\":\"{_appData}\"}}," +
-				"\"patient\":{" +
-				$"\"id\":\"{_patientId}\"," +
-				$"\"age\":{_patientAge}," +
-				$"\"height\":{_patientHeight}," +
-				$"\"weight\":{_patientWeight}}}," +
-				"\"medicalData\":{" +
-				$"\"mainComplaint\":\"{_mainComplaint}\"," +
-				$"\"historyOfCurrentDesease\":\"{_historyOfCurrentDesease}\"," +
-				$"\"historyOfPastDesease\":\"{_historyOfPastDesease}\"," +
-				$"\"diagnosis\":\"{_diagnosis}\"," +
-				$"\"relatedDeseases\":\"{_relatedDeseases}\"," +
-				$"\"medications\":\"{_medications}\"," +
-				$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}," +
-				$"\"movements\":{strMovements}}}}}";
+			if (update)
+			{
+				return $"{{\"session\":{{\"title\":\"{_title}\"," +
+					$"\"description\":\"{_description}\"," +
+					$"\"professionalId\":\"{_professionalId}\"," +
+					$"\"patientSessionNumber\":{_patientSessionNumber}," +
+					"\"app\":{" +
+					$"\"code\":{_appCode}," +
+					$"\"data\":\"{_appData}\"}}," +
+					"\"patient\":{" +
+					$"\"id\":\"{_patientId}\"," +
+					$"\"age\":{_patientAge}," +
+					$"\"height\":{_patientHeight}," +
+					$"\"weight\":{_patientWeight}}}," +
+					"\"medicalData\":{" +
+					$"\"mainComplaint\":\"{_mainComplaint}\"," +
+					$"\"historyOfCurrentDesease\":\"{_historyOfCurrentDesease}\"," +
+					$"\"historyOfPastDesease\":\"{_historyOfPastDesease}\"," +
+					$"\"diagnosis\":\"{_diagnosis}\"," +
+					$"\"relatedDeseases\":\"{_relatedDeseases}\"," +
+					$"\"medications\":\"{_medications}\"," +
+					$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}}}}}";
+			}
+			else
+			{
+				return $"{{\"session\":{{\"id\":\"{_id}\"," +
+					$"\"title\":\"{_title}\"," +
+					$"\"description\":\"{_description}\"," +
+					$"\"professionalId\":\"{_professionalId}\"," +
+					$"\"patientSessionNumber\":{_patientSessionNumber}," +
+					"\"app\":{" +
+					$"\"code\":{_appCode}," +
+					$"\"data\":\"{_appData}\"}}," +
+					"\"patient\":{" +
+					$"\"id\":\"{_patientId}\"," +
+					$"\"age\":{_patientAge}," +
+					$"\"height\":{_patientHeight}," +
+					$"\"weight\":{_patientWeight}}}," +
+					"\"medicalData\":{" +
+					$"\"mainComplaint\":\"{_mainComplaint}\"," +
+					$"\"historyOfCurrentDesease\":\"{_historyOfCurrentDesease}\"," +
+					$"\"historyOfPastDesease\":\"{_historyOfPastDesease}\"," +
+					$"\"diagnosis\":\"{_diagnosis}\"," +
+					$"\"relatedDeseases\":\"{_relatedDeseases}\"," +
+					$"\"medications\":\"{_medications}\"," +
+					$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}," +
+					$"\"movements\":{strMovements}}}}}";
+			}
 		}
 
 		public override string ToString()
