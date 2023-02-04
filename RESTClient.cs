@@ -131,7 +131,8 @@ namespace ReBase
 		{
 			int[] artList = articulations ?? new int[] { };
 
-			string fullUrl = $"{WEB_URL}/session?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}&legacy={legacy}";
+			string fullUrl = $"{WEB_URL}/session?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}";
+			if (legacy) fullUrl += $"&legacy = {legacy}";
 			if (page > 0) fullUrl += $"&page={page}";
 			if (limit > 0) fullUrl += $"&limit={limit}";
 
@@ -139,17 +140,20 @@ namespace ReBase
 			request.method = "GET";
 			yield return request.SendWebRequest();
 
-			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FetchMovements);
+			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FetchSessions);
 			request.Dispose();
 
 			callback(response);
 		}
 
-		public IEnumerator FindSession(Action<APIResponse> callback, string id)
+		public IEnumerator FindSession(Action<APIResponse> callback, string id, bool legacy = false)
 		{
 			if (id == default(string)) throw new MissingAttributeException("session id");
 
-			UnityWebRequest request = UnityWebRequest.Get($"{WEB_URL}/session/{id}");
+			string fullUrl = $"{WEB_URL}/session/{id}";
+			if (legacy) fullUrl += $"?legacy = {legacy}";
+
+			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
 			request.method = "GET";
 			yield return request.SendWebRequest();
 
@@ -159,11 +163,30 @@ namespace ReBase
 			callback(response);
 		}
 
+		public IEnumerator InsertSession(Action<APIResponse> callback, Session session)
+		{
+			string json = session.ToJson();
+
+			using (UnityWebRequest request = UnityWebRequest.Post($"{WEB_URL}/session", json))
+			{
+				request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+				request.uploadHandler.contentType = "application/json";
+				request.method = "POST";
+
+				yield return request.SendWebRequest();
+
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.InsertSession);
+				request.Dispose();
+
+				callback(response);
+			}
+		}
+
 		public IEnumerator UpdateSession(Action<APIResponse> callback, Session session)
 		{
 			if (session.id == default(string)) throw new MissingAttributeException("session id");
 
-			string json = session.ToJson();
+			string json = session.ToJson(update: true);
 
 			using (UnityWebRequest request = UnityWebRequest.Put($"{WEB_URL}/session/{session.id}", json))
 			{
