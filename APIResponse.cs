@@ -11,9 +11,10 @@ namespace ReBase
 			DeleteMovement = 5,
 			FetchSessions = 6,
 			FindSession = 7,
-			UpdateSession = 8,
-			DeleteSession = 9,
-			APIError = 10
+			InsertSession = 8,
+			UpdateSession = 9,
+			DeleteSession = 10,
+			APIError = 11
 		}
 
 		public ResponseType responseType;
@@ -29,6 +30,7 @@ namespace ReBase
 		public SerializableSession[] sessions;
 		public SerializableSession session;
 		public string deletedId;
+		public int deletedCount;
 
 		public override string ToString()
 		{
@@ -48,12 +50,15 @@ namespace ReBase
 					if (movement != null && movement.id != null) str += $", movement: {movement}";
 					break;
 				case ResponseType.DeleteMovement:
-				case ResponseType.DeleteSession:
 					if (deletedId != null) str += $", deletedId: {deletedId}";
+					break;
+				case ResponseType.DeleteSession:
+					if (deletedId != null) str += $", deletedId: {deletedId}, deletedCount: {deletedCount}";
 					break;
 				case ResponseType.FetchSessions:
 					if (sessions != null && sessions.Length > 0) str += $", sessions: [{string.Join<SerializableSession>(", ", sessions)}]";
 					break;
+				case ResponseType.InsertSession:
 				case ResponseType.FindSession:
                 case ResponseType.UpdateSession:
 					if (session != null && session.id != null) str += $", session: {session}";
