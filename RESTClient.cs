@@ -3,7 +3,6 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System;
 using System.Text;
-using System.Security.Cryptography;
 
 namespace ReBase
 {
@@ -13,16 +12,16 @@ namespace ReBase
 		public static RESTClient Instance { get { return instance; } }
 
 		private string WEB_URL = "http://200.145.46.239:3030";
-		//private UnityWebRequest www;
 
 		public IEnumerator FetchMovements(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
-											int[] articulations = null, int page = 0, int limit = 0)
+											int[] articulations = null, int page = 0, int per = 0, string previousId = "")
 		{
 			int[] artList = articulations ?? new int[] { };
 
 			string fullUrl = $"{WEB_URL}/movement?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}";
 			if (page > 0) fullUrl += $"&page={page}";
-			if (limit > 0) fullUrl += $"&limit={limit}";
+			if (per > 0) fullUrl += $"&per={per}";
+			if (previousId != "") fullUrl += $"&previous_id={previousId}";
 
 			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
 			request.method = "GET";
