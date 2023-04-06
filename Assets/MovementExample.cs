@@ -12,7 +12,6 @@ public class MovementExample : MonoBehaviour
         Application.targetFrameRate = 30;
 
         movement = new Movement(
-            title: "Eu sou um outro Movimento!",
             label: "NewAPITest",
             fps: Application.targetFrameRate,
             professionalId: "MrTrotta2010",

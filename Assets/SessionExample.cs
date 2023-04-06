@@ -19,7 +19,6 @@ public class SessionExample : MonoBehaviour
     void Start()
     {
         Movement movement = new Movement(
-            title: "Teste de Sessão",
             description: "Eu sou o primeiro movimento da Sessão",
             sessionId: "test1",
             label: "NewAPITest",
@@ -48,13 +47,12 @@ public class SessionExample : MonoBehaviour
 
         if (insertedCount == 2)
         {
-            firstSessionId = response.movement.session.id;
+            firstSessionId = response.movement.sessionId;
             StartCoroutine(RESTClient.Instance.FetchSessions(OnFetch, professionalId: professionalId, patientId: patientId));
             return;
         }
 
         Movement movement = new Movement(
-            title: "Teste de Sessão",
             description: "Eu sou o segundo movimento da Sessão",
             sessionId: "test1",
             label: "NewAPITest",
