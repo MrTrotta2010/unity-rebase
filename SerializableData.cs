@@ -6,38 +6,10 @@ namespace ReBase
 	public class SerializableMovement
 	{
 		[Serializable]
-		public class SessionData
-		{
-			public string id;
-			public string title;
-			public string description;
-			public string professionalId;
-			public int patientSessionNumber;
-		}
-		[Serializable]
 		public class AppData
 		{
 			public int code;
 			public string data;
-		}
-		[Serializable]
-		public class PatientData
-		{
-			public string id;
-			public int age;
-			public float height;
-			public float weight;
-		}
-		[Serializable]
-		public class MedicalData
-		{
-			public string mainComplaint;
-			public string historyOfCurrentDesease;
-			public string historyOfPastDesease;
-			public string diagnosis;
-			public string relatedDeseases;
-			public string medications;
-			public string physicalEvaluation;
 		}
 		[Serializable]
 		public class ArticulationData
@@ -58,19 +30,19 @@ namespace ReBase
 		public float duration;
 		public int numberOfRegisters;
 		public string artIndexPattern;
+		public string sessionId;
+		public string patientId;
+		public string professionalId;
 		public string insertionDate;
 		public string updateDate;
-		public SessionData session;
 		public AppData app;
-		public PatientData patient;
-		public MedicalData medicalData;
 		public ArticulationData[] articulationData;
 
 		public string id { get => _id; set => _id = value; }
 
 		public override string ToString()
 		{
-			return $"{{ id: \"{_id}\", label: \"{label}\", title: \"{session.title}\", description: \"{session.description}\", sessionId: \"{session.id}\", device: \"{device}\", fps: {fps}, duration: {duration}, numberOfRegisters: {numberOfRegisters}, insertionDate: {insertionDate}, updateDate: {updateDate} artIndexPattern: \"{artIndexPattern}\", articulationData: [{(articulationData == null ? "" : string.Join<ArticulationData>(", ", articulationData))}] }}";
+			return $"{{ id: \"{_id}\", label: \"{label}\", sessionId: \"{sessionId}\", professionalId: \"{professionalId}\", patientId: \"{patientId}\", device: \"{device}\", fps: {fps}, duration: {duration}, numberOfRegisters: {numberOfRegisters}, insertionDate: {insertionDate}, updateDate: {updateDate} artIndexPattern: \"{artIndexPattern}\", articulationData: [{(articulationData == null ? "" : string.Join<ArticulationData>(", ", articulationData))}] }}";
 		}
 	}
 
@@ -90,6 +62,25 @@ namespace ReBase
 			public string insertionDate;
 			public string updateDate;
 		}
+		[Serializable]
+		public class PatientData
+		{
+			public string id;
+			public int age;
+			public float height;
+			public float weight;
+		}
+		[Serializable]
+		public class MedicalData
+		{
+			public string mainComplaint;
+			public string historyOfCurrentDesease;
+			public string historyOfPastDesease;
+			public string diagnosis;
+			public string relatedDeseases;
+			public string medications;
+			public string physicalEvaluation;
+		}
 
 		public string id;
 		public string title;
@@ -98,9 +89,8 @@ namespace ReBase
 		public int patientSessionNumber;
 		public int numberOfMovements;
 
-		public SerializableMovement.AppData app;
-		public SerializableMovement.PatientData patient;
-		public SerializableMovement.MedicalData medicalData;
+		public PatientData patient;
+		public MedicalData medicalData;
 
 		public MovementData[] movements;
 
