@@ -50,19 +50,6 @@ namespace ReBase
 	public class SerializableSession
 	{
 		[Serializable]
-		public class MovementData
-		{
-			public string _id;
-			public string label;
-			public string device;
-			public float fps;
-			public float duration;
-			public int numberOfRegisters;
-			public string artIndexPattern;
-			public string insertionDate;
-			public string updateDate;
-		}
-		[Serializable]
 		public class PatientData
 		{
 			public string id;
@@ -88,15 +75,17 @@ namespace ReBase
 		public string professionalId;
 		public int patientSessionNumber;
 		public int numberOfMovements;
+		public string insertionDate;
+		public string updateDate;
 
 		public PatientData patient;
 		public MedicalData medicalData;
 
-		public MovementData[] movements;
+		public SerializableMovement[] movements;
 
 		public override string ToString()
 		{
-			return $"{{\n\tid: \"{id}\",\n\ttitle: \"{title}\",\n\tdescription: {description},\n\tnumberOfMovements: {numberOfMovements},\n\tmovements: [\n\t\t{(movements == null ? "" : string.Join<MovementData>(",\n\t", movements))}]\n\t}}";
+			return $"{{\n\tid: \"{id}\",\n\ttitle: \"{title}\",\n\tdescription: {description},\n\tnumberOfMovements: {numberOfMovements},\n\tmovements: [\n\t\t{(movements == null ? "" : string.Join<SerializableMovement>(",\n\t", movements))}]\n\t}}";
 		}
 	}
 }

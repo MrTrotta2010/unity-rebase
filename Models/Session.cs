@@ -14,9 +14,8 @@ namespace ReBase
 		private string _description;
 		private string _professionalId;
 		private int _patientSessionNumber;
-
-		private int _appCode;
-		private string _appData;
+		private string _insertionDate;
+		private string _updateDate;
 
 		private string _patientId;
 		private int _patientAge;
@@ -30,6 +29,7 @@ namespace ReBase
 		private string _medications;
 		private string _physicalEvaluation;
 
+		private int _numberOfMovements;
 		private List<Movement> _movements;
 
 
@@ -38,8 +38,7 @@ namespace ReBase
 		public string description { get => _description; set => _description = value; }
 		public string professionalId { get => _professionalId; set => _professionalId = value; }
 		public int patientSessionNumber { get => _patientSessionNumber; set => _patientSessionNumber = value; }
-		public int appCode { get => _appCode; set => _appCode = value; }
-		public string appData { get => _appData; set => _appData = value; }
+		public string insertionDate { get => _insertionDate; set => _insertionDate = value; }
 		public string patientId { get => _patientId; set => _patientId = value; }
 		public int patientAge { get => _patientAge; set => _patientAge = value; }
 		public float patientHeight { get => _patientHeight; set => _patientHeight = value; }
@@ -51,6 +50,7 @@ namespace ReBase
 		public string relatedDeseases { get => _relatedDeseases; set => _relatedDeseases = value; }
 		public string medications { get => _medications; set => _medications = value; }
 		public string physicalEvaluation { get => _physicalEvaluation; set => _physicalEvaluation = value; }
+		public int numberOfMovements{ get => _numberOfMovements; set => _numberOfMovements = value; }
 		public List<Movement> movements
 		{
 			get => _movements;
@@ -58,17 +58,17 @@ namespace ReBase
 		}
 
 		public Session(string title = "", string description = "", string professionalId = "", Movement[] movements = null, int patientSessionNumber = 0,
-				int appCode = 0, string appData = "", string patientId = "", int patientAge = 0, float patientHeight = 0f, float patientWeight = 0f,
+				string insertionDate ="", string updateDate = "", string patientId = "", int patientAge = 0, float patientHeight = 0f, float patientWeight = 0f,
 				string mainComplaint = "", string historyOfCurrentDesease = "", string historyOfPastDesease = "", string diagnosis = "",
-				string relatedDeseases = "", string medications = "", string physicalEvaluation = "", string id = "")
+				string relatedDeseases = "", string medications = "", string physicalEvaluation = "", string id = "", int numberOfMovements = 0)
 		{
 			_id = id;
 			_title = title;
 			_description = description;
 			_professionalId = professionalId;
 			_patientSessionNumber = patientSessionNumber;
-			_appCode = appCode;
-			_appData = appData;
+			_insertionDate = insertionDate;
+			_updateDate = updateDate;
 			_patientId = patientId;
 			_patientAge = patientAge;
 			_patientHeight = patientHeight;
@@ -80,65 +80,20 @@ namespace ReBase
 			_relatedDeseases = relatedDeseases;
 			_medications = medications;
 			_physicalEvaluation = physicalEvaluation;
+			_numberOfMovements = numberOfMovements;
 
 			if (movements != null) _movements = new List<Movement>(movements);
 		}
 
-		public Session(Movement movement)
+		public Session(SerializableSession session)
 		{
-			_id = movement.sessionId;
-			_title = movement.title;
-			_description = movement.description;
-			_professionalId = movement.professionalId;
-			_patientSessionNumber = movement.patientSessionNumber;
-			_appCode = movement.appCode;
-			_appData = movement.appData;
-			_patientId = movement.patientId;
-			_patientAge = movement.patientAge;
-			_patientHeight = movement.patientHeight;
-			_patientWeight = movement.patientWeight;
-			_mainComplaint = movement.mainComplaint;
-			_historyOfCurrentDesease = movement.historyOfCurrentDesease;
-			_historyOfPastDesease = movement.historyOfPastDesease;
-			_diagnosis = movement.diagnosis;
-			_relatedDeseases = movement.relatedDeseases;
-			_medications = movement.medications;
-			_physicalEvaluation = movement.physicalEvaluation;
-
-			_movements = new List<Movement>();
-			_movements.Add(movement);
+			ConvertSerializableSession(session);
 		}
 
-		public Session(SerializableMovement serializableMovement)
+		public Session(string sessionJson)
 		{
-			Movement movement = new Movement(serializableMovement);
-
-			_id = movement.sessionId;
-			_title = movement.title;
-			_description = movement.description;
-			_professionalId = movement.professionalId;
-			_patientSessionNumber = movement.patientSessionNumber;
-			_appCode = movement.appCode;
-			_appData = movement.appData;
-			_patientId = movement.patientId;
-			_patientAge = movement.patientAge;
-			_patientHeight = movement.patientHeight;
-			_patientWeight = movement.patientWeight;
-			_mainComplaint = movement.mainComplaint;
-			_historyOfCurrentDesease = movement.historyOfCurrentDesease;
-			_historyOfPastDesease = movement.historyOfPastDesease;
-			_diagnosis = movement.diagnosis;
-			_relatedDeseases = movement.relatedDeseases;
-			_medications = movement.medications;
-			_physicalEvaluation = movement.physicalEvaluation;
-
-			_movements = new List<Movement>();
-			_movements.Add(movement);
-		}
-
-		public Session(SerializableSession movement)
-		{
-			ConvertSerializableSession(movement);
+			SerializableSession auxSession= JsonUtility.FromJson<SerializableSession>(sessionJson);
+			ConvertSerializableSession(auxSession);
 		}
 
 		//public Session(
@@ -153,7 +108,6 @@ namespace ReBase
 		//	if (legacySession)
 		//	{
 		//		SerializableSession auxSession = JsonUtility.FromJson<SerializableSession>(movementJson);
-		//		ConvertSerializableSession(auxSession, legacySessio);
 		//	}
 		//	else
 		//	{
@@ -169,12 +123,9 @@ namespace ReBase
 			if (session.description != "") _description = session.description;
 			if (session.professionalId != "") _professionalId = session.professionalId;
 			_patientSessionNumber = session.patientSessionNumber;
+			_insertionDate = session.insertionDate;
+			_updateDate = session.updateDate;
 
-			if (session.app != null)
-			{
-				_appCode = session.app.code;
-				if (session.app.data != null) _appData = session.app.data;
-			}
 			if (session.patient != null)
 			{
 				if (session.patient.id != null) _patientId = session.patient.id;
@@ -194,19 +145,13 @@ namespace ReBase
 			}
 
 			_movements = new List<Movement>();
+			foreach (SerializableMovement movement in session.movements)
+				_movements.Add(new Movement(movement));
 		}
 
 		public string ToJson(bool update = false)
 		{
 			CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-
-			string strMovements = "[";
-
-			foreach (Movement movement in _movements)
-			{
-				strMovements += $"{movement.ToJson()},";
-			}
-			strMovements = $"{strMovements.TrimEnd(',')}]";
 
 			if (update)
 			{
@@ -214,9 +159,6 @@ namespace ReBase
 					$"\"description\":\"{_description}\"," +
 					$"\"professionalId\":\"{_professionalId}\"," +
 					$"\"patientSessionNumber\":{_patientSessionNumber}," +
-					"\"app\":{" +
-					$"\"code\":{_appCode}," +
-					$"\"data\":\"{_appData}\"}}," +
 					"\"patient\":{" +
 					$"\"id\":\"{_patientId}\"," +
 					$"\"age\":{_patientAge}," +
@@ -233,14 +175,17 @@ namespace ReBase
 			}
 			else
 			{
-				return $"{{\"session\":{{\"id\":\"{_id}\"," +
-					$"\"title\":\"{_title}\"," +
+				string strMovements = "[";
+				foreach (Movement movement in _movements)
+				{
+					strMovements += $"{movement.ToJson()},";
+				}
+				strMovements = $"{strMovements.TrimEnd(',')}]";
+
+				return $"{{\"session\":{{\"title\":\"{_title}\"," +
 					$"\"description\":\"{_description}\"," +
 					$"\"professionalId\":\"{_professionalId}\"," +
 					$"\"patientSessionNumber\":{_patientSessionNumber}," +
-					"\"app\":{" +
-					$"\"code\":{_appCode}," +
-					$"\"data\":\"{_appData}\"}}," +
 					"\"patient\":{" +
 					$"\"id\":\"{_patientId}\"," +
 					$"\"age\":{_patientAge}," +
@@ -254,6 +199,7 @@ namespace ReBase
 					$"\"relatedDeseases\":\"{_relatedDeseases}\"," +
 					$"\"medications\":\"{_medications}\"," +
 					$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}," +
+					$"\"numberOfMovements\":{_numberOfMovements}," +
 					$"\"movements\":{strMovements}}}}}";
 			}
 		}
@@ -270,14 +216,13 @@ namespace ReBase
 			}
 			strMovements = $"{strMovements.TrimEnd(',')}]";
 
-			return $"{{\"session\":{{\"id\":\"{_id}\"," +
+			return $"{{\"session\":{{\"_id\":\"{_id}\"," +
 				$"\"title\":\"{_title}\"," +
 				$"\"description\":\"{_description}\"," +
 				$"\"professionalId\":\"{_professionalId}\"," +
 				$"\"patientSessionNumber\":{_patientSessionNumber}," +
-				"\"app\":{" +
-				$"\"code\":{_appCode}," +
-				$"\"data\":\"{_appData}\"}}," +
+				$"\"insertionDate\":\"{_insertionDate}\"," +
+				$"\"updateDate\":\"{_updateDate}\"," +
 				"\"patient\":{" +
 				$"\"id\":\"{_patientId}\"," +
 				$"\"age\":{_patientAge}," +
@@ -291,6 +236,7 @@ namespace ReBase
 				$"\"relatedDeseases\":\"{_relatedDeseases}\"," +
 				$"\"medications\":\"{_medications}\"," +
 				$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}," +
+				$"\"numberOfMovements\":{_numberOfMovements}," +
 				$"\"articulationData\":{strMovements}}}}}";
 		}
 	}
