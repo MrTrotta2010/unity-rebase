@@ -25,6 +25,7 @@ namespace ReBase
 
 		public string _id;
 		public string label;
+		public string description;
 		public string device;
 		public float fps;
 		public float duration;
@@ -42,7 +43,7 @@ namespace ReBase
 
 		public override string ToString()
 		{
-			return $"{{ id: \"{_id}\", label: \"{label}\", sessionId: \"{sessionId}\", professionalId: \"{professionalId}\", patientId: \"{patientId}\", device: \"{device}\", fps: {fps}, duration: {duration}, numberOfRegisters: {numberOfRegisters}, insertionDate: {insertionDate}, updateDate: {updateDate} artIndexPattern: \"{artIndexPattern}\", articulationData: [{(articulationData == null ? "" : string.Join<ArticulationData>(", ", articulationData))}] }}";
+			return $"{{ id: \"{_id}\", label: \"{label}\", description: \"{description}\", sessionId: \"{sessionId}\", professionalId: \"{professionalId}\", patientId: \"{patientId}\", device: \"{device}\", fps: {fps}, duration: {duration}, numberOfRegisters: {numberOfRegisters}, insertionDate: {insertionDate}, updateDate: {updateDate} artIndexPattern: \"{artIndexPattern}\", articulationData: [{(articulationData == null ? "" : string.Join<ArticulationData>(", ", articulationData))}] }}";
 		}
 	}
 

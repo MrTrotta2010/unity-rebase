@@ -10,6 +10,7 @@ namespace ReBase
 	{
 		private string _id;
 		private string _label;
+		private string _description;
 		private string _device;
 		private int[] _articulations;
 		private float _fps;
@@ -30,6 +31,7 @@ namespace ReBase
 
 		public string id { get => _id; }
 		public string label { get => _label; set => _label = value; }
+		public string description { get => _description; set => _description = value; }
 		public string device { get => _device; set => _device = value; }
 		public float fps { get => _fps; set => _fps = value; }
 		public float duration { get => _duration; set => _duration = value; }
@@ -52,11 +54,12 @@ namespace ReBase
 			}
 		}
 
-		public Movement(string label = "", string device = "", float fps = 30f, int[] articulations = null,
+		public Movement(string label = "", string description = "", string device = "", float fps = 30f, int[] articulations = null,
 						string sessionId = "",string professionalId = "", int appCode = 0, string appData = "",
 						string patientId = "", Register[] articulationData = null)
 		{
 			_label = label;
+			_description = description;
 			_device = device;
 			_fps = fps;
 
@@ -112,6 +115,7 @@ namespace ReBase
 			if (update)
 			{
 				return $"{{\"movement\":{{\"label\":\"{_label}\"," +
+					$"\"description\":\"{_description}\"," +
 					$"\"device\":\"{_device}\"," +
 					$"\"artIndexPattern\":\"{string.Join(";", _articulations)}\"," +
 					$"\"sessionId\":\"{_sessionId}\"," +
@@ -124,6 +128,7 @@ namespace ReBase
 			}
 			return $"{{\"movement\":{{\"label\":\"{_label}\"," +
 				$"\"device\":\"{_device}\"," +
+				$"\"description\":\"{_description}\"," +
 				$"\"artIndexPattern\":\"{string.Join(";", _articulations)}\"," +
 				$"\"fps\":\"{_fps}\"," +
 				$"\"duration\":{_duration}," +
@@ -143,6 +148,7 @@ namespace ReBase
 
 			return $"{{\"movement\":{{\"id\":\"{_id}\"," +
 				$"\"label\":\"{_label}\"," +
+				$"\"description\":\"{_description}\"," +
 				$"\"device\":\"{_device}\"," +
 				$"\"artIndexPattern\":\"{string.Join(";", _articulations)}\"," +
 				$"\"insertionDate\":\"{_insertionDate}\"," +
@@ -168,6 +174,7 @@ namespace ReBase
 		{
 			if (movement.id != null) _id = movement.id;
 			if (movement.label != null) _label = movement.label;
+			if (movement.description != null) _description = movement.description;
 			if (movement.device != null) _device = movement.device;
 			if (movement.insertionDate != null) _insertionDate = movement.insertionDate;
 			if (movement.updateDate != null) _updateDate = movement.updateDate;
