@@ -15,7 +15,6 @@ public class MovementExample : MonoBehaviour
             label: "NewAPITest",
             fps: Application.targetFrameRate,
             professionalId: "MrTrotta2010",
-            patientId: "007",
             articulations: new int[] { 1, 2 }
         );
 
