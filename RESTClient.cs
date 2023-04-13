@@ -11,7 +11,7 @@ namespace ReBase
 		private static readonly RESTClient instance = new RESTClient();
 		public static RESTClient Instance { get { return instance; } }
 
-		private string WEB_URL = "http://200.145.46.239:3030";
+		private string WEB_URL = "http://200.145.46.235:3030";
 
 		public IEnumerator FetchMovements(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
 											int[] articulations = null, int page = 0, int per = 0, string previousId = "")
