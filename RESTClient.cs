@@ -126,14 +126,14 @@ namespace ReBase
 		}
 
 		public IEnumerator FetchSessions(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
-											int[] articulations = null, bool legacy = false, int page = 0, int limit = 0)
+											int[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = "")
 		{
 			int[] artList = articulations ?? new int[] { };
 
 			string fullUrl = $"{WEB_URL}/session?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}";
 			if (legacy) fullUrl += $"&legacy = {legacy}";
-			if (page > 0) fullUrl += $"&page={page}";
-			if (limit > 0) fullUrl += $"&limit={limit}";
+			if (per > 0) fullUrl += $"&per={per}";
+			if (previousId != "") fullUrl += $"&previous_id={previousId}";
 
 			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
 			request.method = "GET";
