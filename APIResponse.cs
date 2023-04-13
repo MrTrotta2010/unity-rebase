@@ -61,7 +61,7 @@ namespace ReBase
 				case ResponseType.InsertSession:
 				case ResponseType.FindSession:
                 case ResponseType.UpdateSession:
-					if (session != null && session.id != null) str += $", session: {session}";
+					if (session != null && session._id != null) str += $", session: {session}";
 					break;
                 default:
 					if (HTMLError != null) str += $", HTMLError: \"{HTMLError}\"";
