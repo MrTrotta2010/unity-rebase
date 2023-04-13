@@ -8,8 +8,11 @@ public class PaginationExample : MonoBehaviour
     int currentPage = 1;
     bool useIdBasePagination = false;
 
-    void Start()
+    public void RunPaginationExample()
     {
+        currentPage = 1;
+        useIdBasePagination = false;
+
         RunMovementPagination();
     }
 
@@ -34,7 +37,6 @@ public class PaginationExample : MonoBehaviour
         bool foundAnything = response.movements != null;
 
         Debug.Log($"Page {currentPage}: {(foundAnything ? response.movements.Length.ToString() : "no")} movements");
-        Debug.Log(response);
 
         if (useIdBasePagination)
 		{
@@ -73,7 +75,6 @@ public class PaginationExample : MonoBehaviour
         bool foundAnything = response.sessions != null;
 
         Debug.Log($"Page {currentPage}: {(foundAnything ? response.sessions.Length.ToString() : "no")} sessions");
-        Debug.Log(response);
 
         if (useIdBasePagination)
         {

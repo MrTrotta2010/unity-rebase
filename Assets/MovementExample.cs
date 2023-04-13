@@ -2,12 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ReBase;
+using System;
 
 public class MovementExample : MonoBehaviour
 {
     private Movement movement;
 
-    void Awake()
+    public void RunMovementExample()
     {
         Application.targetFrameRate = 30;
 
@@ -15,20 +16,17 @@ public class MovementExample : MonoBehaviour
             label: "NewAPITest",
             fps: Application.targetFrameRate,
             professionalId: "MrTrotta2010",
-            articulations: new int[] { 1, 2 }
+            articulations: new string[] { "1", "2" }
         );
 
         movement.AddRegister(new Register(
-            new Dictionary<int, Vector3>()
+            new Dictionary<string, Rotation>()
 			{
-                {  1, new Vector3(1f, 1f, 1f) },
-                {  2, new Vector3(2f, 2f, 2f) }
+                { "1", new Rotation(1f, 1f, 1f) },
+                { "2", new Rotation(2f, 2f, 2f) }
 			}
         ));
-    }
 
-	void Start()
-	{
         StartCoroutine(RESTClient.Instance.InsertMovement(OnInserted, movement));
     }
 
@@ -40,8 +38,14 @@ public class MovementExample : MonoBehaviour
         {
             foreach (SerializableMovement serializableMovement in response.movements)
             {
-                Movement downloadedMovement = new Movement(serializableMovement);
-                Debug.Log($"Movement: {downloadedMovement.ToJson()}");
+                try {
+                    Movement downloadedMovement = new Movement(serializableMovement);
+				}
+                catch(Exception e)
+				{
+                    Debug.LogError(e);
+                    Debug.LogError(serializableMovement);
+				}
             }
         }
     }

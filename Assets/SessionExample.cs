@@ -11,13 +11,12 @@ public class SessionExample : MonoBehaviour
     private string patientId = "007";
     private string firstSessionId = "";
 
-    void Awake()
+    public void RunSessionExample()
     {
         Application.targetFrameRate = 30;
-    }
+        insertedCount = 0;
+        firstSessionId = "";
 
-    void Start()
-    {
         session = new Session(
             title: "Teste de Sessão",
             description: "Eu sou a primeira Sessão",
@@ -33,7 +32,7 @@ public class SessionExample : MonoBehaviour
         Debug.Log($"Inserted: {response}");
         insertedCount++;
 
-        if (insertedCount == 2)
+        if (insertedCount >= 2)
         {
             StartCoroutine(RESTClient.Instance.FetchSessions(OnFetch, professionalId: professionalId, patientId: patientId));
             return;
@@ -48,14 +47,14 @@ public class SessionExample : MonoBehaviour
             fps: Application.targetFrameRate,
             professionalId: professionalId,
             patientId: patientId,
-            articulations: new int[] { 1, 2 }
+            articulations: new string[] { "1", "2" }
         );
 
         movement.AddRegister(new Register(
-            new Dictionary<int, Vector3>()
+            new Dictionary<string, Rotation>()
             {
-                {  1, new Vector3(1f, 1f, 1f) },
-                {  2, new Vector3(2f, 2f, 2f) }
+                {  "1", new Rotation(1f, 1f, 1f) },
+                {  "2", new Rotation(2f, 2f, 2f) }
             }
         ));
 
@@ -70,13 +69,10 @@ public class SessionExample : MonoBehaviour
 		{
             if (serializableSession.id == firstSessionId)
 			{
-                Debug.Log(serializableSession);
                 session = new Session(serializableSession);
                 break;
             }
 		}
-
-        Debug.Log(session);
 
         if (session.id != default(string))
 		{
@@ -110,13 +106,13 @@ public class SessionExample : MonoBehaviour
                 new Movement(
                     label: "firstMovement",
                     fps: Application.targetFrameRate,
-                    articulations: new int[] { 1, 2 },
+                    articulations: new string[] { "1", "2" },
                     articulationData: new Register[1] {
                         new Register(
-                            new Dictionary<int, Vector3>()
+                            new Dictionary<string, Rotation>()
                             {
-                                {  1, new Vector3(1f, 1f, 1f) },
-                                {  2, new Vector3(2f, 2f, 2f) }
+                                { "1", new Rotation(1f, 1f, 1f) },
+                                { "2", new Rotation(2f, 2f, 2f) }
                             }
                         )
                     }
@@ -124,13 +120,13 @@ public class SessionExample : MonoBehaviour
                 new Movement(
                     label: "secondMovement",
                     fps: Application.targetFrameRate,
-                    articulations: new int[] { 1, 2 },
+                    articulations: new string[] { "1", "2" },
                     articulationData: new Register[1] {
                         new Register(
-                            new Dictionary<int, Vector3>()
+                            new Dictionary<string, Rotation>()
                             {
-                                {  1, new Vector3(1f, 1f, 1f) },
-                                {  2, new Vector3(2f, 2f, 2f) }
+                                { "1", new Rotation(1f, 1f, 1f) },
+                                { "2", new Rotation(2f, 2f, 2f) }
                             }
                         )
                     }
