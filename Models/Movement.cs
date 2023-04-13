@@ -12,7 +12,7 @@ namespace ReBase
 		private string _label;
 		private string _description;
 		private string _device;
-		private int[] _articulations;
+		private string[] _articulations;
 		private float _fps;
 		private float _duration;
 		private int _numberOfRegisters;
@@ -36,7 +36,7 @@ namespace ReBase
 		public float fps { get => _fps; set => _fps = value; }
 		public float duration { get => _duration; set => _duration = value; }
 		public int numberOfRegisters { get => _numberOfRegisters; set => _numberOfRegisters = value; }
-		public int[] articulations { get => _articulations; set => _articulations = value; }
+		public string[] articulations { get => _articulations; set => _articulations = value; }
 		public string insertionDate { get => _insertionDate; }
 		public string updateDate { get => _updateDate; }
 		public string sessionId { get => _sessionId; }
@@ -54,7 +54,7 @@ namespace ReBase
 			}
 		}
 
-		public Movement(string label = "", string description = "", string device = "", float fps = 30f, int[] articulations = null,
+		public Movement(string label = "", string description = "", string device = "", float fps = 30f, string[] articulations = null,
 						string sessionId = "",string professionalId = "", int appCode = 0, string appData = "",
 						string patientId = "", Register[] articulationData = null)
 		{
@@ -63,7 +63,7 @@ namespace ReBase
 			_device = device;
 			_fps = fps;
 
-			_articulations = articulations ?? new int[] { };
+			_articulations = articulations ?? new string[] { };
 			ValidateArticulationList();
 
 			_sessionId = sessionId;
@@ -78,7 +78,7 @@ namespace ReBase
 			if (articulationData != null)
 			{
 				foreach (Register register in articulationData)
-					ValidateArticulationData(register.Articulations);
+					ValidateArticulationData(register.articulations);
 
 				_articulationData = new List<Register>(articulationData);
 			}
@@ -101,7 +101,7 @@ namespace ReBase
 
 		public void AddRegister(Register register)
 		{
-			ValidateArticulationData(register.Articulations);
+			ValidateArticulationData(register.articulations);
 
 			_articulationData.Add(register);
 			_numberOfRegisters += 1;
@@ -117,29 +117,39 @@ namespace ReBase
 				return $"{{\"movement\":{{\"label\":\"{_label}\"," +
 					$"\"description\":\"{_description}\"," +
 					$"\"device\":\"{_device}\"," +
-					$"\"artIndexPattern\":\"{string.Join(";", _articulations)}\"," +
 					$"\"sessionId\":\"{_sessionId}\"," +
-					$"\"patientId\":\"{_patientId}\"," +
-					$"\"professionalId\":\"{_professionalId}\"," +
 					"\"app\":{" +
 					$"\"code\":{_appCode}," +
-					$"\"data\":\"{_appData}\"}}," +
-					$"\"articulationData\":{SerializeArticulationData()}}}}}";
+					$"\"data\":\"{_appData}\"}}}}}}";
 			}
 			return $"{{\"movement\":{{\"label\":\"{_label}\"," +
 				$"\"device\":\"{_device}\"," +
 				$"\"description\":\"{_description}\"," +
-				$"\"artIndexPattern\":\"{string.Join(";", _articulations)}\"," +
 				$"\"fps\":\"{_fps}\"," +
 				$"\"duration\":{_duration}," +
 				$"\"numberOfRegisters\":{_numberOfRegisters}," +
 				$"\"sessionId\":\"{_sessionId}\"," +
-				$"\"patientId\":\"{_patientId}\"," +
-				$"\"professionalId\":\"{_professionalId}\"," +
 				"\"app\":{" +
 				$"\"code\":{_appCode}," +
 				$"\"data\":\"{_appData}\"}}," +
 				$"\"articulationData\":{SerializeArticulationData()}}}}}";
+		}
+
+		public string ToCreateSessionJson()
+		{
+			CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
+
+			return $"{{\"label\":\"{_label}\"," +
+				$"\"device\":\"{_device}\"," +
+				$"\"description\":\"{_description}\"," +
+				$"\"fps\":\"{_fps}\"," +
+				$"\"duration\":{_duration}," +
+				$"\"numberOfRegisters\":{_numberOfRegisters}," +
+				$"\"sessionId\":\"{_sessionId}\"," +
+				"\"app\":{" +
+				$"\"code\":{_appCode}," +
+				$"\"data\":\"{_appData}\"}}," +
+				$"\"articulationData\":{SerializeArticulationData()}}}";
 		}
 
 		public override string ToString()
@@ -150,7 +160,7 @@ namespace ReBase
 				$"\"label\":\"{_label}\"," +
 				$"\"description\":\"{_description}\"," +
 				$"\"device\":\"{_device}\"," +
-				$"\"artIndexPattern\":\"{string.Join(";", _articulations)}\"," +
+				$"\"articulations\":[{string.Join(",", _articulations)}]," +
 				$"\"insertionDate\":\"{_insertionDate}\"," +
 				$"\"updateDate\":\"{_updateDate}\"," +
 				$"\"duration\":{_duration}," +
@@ -164,9 +174,9 @@ namespace ReBase
 				$"\"articulationData\":{SerializeArticulationData()}}}}}";
 		}
 
-		private void ValidateArticulationData(int[] registerArticulations)
+		private void ValidateArticulationData(string[] registerArticulations)
 		{
-			if (!Articulation.CompareArticulationLists(_articulations, registerArticulations))
+			if (!CompareArticulationLists(_articulations, registerArticulations))
 				throw new MismatchedArticulationsException("Articulation lists do not match", _articulations, registerArticulations);
 		}
 
@@ -182,14 +192,9 @@ namespace ReBase
 			_duration = movement.duration;
 			_numberOfRegisters = movement.numberOfRegisters;
 
-			if (movement.artIndexPattern != null)
+			if (movement.articulations != null)
 			{
-				string[] splitArtIndexPatter = movement.artIndexPattern.Split(';');
-				_articulations = new int[splitArtIndexPatter.Length];
-				for (int i = 0; i < splitArtIndexPatter.Length; i++)
-				{
-					_articulations[i] = int.Parse(splitArtIndexPatter[i]);
-				}
+				_articulations = movement.articulations;
 				ValidateArticulationList();
 			}
 			if (movement.sessionId != null) _sessionId = movement.sessionId;
@@ -206,27 +211,29 @@ namespace ReBase
 
 		private string SerializeArticulationData()
 		{
-			Dictionary<int, List<Vector3>> aritulationDataDict = new Dictionary<int, List<Vector3>>();
+			Dictionary<string, List<Rotation>> aritulationDataDict = new Dictionary<string, List<Rotation>>();
 
-			foreach (int articulation in _articulations)
+			foreach (string articulation in _articulations)
 			{
-				aritulationDataDict.Add(articulation, new List<Vector3>());
+				aritulationDataDict.Add(articulation, new List<Rotation>());
 			}
 			foreach (Register register in _articulationData)
 			{
-				foreach (int articulation in aritulationDataDict.Keys)
+				foreach (string articulation in aritulationDataDict.Keys)
 				{
 					aritulationDataDict[articulation].Add(register.GetArticulationRotations(articulation));
 				}
 			}
 
 			string serializedList = "[";
-			foreach (KeyValuePair<int, List<Vector3>> items in aritulationDataDict)
+			foreach (KeyValuePair<string, List<Rotation>> items in aritulationDataDict)
 			{
 				serializedList += $"{{\"articulation\":{items.Key},\"data\":[";
 				for (int i = 0; i < items.Value.Count; i++)
 				{
-					Vector3 coordinates = items.Value[i];
+					Rotation coordinates = items.Value[i];
+					if (coordinates == null) continue;
+
 					serializedList += $"[{coordinates.x},{coordinates.y},{coordinates.z}]";
 					if (i < items.Value.Count - 1) serializedList += ",";
 				}
@@ -238,31 +245,25 @@ namespace ReBase
 
 		private List<Register> ArticulationDataToRegisterList(SerializableMovement.ArticulationData[] articulationData)
 		{
-			int length = 0;
-			foreach (SerializableMovement.ArticulationData dataObject in articulationData)
-			{
-				length = dataObject.data.Length;
-				break;
-			}
-
+			int length = articulationData?[0].data.Length ?? 0;
 			List<Register> registerList = new List<Register>();
 
-			for (int j = 0; j < length; j += 3)
+			for (int j = 0; j < length; j++)
 			{
 				Register register = new Register(_articulations);
 				foreach (SerializableMovement.ArticulationData dataObject in articulationData)
 				{
-
 					try
 					{
-						Vector3 rotations = new Vector3(dataObject.data[j], dataObject.data[j + 1], dataObject.data[j + 2]);
+						Rotation rotations = new Rotation(dataObject.data[j][0], dataObject.data[j][1], dataObject.data[j][2]);
 						register.SetArticulationRotations(dataObject.articulation, rotations);
 					}
-					catch (ArgumentException)
+					catch (Exception ex) when (ex is ArgumentException || ex is NullReferenceException)
 					{
 						continue;
 					}
 				}
+				if (register.isEmpty) continue;
 				registerList.Add(register);
 			}
 			return registerList;
@@ -270,12 +271,11 @@ namespace ReBase
 
 		private void ValidateArticulationList()
 		{
-			foreach (int articulationA in _articulations)
+			foreach (string articulationA in _articulations)
 			{
 				int count = 0;
-				foreach (int articulationB in _articulations)
+				foreach (string articulationB in _articulations)
 				{
-					if (articulationA < 1 || articulationA > 20) throw new IndexOutOfRangeException("Articulations can't be smaller than 1 or greater than 20");
 					if (articulationA == articulationB)
 					{
 						count++;
@@ -286,6 +286,16 @@ namespace ReBase
 					}
 				}
 			}
+		}
+
+		public static bool CompareArticulationLists(string[] listA, string[] listB)
+		{
+			if (listA.Length != listB.Length) return false;
+			for (int i = 0; i < listA.Length; i++)
+			{
+				if (listA[i] != listB[i]) return false;
+			}
+			return true;
 		}
 	}
 }

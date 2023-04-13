@@ -8,41 +8,36 @@ namespace ReBase
 	[Serializable]
 	public class Register
 	{
-		private Dictionary<int, Vector3> articulations;
+		private Dictionary<string, Rotation> _articulations;
 
-		public int ArticulationCount { get => articulations.Count; }
-
-		public int[] Articulations { get => articulations.Keys.ToArray(); }
+		public int articulationCount { get => _articulations.Count; }
+		public string[] articulations { get => _articulations.Keys.ToArray(); }
+		public bool isEmpty { get => _articulations.Count == 0; }
 
 		public Register()
 		{
-			articulations = new Dictionary<int, Vector3>();
+			_articulations = new Dictionary<string, Rotation>();
 		}
 
-		public Register(int[] articulationList)
+		public Register(string[] articulationList)
 		{
-			articulations = new Dictionary<int, Vector3>();
+			_articulations = new Dictionary<string, Rotation>();
 			SetArticulations(articulationList);
 		}
 
-		public Register(Dictionary<int, Vector3> articulations)
+		public Register(Dictionary<string, Rotation> articulations)
 		{
-			this.articulations = articulations;
+			this._articulations = articulations;
 		}
 
 		// Define quais articulações estarão no dicionário
-		public void SetArticulations(int[] articulationList)
+		public void SetArticulations(string[] articulationList)
 		{
-			foreach (int articulation in articulationList)
+			foreach (string articulation in articulationList)
 			{
-				if (articulation < 1 || articulation > 20)
-				{
-					articulations.Clear();
-					throw new IndexOutOfRangeException("Articulations can't be smaller than 1 or greater than 20");
-				}
 				try
 				{
-					articulations.Add(articulation, new Vector3());
+					_articulations.Add(articulation, null);
 				}
 				catch (ArgumentException)
 				{
@@ -51,21 +46,21 @@ namespace ReBase
 			}
 		}
 
-		public void SetArticulationRotations(int articulation, Vector3 rotations)
+		public void SetArticulationRotations(string articulation, Rotation rotations)
 		{
-			articulations[articulation] = rotations;
+			_articulations[articulation] = rotations;
 		}
 
-		public Vector3 GetArticulationRotations(int articulation)
+		public Rotation GetArticulationRotations(string articulation)
 		{
-			return articulations[articulation];
+			return _articulations[articulation];
 		}
 
 		override public string ToString()
 		{
-			string[] list = new string[articulations.Count];
+			string[] list = new string[_articulations.Count];
 			int i = 0;
-			foreach (KeyValuePair<int, Vector3> kvp in articulations)
+			foreach (KeyValuePair<string, Rotation> kvp in _articulations)
 			{
 				list[i] = Math.Round(kvp.Value.x, 2).ToString().Replace(',', '.') + "," +
 						Math.Round(kvp.Value.y, 2).ToString().Replace(',', '.') + "," +

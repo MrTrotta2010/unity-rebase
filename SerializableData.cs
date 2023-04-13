@@ -14,12 +14,28 @@ namespace ReBase
 		[Serializable]
 		public class ArticulationData
 		{
-			public int articulation;
-			public float[] data;
+			public string articulation;
+			public DataFrame[] data;
 
 			public override string ToString()
 			{
-				return $"{{ articulation: {articulation}, data: [{(data != null ? string.Join(", ", data) : "")}] }}";
+				return $"{{ articulation: {articulation}, data: [{(data != null ? string.Join<DataFrame>(", ", data) : "")}] }}";
+			}
+		}
+		[Serializable]
+		public class DataFrame
+		{
+			public float[] data;
+
+			public float this[int i]
+			{
+				get { return data[i]; }
+				set { data[i] = value; }
+			}
+
+			public override string ToString()
+			{
+				return data != null ? $"[{(string.Join(", ", data))}]" : "";
 			}
 		}
 
@@ -30,7 +46,7 @@ namespace ReBase
 		public float fps;
 		public float duration;
 		public int numberOfRegisters;
-		public string artIndexPattern;
+		public string[] articulations;
 		public string sessionId;
 		public string patientId;
 		public string professionalId;
@@ -43,7 +59,7 @@ namespace ReBase
 
 		public override string ToString()
 		{
-			return $"{{ id: \"{_id}\", label: \"{label}\", description: \"{description}\", sessionId: \"{sessionId}\", professionalId: \"{professionalId}\", patientId: \"{patientId}\", device: \"{device}\", fps: {fps}, duration: {duration}, numberOfRegisters: {numberOfRegisters}, insertionDate: {insertionDate}, updateDate: {updateDate} artIndexPattern: \"{artIndexPattern}\", articulationData: [{(articulationData == null ? "" : string.Join<ArticulationData>(", ", articulationData))}] }}";
+			return $"{{\n\tid: \"{_id}\",\n\tlabel: \"{label}\",\n\tdescription: \"{description}\",\n\tsessionId: \"{sessionId}\",\n\tprofessionalId: \"{professionalId}\",\n\tpatientId: \"{patientId}\",\n\tdevice: \"{device}\",\n\tfps: {fps},\n\tduration: {duration},\n\tnumberOfRegisters: {numberOfRegisters},\n\tinsertionDate: {insertionDate},\n\tupdateDate: {updateDate},\n\articulations: \"{(articulations == null ? "" : string.Join(",", articulations))}\",\n\tarticulationData: [{(articulationData == null ? "" : $"\n\t\t{string.Join<ArticulationData>(",\n\t\t", articulationData)}")}\n\t]\n}}";
 		}
 	}
 
@@ -70,7 +86,7 @@ namespace ReBase
 			public string physicalEvaluation;
 		}
 
-		public string id;
+		public string _id;
 		public string title;
 		public string description;
 		public string professionalId;
@@ -84,9 +100,11 @@ namespace ReBase
 
 		public SerializableMovement[] movements;
 
+		public string id { get => _id; set => _id = value; }
+
 		public override string ToString()
 		{
-			return $"{{\n\tid: \"{id}\",\n\ttitle: \"{title}\",\n\tdescription: {description},\n\tnumberOfMovements: {numberOfMovements},\n\tmovements: [\n\t\t{(movements == null ? "" : string.Join<SerializableMovement>(",\n\t", movements))}]\n\t}}";
+			return $"{{\n\tid: \"{_id}\",\n\ttitle: \"{title}\",\n\tdescription: {description},\n\tnumberOfMovements: {numberOfMovements},\n\tmovements: [{(movements == null ? "" : $"\n\t\t{string.Join<SerializableMovement>(",\n\t\t\t\t", movements)}\n\t\t")}\n\t\t]\n}}";
 		}
 	}
 }

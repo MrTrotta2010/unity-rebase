@@ -13,7 +13,7 @@ namespace ReBase
         public RepeatedArticulationException(string message, Exception inner)
             : base(message, inner) { }
 
-        public RepeatedArticulationException(string message, int[] articulations)
+        public RepeatedArticulationException(string message, string[] articulations)
         : this(message)
         {
             Patterns = $"[{string.Join(", ", articulations)}]";

@@ -83,6 +83,7 @@ namespace ReBase
 			_numberOfMovements = numberOfMovements;
 
 			if (movements != null) _movements = new List<Movement>(movements);
+			else _movements = new List<Movement>();
 		}
 
 		public Session(SerializableSession session)
@@ -178,7 +179,7 @@ namespace ReBase
 				string strMovements = "[";
 				foreach (Movement movement in _movements)
 				{
-					strMovements += $"{movement.ToJson()},";
+					strMovements += $"{movement.ToCreateSessionJson()},";
 				}
 				strMovements = $"{strMovements.TrimEnd(',')}]";
 

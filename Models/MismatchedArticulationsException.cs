@@ -13,7 +13,7 @@ namespace ReBase
         public MismatchedArticulationsException(string message, Exception inner)
             : base(message, inner) { }
 
-        public MismatchedArticulationsException(string message, int[] articulationsA, int[] articulationsB)
+        public MismatchedArticulationsException(string message, string[] articulationsA, string[] articulationsB)
         : this(message)
         {
             Patterns = $"[{string.Join(", ", articulationsA)}] and [{string.Join(", ", articulationsB)}]";
