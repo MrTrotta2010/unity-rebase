@@ -3,317 +3,266 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System;
 using System.Text;
-using System.Security.Cryptography;
 
-public class RESTClient
+namespace ReBase
 {
-	private static readonly RESTClient instance = new RESTClient();
-	public static RESTClient Instance { get { return instance; } }
-
-	// private string WEB_URL = "http://ec2-3-16-40-77.us-east-2.compute.amazonaws.com:3000";
-	// private string WEB_URL = "http://192.168.0.115:3000";
-	// private string WEB_URL = "http://brainnvr.ddns.net:3000";
-	private string WEB_URL = "http://200.145.46.239:3000";
-	//private UnityWebRequest www;
-	private string sessionId;
-
-	private RESTClient()
+	public class RESTClient
 	{
-		GenerateNewSessionID();
-	}
+		private static readonly RESTClient instance = new RESTClient();
+		public static RESTClient Instance { get { return instance; } }
 
-	public IEnumerator DownloadSessions(Action<bool, string> callback, string professionalId = "", string patientName = "")
-	{
-		string response = "Request could not be completed properly";
-		bool success = false;
+		private string WEB_URL = "http://200.145.46.235:3030";
 
-		string fullUrl = WEB_URL + "/get";
-		if (professionalId != "" && patientName != "")
-        {
-			fullUrl += "/professionalpatient/" + professionalId + "/" + patientName;
-        }
-		else if (professionalId != "")
-        {
-			fullUrl += "/professionalid/" + professionalId;
-		}
-		else if (patientName != "")
+		public IEnumerator FetchMovements(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
+											int[] articulations = null, int page = 0, int per = 0, string previousId = "")
 		{
-			fullUrl += "/patientid/" + patientName;
+			int[] artList = articulations ?? new int[] { };
+
+			string fullUrl = $"{WEB_URL}/movement?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}";
+			if (page > 0) fullUrl += $"&page={page}";
+			if (per > 0) fullUrl += $"&per={per}";
+			if (previousId != "") fullUrl += $"&previous_id={previousId}";
+
+			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
+			request.method = "GET";
+			yield return request.SendWebRequest();
+
+			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FetchMovements);
+			request.Dispose();
+
+			callback(response);
 		}
 
-		UnityWebRequest www = UnityWebRequest.Get(fullUrl);
-		www.method = "GET";
-		yield return www.SendWebRequest();
-
-		if (www.isNetworkError || www.isHttpError)
+		public IEnumerator FindMovement(Action<APIResponse> callback, string id)
 		{
-			success = false;
-			response = www.error;
+			if (id == default(string)) throw new MissingAttributeException("movement id");
+
+			UnityWebRequest request = UnityWebRequest.Get($"{WEB_URL}/movement/{id}");
+			request.method = "GET";
+			yield return request.SendWebRequest();
+
+			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FindMovement);
+			request.Dispose();
+
+			callback(response);
 		}
-		else if (www.isDone)
+
+		public IEnumerator InsertMovement(Action<APIResponse> callback, Movement movement)
 		{
-			while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
-			success = true;
-			response = www.downloadHandler.text;
-		}
-		www.Dispose();
+			string json = movement.ToJson();
 
-		callback(success, response);
-	}
-
-	public IEnumerator UploadSession(Session session, Action<bool, string> callback)
-	{
-		if (session.GetMovementLabel().Contains(","))
-        {
-			callback(false, "Caractere inválido no campo \"movementlabel\": ','");
-        }
-		else
-        {
-			string json = TranslationUtility.SessionToJson(session, sessionId);
-			string response = "Request could not be completed properly";
-			bool success = false;
-
-			using (UnityWebRequest www = UnityWebRequest.Post(WEB_URL + "/post", json))
+			using (UnityWebRequest request = UnityWebRequest.Post($"{WEB_URL}/movement", json))
 			{
-				www.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
-				www.uploadHandler.contentType = "application/json";
-				www.method = "POST";
+				request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+				request.uploadHandler.contentType = "application/json";
+				request.method = "POST";
 
-				yield return www.SendWebRequest();
+				yield return request.SendWebRequest();
 
-				if (www.isNetworkError || www.isHttpError)
-				{
-					success = false;
-					response = www.error;
-				}
-				else if (www.isDone)
-				{
-					while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
-					response = www.downloadHandler.text;
-					success = true;
-					if (response != "{\"[applied]\":true}")
-					{
-						success = false;
-						response = "Failed to store session with duplicate ID. Try again!";
-					}
-				}
-				www.Dispose();
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.InsertMovement);
+				request.Dispose();
+
+				callback(response);
 			}
-			callback(success, response);
-        }
-	}
+		}
 
-	public IEnumerator UploadSession(string sessionJson, Action<bool, string> callback)
-	{
-		string response = "Request could not be completed properly";
-		bool success = false;
-
-		using (UnityWebRequest www = UnityWebRequest.Post(WEB_URL + "/post", sessionJson))
+		public IEnumerator UpdateMovement(Action<APIResponse> callback, string id, Movement movement)
 		{
-			www.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(sessionJson));
-			www.uploadHandler.contentType = "application/json";
-			www.method = "POST";
+			if (id == default(string)) throw new MissingAttributeException("movement id");
 
-			yield return www.SendWebRequest();
+			string json = movement.ToJson(update: true);
 
-			if (www.isNetworkError || www.isHttpError)
+			using (UnityWebRequest request = UnityWebRequest.Put($"{WEB_URL}/movement/{id}", json))
 			{
-				success = false;
-				response = www.error;
+				request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+				request.uploadHandler.contentType = "application/json";
+				request.method = "PUT";
+
+				yield return request.SendWebRequest();
+
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.UpdateMovement);
+				request.Dispose();
+
+				callback(response);
 			}
-			else if (www.isDone)
-			{
-				while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
-				response = www.downloadHandler.text;
-				success = true;
-				if (response != "{\"[applied]\":true}")
-				{
-					success = false;
-					response = "Failed to store session with duplicate ID. Try again!";
-				}
-			}
-			www.Dispose();
 		}
-		callback(success, response);
-	}
 
-	public IEnumerator UpdateSession(string id, string insertiondate, Session session, Action<bool, string> callback)
-	{
-		string json = TranslationUtility.SessionToJson(session, sessionId);
-		string response = "Request could not be completed properly";
-		bool success = false;
-
-		using (UnityWebRequest www = UnityWebRequest.Put(WEB_URL + "/put/movement/" + id + "/" + session.GetMovementLabel() + "/" + insertiondate, json))
+		public IEnumerator UpdateMovement(Action<APIResponse> callback, Movement movement)
 		{
-			www.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
-			www.uploadHandler.contentType = "application/json";
-			www.method = "PUT";
+			if (movement.id == default(string)) throw new MissingAttributeException("movement id");
 
-			yield return www.SendWebRequest();
+			string json = movement.ToJson(update: true);
 
-			if (www.isNetworkError || www.isHttpError)
+			using (UnityWebRequest request = UnityWebRequest.Put($"{WEB_URL}/movement/{movement.id}", json))
 			{
-				success = false;
-				response = www.error;
+				request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+				request.uploadHandler.contentType = "application/json";
+				request.method = "PUT";
+
+				yield return request.SendWebRequest();
+
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.UpdateMovement);
+				request.Dispose();
+
+				callback(response);
 			}
-			else if (www.isDone)
-			{
-				while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
-				success = true;
-				response = www.downloadHandler.text;
-			}
-			www.Dispose();
 		}
-		callback(success, response);
-	}
 
-	public IEnumerator UpdateSession(SerializableSession session, Action<bool, string> callback)
-	{
-		string json = JsonUtility.ToJson(session);
-		string response = "Request could not be completed properly";
-		bool success = false;
-
-		using (UnityWebRequest www = UnityWebRequest.Put(WEB_URL + "/put/movement/" + session.id + "/" + session.movementlabel + "/" + session.insertiondate, json))
+		public IEnumerator DeleteMovement(Action<APIResponse> callback, string id)
 		{
-			www.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
-			www.uploadHandler.contentType = "application/json";
-			www.method = "PUT";
+			if (id == default(string)) throw new MissingAttributeException("movement id");
 
-			yield return www.SendWebRequest();
+			using (UnityWebRequest request = UnityWebRequest.Delete($"{WEB_URL}/movement/{id}"))
+			{
+				request.downloadHandler = new DownloadHandlerBuffer();
+				request.method = "DELETE";
+				yield return request.SendWebRequest();
 
-			if (www.isNetworkError || www.isHttpError)
-			{
-				success = false;
-				response = www.error;
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.DeleteMovement);
+				request.Dispose();
+
+				callback(response);
 			}
-			else if (www.isDone)
-			{
-				while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
-				success = true;
-				response = www.downloadHandler.text;
-			}
-			www.Dispose();
 		}
-		callback(success, response);
-	}
 
-	public IEnumerator DeleteAll(Action<bool, string> callback)
-	{
-		using (UnityWebRequest www = UnityWebRequest.Delete(WEB_URL + "/deleteall"))
+		public IEnumerator FetchSessions(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
+											int[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = "")
 		{
-			www.method = "DELETE";
-			yield return www.SendWebRequest();
+			int[] artList = articulations ?? new int[] { };
 
-			if (www.isNetworkError || www.isHttpError)
-			{
-				string errorString = www.error;
-				www.Dispose();
-				callback(false, errorString);
-			}
-			else if (www.isDone)
-			{
-				string response = www.downloadHandler.text;
-				www.Dispose();
-				callback(true, response);
-			}
+			string fullUrl = $"{WEB_URL}/session?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}";
+			if (legacy) fullUrl += $"&legacy = {legacy}";
+			if (per > 0) fullUrl += $"&per={per}";
+			if (previousId != "") fullUrl += $"&previous_id={previousId}";
+
+			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
+			request.method = "GET";
+			yield return request.SendWebRequest();
+
+			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FetchSessions);
+			request.Dispose();
+
+			callback(response);
 		}
-	}
 
-	public IEnumerator DeleteSession(string id, string movementlabel, string insertiondate, Action<bool, string> callback)
-	{
-		using (UnityWebRequest www = UnityWebRequest.Delete(WEB_URL + "/delete/movement/" + id + "/"+ movementlabel + "/" + insertiondate))
+		public IEnumerator FindSession(Action<APIResponse> callback, string id, bool legacy = false)
 		{
-			www.downloadHandler = new DownloadHandlerBuffer();
-			www.method = "DELETE";
-			yield return www.SendWebRequest();
+			if (id == default(string)) throw new MissingAttributeException("session id");
 
-			if (www.isNetworkError || www.isHttpError)
-			{
-				string errorString = www.error;
-				www.Dispose();
-				callback(false, errorString);
-			}
-			else if (www.isDone)
-			{
-				while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
-				string response = www.downloadHandler.text;
-				www.Dispose();
-				callback(true, response);
-			}
+			string fullUrl = $"{WEB_URL}/session/{id}";
+			if (legacy) fullUrl += $"?legacy = {legacy}";
+
+			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
+			request.method = "GET";
+			yield return request.SendWebRequest();
+
+			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FindSession);
+			request.Dispose();
+
+			callback(response);
 		}
-	}
 
-	public IEnumerator DeleteSession(SerializableSession session, Action<bool, string> callback)
-	{
-		using (UnityWebRequest www = UnityWebRequest.Delete(WEB_URL + "/delete/movement/" + session.id + "/"+ session.movementlabel + "/" + session.insertiondate))
+		public IEnumerator InsertSession(Action<APIResponse> callback, Session session)
 		{
-			www.downloadHandler = new DownloadHandlerBuffer();
-			www.method = "DELETE";
-			yield return www.SendWebRequest();
+			string json = session.ToJson();
 
-			if (www.isNetworkError || www.isHttpError)
+			using (UnityWebRequest request = UnityWebRequest.Post($"{WEB_URL}/session", json))
 			{
-				string errorString = www.error;
-				www.Dispose();
-				callback(false, errorString);
-			}
-			else if (www.isDone)
-			{
-				while (!www.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
-				string response = www.downloadHandler.text;
-				www.Dispose();
-				callback(true, response);
+				request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+				request.uploadHandler.contentType = "application/json";
+				request.method = "POST";
+
+				yield return request.SendWebRequest();
+
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.InsertSession);
+				request.Dispose();
+
+				callback(response);
 			}
 		}
-	}
 
-	public string GenerateNewSessionID()
-	{
-		char letter;
-		int shift;
-		StringBuilder str_build = new StringBuilder();
-		System.Random random = new System.Random();
-
-		for (int i = 0; i < 50; i++)
+		public IEnumerator UpdateSession(Action<APIResponse> callback, Session session)
 		{
-			double flt = random.NextDouble();
-			int r = random.Next(3);
+			if (session.id == default(string)) throw new MissingAttributeException("session id");
 
-			switch (r)
+			string json = session.ToJson(update: true);
+
+			using (UnityWebRequest request = UnityWebRequest.Put($"{WEB_URL}/session/{session.id}", json))
 			{
-				case 0: // Número
-					shift = Convert.ToInt32(Math.Floor(9 * flt));
-					letter = Convert.ToChar(shift + 48);
-					break;
+				request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+				request.uploadHandler.contentType = "application/json";
+				request.method = "PUT";
 
-				case 1: // Letra máiúscula
-					shift = Convert.ToInt32(Math.Floor(25 * flt));
-					letter = Convert.ToChar(shift + 65);
-					break;
+				yield return request.SendWebRequest();
 
-				default: // Letra minúscula
-					shift = Convert.ToInt32(Math.Floor(25 * flt));
-					letter = Convert.ToChar(shift + 97);
-					break;
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.UpdateSession);
+				request.Dispose();
+
+				callback(response);
 			}
-			str_build.Append(letter);
 		}
-		sessionId = GetHashString(str_build.ToString());
-		return sessionId;
-	}
 
-	private byte[] GetHash(string inputString)
-	{
-		using (HashAlgorithm algorithm = SHA256.Create())
-			return algorithm.ComputeHash(Encoding.UTF8.GetBytes(inputString));
-	}
+		public IEnumerator DeleteSession(Action<APIResponse> callback, string id)
+		{
+			if (id == default(string)) throw new MissingAttributeException("session id");
 
-	private string GetHashString(string inputString)
-	{
-		StringBuilder sb = new StringBuilder();
-		foreach (byte b in GetHash(inputString))
-			sb.Append(b.ToString("X2"));
+			using (UnityWebRequest request = UnityWebRequest.Delete($"{WEB_URL}/session/{id}"))
+			{
+				request.downloadHandler = new DownloadHandlerBuffer();
+				request.method = "DELETE";
+				yield return request.SendWebRequest();
 
-		return sb.ToString();
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.DeleteSession);
+				request.Dispose();
+
+				callback(response);
+			}
+		}
+
+		private bool IsHTTPError(UnityWebRequest request)
+		{
+			return request.result == UnityWebRequest.Result.ProtocolError;
+		}
+
+		private bool IsNetworkError(UnityWebRequest request)
+		{
+			return request.result == UnityWebRequest.Result.ConnectionError;
+		}
+
+		private APIResponse ParseAPIResponse(UnityWebRequest request, APIResponse.ResponseType responseType)
+		{
+			if (IsNetworkError(request) || IsHTTPError(request))
+			{
+				return NewAPIResponse(APIResponse.ResponseType.APIError, request.downloadHandler.text, request.responseCode);
+			}
+			if (!request.isDone)
+			{
+				return new APIResponse();
+			}
+
+			while (!request.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
+
+			return NewAPIResponse(responseType, request.downloadHandler.text, request.responseCode);
+		}
+
+		private APIResponse NewAPIResponse(APIResponse.ResponseType responseType, string response, long responseCode)
+		{
+			APIResponse responseObject;
+
+			try
+            {
+				responseObject = JsonUtility.FromJson<APIResponse>(response);
+				responseObject.responseType = responseType;
+            }
+			catch (ArgumentException)
+            {
+				responseObject = new APIResponse();
+				responseObject.responseType = APIResponse.ResponseType.APIError;
+				responseObject.HTMLError = response;
+			}
+
+			responseObject.code = responseCode;
+			return responseObject;
+		}
 	}
 }

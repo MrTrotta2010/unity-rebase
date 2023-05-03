@@ -1,111 +1,73 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public class Register
+namespace ReBase
 {
-	private Dictionary<int, Vector3> articulations;
-
-	public int GetCount()
+	[Serializable]
+	public class Register
 	{
-		return articulations.Count;
-	}
+		private Dictionary<string, Rotation> _articulations;
 
-	public Register()
-	{
-		articulations = new Dictionary<int, Vector3>();
-	}
+		public int articulationCount { get => _articulations.Count; }
+		public string[] articulations { get => _articulations.Keys.ToArray(); }
+		public bool isEmpty { get => _articulations.Count == 0; }
 
-	public Register(int[] articulationList)
-	{
-		articulations = new Dictionary<int, Vector3>();
-		SetArticulations(articulationList);
-	}
-
-	// Define quais articulações estarão no dicionário
-	public void SetArticulations(int[] articulationList)
-	{
-		for (int i = 0; i < articulationList.Length; i++)
+		public Register()
 		{
-			if (1 <= articulationList[i] && articulationList[i] <= 20)
+			_articulations = new Dictionary<string, Rotation>();
+		}
+
+		public Register(string[] articulationList)
+		{
+			_articulations = new Dictionary<string, Rotation>();
+			SetArticulations(articulationList);
+		}
+
+		public Register(Dictionary<string, Rotation> articulations)
+		{
+			this._articulations = articulations;
+		}
+
+		// Define quais articulações estarão no dicionário
+		public void SetArticulations(string[] articulationList)
+		{
+			foreach (string articulation in articulationList)
 			{
 				try
 				{
-					articulations.Add(articulationList[i], new Vector3());
+					_articulations.Add(articulation, null);
 				}
 				catch (ArgumentException)
 				{
-					throw new ArgumentException("Duplicate articulation in list");
+					throw new RepeatedArticulationException("Duplicate articulation in list", articulationList);
 				}
 			}
-			else
+		}
+
+		public void SetArticulationRotations(string articulation, Rotation rotations)
+		{
+			_articulations[articulation] = rotations;
+		}
+
+		public Rotation GetArticulationRotations(string articulation)
+		{
+			return _articulations[articulation];
+		}
+
+		override public string ToString()
+		{
+			string[] list = new string[_articulations.Count];
+			int i = 0;
+			foreach (KeyValuePair<string, Rotation> kvp in _articulations)
 			{
-				articulations.Clear();
-				throw new IndexOutOfRangeException("Articulations can't be smaller than 1 or greater than 20");
+				list[i] = Math.Round(kvp.Value.x, 2).ToString().Replace(',', '.') + "," +
+						Math.Round(kvp.Value.y, 2).ToString().Replace(',', '.') + "," +
+						Math.Round(kvp.Value.z, 2).ToString().Replace(',', '.');
+				i++;
 			}
+			return string.Join(";", list);
 		}
 	}
-
-	public void SetArticulationRotations(int articulation, Vector3 rotations)
-	{
-		if (articulations.ContainsKey(articulation))
-		{
-			articulations[articulation] = rotations;
-		}
-		else
-		{
-			throw new KeyNotFoundException();
-		}
-	}
-	
-	public Vector3 GetArticulationRotations(int articulation)
-	{
-		try
-		{
-			return articulations[articulation];
-		}
-		catch (KeyNotFoundException)
-		{
-			throw new KeyNotFoundException();
-		}
-	}
-
-	override public string ToString()
-	{
-		string[] list = new string[articulations.Count];
-		int i = 0;
-		foreach (KeyValuePair<int, Vector3> kvp in articulations)
-		{
-			list[i] = Math.Round(kvp.Value.x, 2).ToString().Replace(',', '.') + "," +
-					Math.Round(kvp.Value.y, 2).ToString().Replace(',', '.') + "," +
-					Math.Round(kvp.Value.z, 2).ToString().Replace(',', '.');
-			i++;
-		}
-		return string.Join(";", list);
-	}
-
-	public string GetArticulationIndexPattern()
-	{
-		string[] list = new string[articulations.Count];
-		int i = 0;
-		foreach (KeyValuePair<int, Vector3> kvp in articulations)
-		{
-			list[i] = ("a" + kvp.Key);
-			i++;
-		}
-		return string.Join(";", list);
-	}
-
-	public int[] GetArticulationList()
-    {
-		int[] articulationList = new int[articulations.Count];
-		int i = 0;
-		foreach (KeyValuePair<int, Vector3> kvp in articulations)
-        {
-			articulationList[i] = kvp.Key;
-			i++;
-        }
-		return articulationList;
-    }
 }
