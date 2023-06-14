@@ -32,6 +32,8 @@ namespace ReBase
 		public string deletedId;
 		public int deletedCount;
 
+		public bool success { get { return status == 0; } }
+
 		public override string ToString()
 		{
 			string str = $"{{ type: {responseType}, code: {code}, status: {status}";

@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 using System.Collections.Generic;
 using UnityEngine;
+using Newtonsoft.Json;
 
 namespace ReBase
 {
@@ -95,7 +96,7 @@ namespace ReBase
 
 		public Movement(string movementJson)
 		{
-			SerializableMovement auxMovement = JsonUtility.FromJson<SerializableMovement>(movementJson);
+			SerializableMovement auxMovement = JsonConvert.DeserializeObject<SerializableMovement>(movementJson);
 			ConvertSerializableMovement(auxMovement);
 		}
 
@@ -245,7 +246,7 @@ namespace ReBase
 
 		private List<Register> ArticulationDataToRegisterList(SerializableMovement.ArticulationData[] articulationData)
 		{
-			int length = articulationData?[0].data.Length ?? 0;
+			int length = articulationData?[0].data?.Length ?? 0;
 			List<Register> registerList = new List<Register>();
 
 			for (int j = 0; j < length; j++)
@@ -253,6 +254,8 @@ namespace ReBase
 				Register register = new Register(_articulations);
 				foreach (SerializableMovement.ArticulationData dataObject in articulationData)
 				{
+					if (dataObject.data.Length == 0) continue;
+
 					try
 					{
 						Rotation rotations = new Rotation(dataObject.data[j][0], dataObject.data[j][1], dataObject.data[j][2]);

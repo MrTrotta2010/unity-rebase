@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Globalization;
 using System.Collections.Generic;
-using UnityEngine;
+using Newtonsoft.Json;
 
 namespace ReBase
 {
@@ -51,6 +50,15 @@ namespace ReBase
 		public string medications { get => _medications; set => _medications = value; }
 		public string physicalEvaluation { get => _physicalEvaluation; set => _physicalEvaluation = value; }
 		public int numberOfMovements{ get => _numberOfMovements; set => _numberOfMovements = value; }
+		public float duration
+		{
+			get
+			{
+				float sum = 0f;
+				foreach (Movement movement in _movements) sum += movement.duration;
+				return sum;
+			}
+		}
 		public List<Movement> movements
 		{
 			get => _movements;
@@ -93,7 +101,7 @@ namespace ReBase
 
 		public Session(string sessionJson)
 		{
-			SerializableSession auxSession= JsonUtility.FromJson<SerializableSession>(sessionJson);
+			SerializableSession auxSession= JsonConvert.DeserializeObject<SerializableSession>(sessionJson);
 			ConvertSerializableSession(auxSession);
 		}
 

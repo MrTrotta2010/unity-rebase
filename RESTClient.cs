@@ -1,8 +1,10 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 using System;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace ReBase
 {
@@ -14,14 +16,9 @@ namespace ReBase
 		private string WEB_URL = "http://200.145.46.235:3030";
 
 		public IEnumerator FetchMovements(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
-											int[] articulations = null, int page = 0, int per = 0, string previousId = "")
+											string[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = "")
 		{
-			int[] artList = articulations ?? new int[] { };
-
-			string fullUrl = $"{WEB_URL}/movement?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}";
-			if (page > 0) fullUrl += $"&page={page}";
-			if (per > 0) fullUrl += $"&per={per}";
-			if (previousId != "") fullUrl += $"&previous_id={previousId}";
+			string fullUrl = FormatQueryParams($"{WEB_URL}/movement", professionalId, patientId, movementLabel, articulations, page, per, previousId, legacy);
 
 			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
 			request.method = "GET";
@@ -126,14 +123,9 @@ namespace ReBase
 		}
 
 		public IEnumerator FetchSessions(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
-											int[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = "")
+											string[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = "")
 		{
-			int[] artList = articulations ?? new int[] { };
-
-			string fullUrl = $"{WEB_URL}/session?professionalid={professionalId}&patientid={patientId}&movementLabel={movementLabel}&articulations={string.Join(",", artList)}";
-			if (legacy) fullUrl += $"&legacy = {legacy}";
-			if (per > 0) fullUrl += $"&per={per}";
-			if (previousId != "") fullUrl += $"&previous_id={previousId}";
+			string fullUrl = FormatQueryParams($"{WEB_URL}/session", professionalId, patientId, movementLabel, articulations, page, per, previousId, legacy);
 
 			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
 			request.method = "GET";
@@ -229,11 +221,42 @@ namespace ReBase
 			return request.result == UnityWebRequest.Result.ConnectionError;
 		}
 
+		private string FormatQueryParams(string baseUrl, string professionalId, string patientId, string movementLabel,
+								  string[] articulations, int page, int per, string previousId, bool legacy)
+		{
+			string fullUrl = baseUrl;
+			List<string> filters = new List<string>();
+
+			if (professionalId != "") filters.Add($"professionalid={professionalId}");
+			if (patientId != "") filters.Add($"patientid={patientId}");
+			if (movementLabel != "") filters.Add($"movementlabel={movementLabel}");
+			if (articulations != null && articulations.Length > 0)
+			{
+				bool valid = true;
+				foreach (string art in articulations)
+				{
+					if (art == "")
+					{
+						valid = false;
+						break;
+					}
+				}
+				if (valid) filters.Add($"articulations={string.Join(",", articulations)}");
+			}
+			if (page > 0) filters.Add($"page={page}");
+			if (per > 0) filters.Add($"per={per}");
+			if (previousId != "") filters.Add($"previous_id={previousId}");
+			if (legacy) filters.Add($"legacy=true");
+
+			if (filters.Count > 0) fullUrl += $"?{string.Join("&", filters)}";
+			return fullUrl;
+		}
+
 		private APIResponse ParseAPIResponse(UnityWebRequest request, APIResponse.ResponseType responseType)
 		{
 			if (IsNetworkError(request) || IsHTTPError(request))
 			{
-				return NewAPIResponse(APIResponse.ResponseType.APIError, request.downloadHandler.text, request.responseCode);
+				return NewAPIResponse(APIResponse.ResponseType.APIError, request.downloadHandler.text, request.responseCode, 1);
 			}
 			if (!request.isDone)
 			{
@@ -242,27 +265,39 @@ namespace ReBase
 
 			while (!request.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
 
-			return NewAPIResponse(responseType, request.downloadHandler.text, request.responseCode);
+			return NewAPIResponse(responseType, request.downloadHandler.text, request.responseCode, 0);
 		}
 
-		private APIResponse NewAPIResponse(APIResponse.ResponseType responseType, string response, long responseCode)
+		private APIResponse NewAPIResponse(APIResponse.ResponseType responseType, string response, long responseCode, int responseStatus)
 		{
 			APIResponse responseObject;
 
 			try
-            {
-				responseObject = JsonUtility.FromJson<APIResponse>(response);
+			{
+				responseObject = JsonConvert.DeserializeObject<APIResponse>(response);
+				if (responseObject == null) responseObject = NewAPIErrorResponse(response);
 				responseObject.responseType = responseType;
-            }
+			}
 			catch (ArgumentException)
+			{
+				responseObject = NewAPIErrorResponse(response);
+			}
+			catch (NullReferenceException)
             {
-				responseObject = new APIResponse();
-				responseObject.responseType = APIResponse.ResponseType.APIError;
-				responseObject.HTMLError = response;
+				responseObject = NewAPIErrorResponse(response);
 			}
 
 			responseObject.code = responseCode;
+			responseObject.status = responseStatus;
 			return responseObject;
+		}
+
+		private APIResponse NewAPIErrorResponse(string response)
+		{
+			APIResponse reponseObject = new APIResponse();
+			reponseObject.responseType = APIResponse.ResponseType.APIError;
+			reponseObject.HTMLError = response;
+			return reponseObject;
 		}
 	}
 }

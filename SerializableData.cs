@@ -15,11 +15,21 @@ namespace ReBase
 		public class ArticulationData
 		{
 			public string articulation;
-			public DataFrame[] data;
+			public float[][] data;
+
+			private string JoinData()
+			{
+				string[] str = new string[data.Length];
+				for (int i = 0; i < data.Length; i++)
+				{
+					str[i] = $"[{string.Join(", ", data[i])}]";
+				}
+				return string.Join(", ", str);
+			}
 
 			public override string ToString()
 			{
-				return $"{{ articulation: {articulation}, data: [{(data != null ? string.Join<DataFrame>(", ", data) : "")}] }}";
+				return $"{{ articulation: {articulation}, data: [{(data != null ? JoinData() : "")}] }}";
 			}
 		}
 		[Serializable]
@@ -27,11 +37,11 @@ namespace ReBase
 		{
 			public float[] data;
 
-			public float this[int i]
-			{
-				get { return data[i]; }
-				set { data[i] = value; }
-			}
+			//public float this[int i]
+			//{
+			//	get { return data[i]; }
+			//	set { data[i] = value; }
+			//}
 
 			public override string ToString()
 			{
@@ -92,6 +102,7 @@ namespace ReBase
 		public string professionalId;
 		public int patientSessionNumber;
 		public int numberOfMovements;
+		public float duration;
 		public string insertionDate;
 		public string updateDate;
 

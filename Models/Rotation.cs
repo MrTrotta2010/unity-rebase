@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace ReBase
@@ -22,5 +20,10 @@ namespace ReBase
             this.x = x;
             this.y = y;
         }
+
+        public Vector3 ToVector3()
+		{
+            return new Vector3((float)x, (float)y, (float)z);
+		}
     }
 }
