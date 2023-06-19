@@ -246,7 +246,7 @@ namespace ReBase
 
 		private List<Register> ArticulationDataToRegisterList(SerializableMovement.ArticulationData[] articulationData)
 		{
-			int length = articulationData?[0].data?.Length ?? 0;
+			int length = articulationData?.Length > 0 ? (articulationData[0].data?.Length ?? 0) : 0;
 			List<Register> registerList = new List<Register>();
 
 			for (int j = 0; j < length; j++)
