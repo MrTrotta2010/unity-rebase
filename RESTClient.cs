@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using System;
-using System.Threading.Tasks;
-using System.Net.Http;
 using System.Text;
 using Newtonsoft.Json;
 
@@ -15,97 +15,216 @@ namespace ReBase
 
 		private string WEB_URL = "http://200.145.46.235:3030";
 
-		static readonly HttpClient client = new HttpClient();
-
-		private enum Resource { Movement = 0, Session = 1 }
-
-		private enum Method { GET = 0, POST = 1, PUT = 2, DELETE = 3 }
-
-		public async Task<APIResponse> FetchMovements(string professionalId = "", string patientId = "", string movementLabel = "",
-													  string[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = "")
-		{
-			return await SendRequest(Method.GET, Resource.Movement, APIResponse.ResponseType.FetchMovements,
-									 query: FormatQueryParams(professionalId, patientId, movementLabel, articulations, page, per, previousId, legacy));
-		}
-
-		public async Task<APIResponse> FindMovement(string id, bool legacy = false)
-		{
-			if (id == default) throw new MissingAttributeException("movement id");
-
-			return await SendRequest(Method.GET, Resource.Movement, APIResponse.ResponseType.FindMovement,
-									 id, FormatQueryParams(legacy: legacy));
-		}
-
-		public async Task<APIResponse> InsertMovement(Movement movement)
-		{
-			return await SendRequest(Method.POST, Resource.Movement, APIResponse.ResponseType.InsertMovement,
-									 body: movement.ToJson());
-		}
-
-		public async Task<APIResponse> UpdateMovement(string id, Movement movement)
-		{
-			if (id == default) throw new MissingAttributeException("movement id");
-
-			return await SendRequest(Method.PUT, Resource.Movement, APIResponse.ResponseType.UpdateMovement,
-									 id, body: movement.ToJson(true));
-		}
-
-		public async Task<APIResponse> UpdateMovement(Movement movement)
-		{
-			if (movement.id == default) throw new MissingAttributeException("movement id");
-
-			return await SendRequest(Method.PUT, Resource.Movement, APIResponse.ResponseType.UpdateMovement,
-									 movement.id, body: movement.ToJson(true));
-		}
-
-		public async Task<APIResponse> DeleteMovement(string id)
-		{
-			if (id == default) throw new MissingAttributeException("movement id");
-
-			return await SendRequest(Method.DELETE, Resource.Movement, APIResponse.ResponseType.DeleteMovement, id);
-		}
-
-		public async Task<APIResponse> FetchSessions(string professionalId = "", string patientId = "", string movementLabel = "",
+		public IEnumerator FetchMovements(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
 											string[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = "")
 		{
-			return await SendRequest(Method.GET, Resource.Session, APIResponse.ResponseType.FetchSessions,
-									 query: FormatQueryParams(professionalId, patientId, movementLabel, articulations, page, per, previousId, legacy));
+			string fullUrl = FormatQueryParams($"{WEB_URL}/movement", professionalId, patientId, movementLabel, articulations, page, per, previousId, legacy);
+
+			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
+			request.method = "GET";
+			yield return request.SendWebRequest();
+
+			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FetchMovements);
+			request.Dispose();
+
+			callback(response);
 		}
 
-		public async Task<APIResponse> FindSession(string id, bool legacy = false)
+		public IEnumerator FindMovement(Action<APIResponse> callback, string id)
 		{
-			if (id == default) throw new MissingAttributeException("session id");
+			if (id == default(string)) throw new MissingAttributeException("movement id");
 
-			return await SendRequest(Method.GET, Resource.Session, APIResponse.ResponseType.FindSession,
-									 id, FormatQueryParams(legacy: legacy));
+			UnityWebRequest request = UnityWebRequest.Get($"{WEB_URL}/movement/{id}");
+			request.method = "GET";
+			yield return request.SendWebRequest();
+
+			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FindMovement);
+			request.Dispose();
+
+			callback(response);
 		}
 
-		public async Task<APIResponse> InsertSession(Session session)
+		public IEnumerator InsertMovement(Action<APIResponse> callback, Movement movement)
 		{
-			return await SendRequest(Method.POST, Resource.Session, APIResponse.ResponseType.InsertSession,
-									 body: session.ToJson());
+			string json = movement.ToJson();
+
+			using (UnityWebRequest request = UnityWebRequest.Post($"{WEB_URL}/movement", json))
+			{
+				request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+				request.uploadHandler.contentType = "application/json";
+				request.method = "POST";
+
+				yield return request.SendWebRequest();
+
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.InsertMovement);
+				request.Dispose();
+
+				callback(response);
+			}
 		}
 
-		public async Task<APIResponse> UpdateSession(Session session)
+		public IEnumerator UpdateMovement(Action<APIResponse> callback, string id, Movement movement)
 		{
-			if (session.id == default) throw new MissingAttributeException("session id");
+			if (id == default(string)) throw new MissingAttributeException("movement id");
 
-			return await SendRequest(Method.PUT, Resource.Session, APIResponse.ResponseType.UpdateSession,
-									 session.id, body: session.ToJson(true));
+			string json = movement.ToJson(update: true);
+
+			using (UnityWebRequest request = UnityWebRequest.Put($"{WEB_URL}/movement/{id}", json))
+			{
+				request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+				request.uploadHandler.contentType = "application/json";
+				request.method = "PUT";
+
+				yield return request.SendWebRequest();
+
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.UpdateMovement);
+				request.Dispose();
+
+				callback(response);
+			}
 		}
 
-		public async Task<APIResponse> DeleteSession(string id)
+		public IEnumerator UpdateMovement(Action<APIResponse> callback, Movement movement)
 		{
-			if (id == default) throw new MissingAttributeException("session id");
+			if (movement.id == default(string)) throw new MissingAttributeException("movement id");
 
-			return await SendRequest(Method.DELETE, Resource.Session, APIResponse.ResponseType.DeleteSession, id);
+			string json = movement.ToJson(update: true);
+
+			using (UnityWebRequest request = UnityWebRequest.Put($"{WEB_URL}/movement/{movement.id}", json))
+			{
+				request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+				request.uploadHandler.contentType = "application/json";
+				request.method = "PUT";
+
+				yield return request.SendWebRequest();
+
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.UpdateMovement);
+				request.Dispose();
+
+				callback(response);
+			}
 		}
 
-		private string FormatQueryParams(string professionalId = "", string patientId = "", string movementLabel = "",
-										 string[] articulations = null, int page = -1, int per = -1, string previousId = "",
-										 bool legacy = false)
+		public IEnumerator DeleteMovement(Action<APIResponse> callback, string id)
 		{
-			string query = "";
+			if (id == default(string)) throw new MissingAttributeException("movement id");
+
+			using (UnityWebRequest request = UnityWebRequest.Delete($"{WEB_URL}/movement/{id}"))
+			{
+				request.downloadHandler = new DownloadHandlerBuffer();
+				request.method = "DELETE";
+				yield return request.SendWebRequest();
+
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.DeleteMovement);
+				request.Dispose();
+
+				callback(response);
+			}
+		}
+
+		public IEnumerator FetchSessions(Action<APIResponse> callback, string professionalId = "", string patientId = "", string movementLabel = "",
+											string[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = "")
+		{
+			string fullUrl = FormatQueryParams($"{WEB_URL}/session", professionalId, patientId, movementLabel, articulations, page, per, previousId, legacy);
+
+			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
+			request.method = "GET";
+			yield return request.SendWebRequest();
+
+			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FetchSessions);
+			request.Dispose();
+
+			callback(response);
+		}
+
+		public IEnumerator FindSession(Action<APIResponse> callback, string id, bool legacy = false)
+		{
+			if (id == default(string)) throw new MissingAttributeException("session id");
+
+			string fullUrl = $"{WEB_URL}/session/{id}";
+			if (legacy) fullUrl += $"?legacy = {legacy}";
+
+			UnityWebRequest request = UnityWebRequest.Get(fullUrl);
+			request.method = "GET";
+			yield return request.SendWebRequest();
+
+			APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.FindSession);
+			request.Dispose();
+
+			callback(response);
+		}
+
+		public IEnumerator InsertSession(Action<APIResponse> callback, Session session)
+		{
+			string json = session.ToJson();
+
+			using (UnityWebRequest request = UnityWebRequest.Post($"{WEB_URL}/session", json))
+			{
+				request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+				request.uploadHandler.contentType = "application/json";
+				request.method = "POST";
+
+				yield return request.SendWebRequest();
+
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.InsertSession);
+				request.Dispose();
+
+				callback(response);
+			}
+		}
+
+		public IEnumerator UpdateSession(Action<APIResponse> callback, Session session)
+		{
+			if (session.id == default(string)) throw new MissingAttributeException("session id");
+
+			string json = session.ToJson(update: true);
+
+			using (UnityWebRequest request = UnityWebRequest.Put($"{WEB_URL}/session/{session.id}", json))
+			{
+				request.uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json));
+				request.uploadHandler.contentType = "application/json";
+				request.method = "PUT";
+
+				yield return request.SendWebRequest();
+
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.UpdateSession);
+				request.Dispose();
+
+				callback(response);
+			}
+		}
+
+		public IEnumerator DeleteSession(Action<APIResponse> callback, string id)
+		{
+			if (id == default(string)) throw new MissingAttributeException("session id");
+
+			using (UnityWebRequest request = UnityWebRequest.Delete($"{WEB_URL}/session/{id}"))
+			{
+				request.downloadHandler = new DownloadHandlerBuffer();
+				request.method = "DELETE";
+				yield return request.SendWebRequest();
+
+				APIResponse response = ParseAPIResponse(request, APIResponse.ResponseType.DeleteSession);
+				request.Dispose();
+
+				callback(response);
+			}
+		}
+
+		private bool IsHTTPError(UnityWebRequest request)
+		{
+			return request.result == UnityWebRequest.Result.ProtocolError;
+		}
+
+		private bool IsNetworkError(UnityWebRequest request)
+		{
+			return request.result == UnityWebRequest.Result.ConnectionError;
+		}
+
+		private string FormatQueryParams(string baseUrl, string professionalId, string patientId, string movementLabel,
+								  string[] articulations, int page, int per, string previousId, bool legacy)
+		{
+			string fullUrl = baseUrl;
 			List<string> filters = new List<string>();
 
 			if (professionalId != "") filters.Add($"professionalid={professionalId}");
@@ -129,57 +248,28 @@ namespace ReBase
 			if (previousId != "") filters.Add($"previous_id={previousId}");
 			if (legacy) filters.Add($"legacy=true");
 
-			if (filters.Count > 0) query += $"?{string.Join("&", filters)}";
-			return query;
+			if (filters.Count > 0) fullUrl += $"?{string.Join("&", filters)}";
+			return fullUrl;
 		}
 
-		private async Task<APIResponse> SendRequest(Method method, Resource resource, APIResponse.ResponseType responseType, string resourceId = null, string query = "", string body = "")
+		private APIResponse ParseAPIResponse(UnityWebRequest request, APIResponse.ResponseType responseType)
 		{
-			string url = resource == Resource.Movement ? $"{WEB_URL}/movement" : $"{WEB_URL}/session";
-			if (resourceId != null) url += $"/{resourceId}";
-			url += query;
-
-			HttpResponseMessage httpResponse = null;
-
-			try
+			if (IsNetworkError(request) || IsHTTPError(request))
 			{
-				switch (method)
-				{
-					case Method.GET:
-						httpResponse = await client.GetAsync(url);
-						break;
-					case Method.POST:
-						httpResponse = await client.PostAsync(url, new StringContent(body, Encoding.UTF8, "application/json"));
-						break;
-					case Method.PUT:
-						httpResponse = await client.PutAsync(url, new StringContent(body, Encoding.UTF8, "application/json"));
-						break;
-					case Method.DELETE:
-						httpResponse = await client.DeleteAsync(url);
-						break;
-				}
+				return NewAPIResponse(APIResponse.ResponseType.APIError, request.downloadHandler.text, request.responseCode, 1);
 			}
-			catch (HttpRequestException e)
+			if (!request.isDone)
 			{
-				return NewAPIErrorResponse(e.Message);
+				return new APIResponse();
 			}
 
-			return await ParseAPIResponse(httpResponse, responseType);
-		}
+			while (!request.downloadHandler.isDone) { } // Aguarda caso o download handler não tenha completado os processamentos
 
-		private async Task<APIResponse> ParseAPIResponse(HttpResponseMessage response, APIResponse.ResponseType responseType)
-		{
-			if (!response.IsSuccessStatusCode)
-			{
-				return NewAPIResponse(APIResponse.ResponseType.APIError, await response.Content.ReadAsStringAsync(), (int)response.StatusCode, 1);
-			}
-
-			return NewAPIResponse(responseType, await response.Content.ReadAsStringAsync(), (int)response.StatusCode, 0);
+			return NewAPIResponse(responseType, request.downloadHandler.text, request.responseCode, 0);
 		}
 
 		private APIResponse NewAPIResponse(APIResponse.ResponseType responseType, string response, long responseCode, int responseStatus)
 		{
-			Debug.Log(response);
 			APIResponse responseObject;
 
 			try
