@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using ReBase;
@@ -11,7 +10,7 @@ public class SessionExample : MonoBehaviour
     private string patientId = "007";
     private string firstSessionId = "";
 
-    public void RunSessionExample()
+    public async void RunSessionExample()
     {
         Application.targetFrameRate = 30;
         insertedCount = 0;
@@ -24,133 +23,118 @@ public class SessionExample : MonoBehaviour
             patientId: patientId
         );
 
-        StartCoroutine(RESTClient.Instance.InsertSession(OnInserted, session));
-    }
-
-    public void OnInserted(APIResponse response)
-    {
+        // Insert Session
+        APIResponse response;
+        response = await RESTClient.Instance.InsertSession(session);
+        firstSessionId = response.session?.id;
         Debug.Log($"Inserted: {response}");
-        insertedCount++;
 
-        if (insertedCount >= 2)
+        // Insert Movements into Session
+        for (insertedCount = 0; insertedCount < 2; insertedCount++)
         {
-            StartCoroutine(RESTClient.Instance.FetchSessions(OnFetch, professionalId: professionalId, patientId: patientId));
-            return;
-        }
+            Movement movement = new Movement(
+                description: "Eu sou um movimento da primeira Sessão",
+                sessionId: firstSessionId,
+                label: "NewAPITest",
+                fps: Application.targetFrameRate,
+                professionalId: professionalId,
+                patientId: patientId,
+                articulations: new string[] { "1", "2" }
+            );
 
-        firstSessionId = response.session.id;
+            movement.AddRegister(new Register(
+                new Dictionary<string, Rotation>()
+                {
+                    {  "1", new Rotation(1f, 1f, 1f) },
+                    {  "2", new Rotation(2f, 2f, 2f) }
+                }
+            ));
 
-        Movement movement = new Movement(
-            description: "Eu sou um movimento da primeira Sessão",
-            sessionId: firstSessionId,
-            label: "NewAPITest",
-            fps: Application.targetFrameRate,
-            professionalId: professionalId,
-            patientId: patientId,
-            articulations: new string[] { "1", "2" }
-        );
+            response = await RESTClient.Instance.InsertMovement(movement);
+			Debug.Log($"Inserted: {response}");
+		}
 
-        movement.AddRegister(new Register(
-            new Dictionary<string, Rotation>()
-            {
-                {  "1", new Rotation(1f, 1f, 1f) },
-                {  "2", new Rotation(2f, 2f, 2f) }
-            }
-        ));
+        // List Sessions
+        response = await RESTClient.Instance.FetchSessions(professionalId: professionalId, patientId: patientId);
+		Debug.Log($"Downloaded: {response}");
 
-        StartCoroutine(RESTClient.Instance.InsertMovement(OnInserted, movement));
-    }
-
-    public void OnFetch(APIResponse response)
-    {
-        Debug.Log($"Downloaded: {response}");
-
-        foreach (SerializableSession serializableSession in response.sessions)
+        // Find previously inserted Session
+		foreach (SerializableSession serializableSession in response.sessions)
 		{
-            if (serializableSession.id == firstSessionId)
+			if (serializableSession.id == firstSessionId)
 			{
-                session = new Session(serializableSession);
-                break;
-            }
+				session = new Session(serializableSession);
+				break;
+			}
 		}
 
-        if (session.id != default(string))
+		// Update Session
+		if (session.id == default) response = null;
+		else
 		{
-            session.title = "Atualizando a Sessão";
-            StartCoroutine(RESTClient.Instance.UpdateSession(OnUpdated, session));
+			session.title = "Atualizando a Sessão";
+			response = await RESTClient.Instance.UpdateSession(session);
 		}
-        else
+		Debug.Log($"Updated: {response}");
+
+        // Delete Session
+		string id = response.session.id ?? session.id;
+        response = await RESTClient.Instance.DeleteSession(id);
+		Debug.Log($"Deleted: {response}");
+
+        // Insert Session with Movements
+		session = new Session(
+			title: "Teste de Sessão 2",
+			description: "Todos os movimentos da Sessão serão inseridos de uma vez",
+			professionalId: professionalId,
+			patientId: patientId,
+			movements: new Movement[2]
+			{
+				new Movement(
+					label: "firstMovement",
+					fps: Application.targetFrameRate,
+					articulations: new string[] { "1", "2" },
+					articulationData: new Register[1] {
+						new Register(
+							new Dictionary<string, Rotation>()
+							{
+								{ "1", new Rotation(1f, 1f, 1f) },
+								{ "2", new Rotation(2f, 2f, 2f) }
+							}
+						)
+					}
+				),
+				new Movement(
+					label: "secondMovement",
+					fps: Application.targetFrameRate,
+					articulations: new string[] { "1", "2" },
+					articulationData: new Register[1] {
+						new Register(
+							new Dictionary<string, Rotation>()
+							{
+								{ "1", new Rotation(1f, 1f, 1f) },
+								{ "2", new Rotation(2f, 2f, 2f) }
+							}
+						)
+					}
+				)
+			}
+		);
+
+		response = await RESTClient.Instance.InsertSession(session);
+
+		if (response.session == null) Debug.Log("Couldn't insert Session");
+		else
 		{
-            OnUpdated(null);
+			Debug.Log($"Inserted: {response}");
+
+			// Find Session
+			response = await RESTClient.Instance.FindSession(response.session.id);
+			Debug.Log($"Found: {response}");
+
+			// Delete Session
+			response = await RESTClient.Instance.DeleteSession(response.session.id);
+			Debug.Log($"Deleted: {response}");
 		}
-    }
-
-    public void OnUpdated(APIResponse response)
-    {
-        Debug.Log($"Updated: {response}");
-        string id = response.session.id ?? session.id;
-        StartCoroutine(RESTClient.Instance.DeleteSession(OnDeleted, id));
-    }
-
-    public void OnDeleted(APIResponse response)
-    {
-        Debug.Log($"Deleted: {response}");
-
-        session = new Session(
-            title: "Teste de Sessão 2",
-            description: "Todos os movimentos da Sessão serão inseridos de uma vez",
-            professionalId: professionalId,
-            patientId: patientId,
-            movements: new Movement[2]
-            {
-                new Movement(
-                    label: "firstMovement",
-                    fps: Application.targetFrameRate,
-                    articulations: new string[] { "1", "2" },
-                    articulationData: new Register[1] {
-                        new Register(
-                            new Dictionary<string, Rotation>()
-                            {
-                                { "1", new Rotation(1f, 1f, 1f) },
-                                { "2", new Rotation(2f, 2f, 2f) }
-                            }
-                        )
-                    }
-                ),
-                new Movement(
-                    label: "secondMovement",
-                    fps: Application.targetFrameRate,
-                    articulations: new string[] { "1", "2" },
-                    articulationData: new Register[1] {
-                        new Register(
-                            new Dictionary<string, Rotation>()
-                            {
-                                { "1", new Rotation(1f, 1f, 1f) },
-                                { "2", new Rotation(2f, 2f, 2f) }
-                            }
-                        )
-                    }
-                )
-            }
-        );
-
-        StartCoroutine(RESTClient.Instance.InsertSession(OnBulkInsert, session));
-    }
-
-    public void OnBulkInsert(APIResponse response)
-	{
-        Debug.Log($"Inserted: {response}");
-        StartCoroutine(RESTClient.Instance.FindSession(OnFind, response.session.id));
-    }
-
-    public void OnFind(APIResponse response)
-    {
-        Debug.Log($"Found: {response}");
-        StartCoroutine(RESTClient.Instance.DeleteSession(End, response.session.id));
-    }
-
-    public void End(APIResponse response)
-    {
-        Debug.Log($"Deleted: {response}");
-    }
+	}
 }

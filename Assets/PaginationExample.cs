@@ -16,36 +16,38 @@ public class PaginationExample : MonoBehaviour
         RunMovementPagination();
     }
 
-    void RunMovementPagination()
-	{
+    async void RunMovementPagination()
+    {
         Debug.Log("Movement pagination!");
         Debug.Log("Pagination with 'page' and 'per'");
-        StartCoroutine(RESTClient.Instance.FetchMovements(OnFetchMovements, professionalId: "MrTrotta2010", page: currentPage, per: 2));
+        APIResponse response = await RESTClient.Instance.FetchMovements(professionalId: "MrTrotta2010", page: currentPage, per: 2);
+        OnFetchMovements(response);
     }
 
-    void RunSessionsPagination()
-	{
+    async void RunSessionsPagination()
+    {
         currentPage = 1;
         useIdBasePagination = false;
         Debug.Log("Session pagination!");
         Debug.Log("Pagination with 'page' and 'per'");
-        StartCoroutine(RESTClient.Instance.FetchSessions(OnFetchSessions, professionalId: "MrTrotta2010", page: currentPage, per: 2));
-    }
+		APIResponse response = await RESTClient.Instance.FetchSessions(professionalId: "MrTrotta2010", page: currentPage, per: 2);
+        OnFetchSessions(response);
+	}
 
-    void OnFetchMovements(APIResponse response)
-	{
+    async void OnFetchMovements(APIResponse response)
+    {
         bool foundAnything = response.movements != null;
 
         Debug.Log($"Page {currentPage}: {(foundAnything ? response.movements.Length.ToString() : "no")} movements");
 
         if (useIdBasePagination)
-		{
+        {
             if (currentPage < 2 && foundAnything)
-			{
+            {
                 string previousId = response.movements[response.movements.Length - 1].id;
                 Debug.Log($"The last ID in the list is {previousId}");
                 currentPage++;
-                StartCoroutine(RESTClient.Instance.FetchMovements(OnFetchMovements, professionalId: "MrTrotta2010", previousId: previousId, per: 2));
+				OnFetchMovements(await RESTClient.Instance.FetchMovements(professionalId: "MrTrotta2010", previousId: previousId, per: 2));
             }
             else
             {
@@ -54,23 +56,23 @@ public class PaginationExample : MonoBehaviour
             }
         }
         else
-		{
+        {
             if (currentPage < 2)
             {
                 currentPage++;
-                StartCoroutine(RESTClient.Instance.FetchMovements(OnFetchMovements, professionalId: "MrTrotta2010", page: currentPage, per: 2));
+				OnFetchMovements(await RESTClient.Instance.FetchMovements(professionalId: "MrTrotta2010", page: currentPage, per: 2));
             }
             else
             {
                 currentPage = 1;
                 useIdBasePagination = true;
                 Debug.Log("ID-based pagination");
-                StartCoroutine(RESTClient.Instance.FetchMovements(OnFetchMovements, professionalId: "MrTrotta2010", per: 2));
+                OnFetchMovements(await RESTClient.Instance.FetchMovements(professionalId: "MrTrotta2010", per: 2));
             }
         }
-	}
+    }
 
-    void OnFetchSessions(APIResponse response)
+    async void OnFetchSessions(APIResponse response)
     {
         bool foundAnything = response.sessions != null;
 
@@ -83,21 +85,21 @@ public class PaginationExample : MonoBehaviour
             currentPage++;
             string previousId = response.sessions[response.sessions.Length - 1].id;
             Debug.Log($"The last ID in the list is {previousId}");
-            StartCoroutine(RESTClient.Instance.FetchSessions(OnFetchSessions, professionalId: "MrTrotta2010", previousId: previousId, per: 2));
+			OnFetchSessions(await RESTClient.Instance.FetchSessions(professionalId: "MrTrotta2010", previousId: previousId, per: 2));
         }
         else
         {
             if (currentPage < 2)
             {
                 currentPage++;
-                StartCoroutine(RESTClient.Instance.FetchSessions(OnFetchSessions, professionalId: "MrTrotta2010", page: currentPage, per: 2));
+                OnFetchSessions(await RESTClient.Instance.FetchSessions(professionalId: "MrTrotta2010", page: currentPage, per: 2));
             }
             else
             {
                 currentPage = 1;
                 useIdBasePagination = true;
                 Debug.Log("ID-based pagination");
-                StartCoroutine(RESTClient.Instance.FetchSessions(OnFetchSessions, professionalId: "MrTrotta2010", per: 2));
+                OnFetchSessions(await RESTClient.Instance.FetchSessions(professionalId: "MrTrotta2010", per: 2));
             }
         }
     }
