@@ -1,19 +1,20 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using System;
-using System.Threading.Tasks;
-using System.Net.Http;
+﻿using System;
 using System.Text;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Diagnostics;
+using UnityEngine;
 
 namespace ReBase
 {
-	public class RESTClient
+	public partial class RESTClient
 	{
 		private static readonly RESTClient instance = new RESTClient();
 		public static RESTClient Instance { get { return instance; } }
 
-		private string WEB_URL = "http://200.145.46.235:3030";
+		private string WEB_URL = "http://http://200.145.46.235:3030";
 
 		static readonly HttpClient client = new HttpClient();
 
@@ -94,16 +95,17 @@ namespace ReBase
 									 session.id, body: session.ToJson(true));
 		}
 
-		public async Task<APIResponse> DeleteSession(string id)
+		public async Task<APIResponse> DeleteSession(string id, bool deep = false)
 		{
 			if (id == default) throw new MissingAttributeException("session id");
 
-			return await SendRequest(Method.DELETE, Resource.Session, APIResponse.ResponseType.DeleteSession, id);
+			return await SendRequest(Method.DELETE, Resource.Session, APIResponse.ResponseType.DeleteSession,
+									 id, FormatQueryParams(deep: deep));
 		}
 
 		private string FormatQueryParams(string professionalId = "", string patientId = "", string movementLabel = "",
 										 string[] articulations = null, int page = -1, int per = -1, string previousId = "",
-										 bool legacy = false)
+										 bool legacy = false, bool deep = false)
 		{
 			string query = "";
 			List<string> filters = new List<string>();
@@ -128,6 +130,7 @@ namespace ReBase
 			if (per > 0) filters.Add($"per={per}");
 			if (previousId != "") filters.Add($"previous_id={previousId}");
 			if (legacy) filters.Add($"legacy=true");
+			if (deep) filters.Add($"deep=true");
 
 			if (filters.Count > 0) query += $"?{string.Join("&", filters)}";
 			return query;
@@ -179,7 +182,6 @@ namespace ReBase
 
 		private APIResponse NewAPIResponse(APIResponse.ResponseType responseType, string response, long responseCode, int responseStatus)
 		{
-			Debug.Log(response);
 			APIResponse responseObject;
 
 			try
