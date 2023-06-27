@@ -118,4 +118,23 @@ namespace ReBase
 			return $"{{\n\tid: \"{_id}\",\n\ttitle: \"{title}\",\n\tdescription: {description},\n\tnumberOfMovements: {numberOfMovements},\n\tmovements: [{(movements == null ? "" : $"\n\t\t{string.Join<SerializableMovement>(",\n\t\t\t\t", movements)}\n\t\t")}\n\t\t]\n}}";
 		}
 	}
+
+	[Serializable]
+	public class MetaData
+	{
+		public int current_page;
+		public int next_page;
+		public int total_count;
+		public int total_page_count;
+
+		public int currentPage { get => current_page; }
+		public int nextPage { get => next_page; }
+		public int totalCount { get => total_count; }
+		public int totalPageCount { get => total_page_count; }
+
+		public override string ToString()
+		{
+			return $"{{ currentPage: {current_page}, nextPage: {next_page}, totalCount: {total_count}, totalPageCount: {total_page_count} }}";
+		}
+	}
 }
