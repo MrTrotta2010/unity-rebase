@@ -101,7 +101,7 @@ namespace ReBase
 
 		public Session(string sessionJson)
 		{
-			SerializableSession auxSession= JsonConvert.DeserializeObject<SerializableSession>(sessionJson);
+			SerializableSession auxSession = Serializer.Deserialize<SerializableSession>(sessionJson);
 			ConvertSerializableSession(auxSession);
 		}
 

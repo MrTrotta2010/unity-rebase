@@ -4,8 +4,6 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Newtonsoft.Json;
-using System.Diagnostics;
-using UnityEngine;
 
 namespace ReBase
 {
@@ -16,7 +14,7 @@ namespace ReBase
 
 		private string WEB_URL = "http://http://200.145.46.235:3030";
 
-		static readonly HttpClient client = new HttpClient();
+		private static readonly HttpClient client = new HttpClient();
 
 		private enum Resource { Movement = 0, Session = 1 }
 
@@ -186,7 +184,7 @@ namespace ReBase
 
 			try
 			{
-				responseObject = JsonConvert.DeserializeObject<APIResponse>(response);
+				responseObject = Serializer.Deserialize<APIResponse>(response);
 				if (responseObject == null) responseObject = NewAPIErrorResponse(response);
 				responseObject.responseType = responseType;
 			}

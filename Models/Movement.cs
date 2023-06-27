@@ -96,7 +96,7 @@ namespace ReBase
 
 		public Movement(string movementJson)
 		{
-			SerializableMovement auxMovement = JsonConvert.DeserializeObject<SerializableMovement>(movementJson);
+			SerializableMovement auxMovement = Serializer.Deserialize<SerializableMovement>(movementJson);
 			ConvertSerializableMovement(auxMovement);
 		}
 
