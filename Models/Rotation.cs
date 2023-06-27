@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace ReBase
 {
-    public class Rotation : MonoBehaviour
+    public class Rotation
     {
         public double x;
         public double y;
