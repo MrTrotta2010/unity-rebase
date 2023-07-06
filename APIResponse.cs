@@ -71,7 +71,11 @@ namespace ReBase
 					if (HTMLError != null) str += $", HTMLError: \"{HTMLError}\"";
 					break;
 			}
-			return str + " }";
+
+			if (meta != null)
+				str += $",\n{meta}";
+
+			return str + " }"; ;
 		}
 	}
 }
