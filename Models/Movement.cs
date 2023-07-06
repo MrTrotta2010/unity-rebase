@@ -1,8 +1,6 @@
 using System;
 using System.Globalization;
 using System.Collections.Generic;
-using UnityEngine;
-using Newtonsoft.Json;
 
 namespace ReBase
 {
