@@ -1,0 +1,21 @@
+{
+  "name": "com.ufsj.unity-rebase",
+  "version": "2.0.0",
+  "displayName": "Unity ReBase",
+  "description": "Allows integration with the ReBase ecosystem",
+  "unity": "2022.3",
+  "dependencies": {
+    "com.unity.nuget.newtonsoft-json": "3.0"
+  },
+  "author": {
+    "name": "Tiago Trotta - Federal University of São João Del-Rei (UFSJ)",
+    "email": "mrtrotta2010@gmail.com"
+  },
+  "samples": [
+    {
+        "displayName": "Usage Example",
+        "description": "Contains an example scene that illustrates how the Unity ReBase API can be used",
+        "path": "Samples~/UsageExample"
+    }
+  ]
+}
