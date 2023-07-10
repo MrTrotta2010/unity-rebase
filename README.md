@@ -1,6 +1,13 @@
 # Unity ReBase
 Este projeto é uma API REST escrita em C# para uso no Unity, para comunicação com o ReBase, um banco de dados um banco de dados Apache Cassandra de sessões de reabilitação física.
 
+## Instalação:
+1. Baixe o arquivo .zip;
+2. Dentro do editor do Unity, acesse o gerenciador de pacotes clicando na aba `Window > Package Manager`;
+3. Clique no botão de adicionar (`+`) e selecione `Add package from disk`;
+4. Carrege a pasta compactada baixada.
+
+## Documentação:
 Sessões:
 
 Cada sessão de uso do aplicativo é composta por R registros e é guardada em uma documento no Apache Cassandra.
