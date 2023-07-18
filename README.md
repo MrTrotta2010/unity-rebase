@@ -11,7 +11,7 @@ O pacote Unity ReBase contém modelos para Sessões e Movimentos, além de vers�
 
 ## Requisitos:
 * Este pacote utiliza a biblioteca [Newtonsoft Json 3.2](https://docs.unity3d.com/Packages/com.unity.nuget.newtonsoft-json@3.2/manual/index.html) e portanto suporta o editor **2018.4 ou superior**;
-* Este pacote também depende da classe `System.Net.Http` e do paradigma `Async/Await`, por isso requer pelo menos **C# 5** e [uma destas versões do pacote .NET](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=net-7.0).
+* Este pacote também depende da classe `System.Net.Http` e do paradigma `Async/Await`, por isso requer pelo menos **C# 5** e [uma destas versões do pacote .NET](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=net-7.0#applies-to).
 
 ## Quickstart:
 Para utilzar a API, basta incluir a biblioteca adicionando `using ReBase` no começo do seu arquivo .cs
