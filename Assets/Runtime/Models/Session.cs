@@ -37,6 +37,7 @@ namespace ReBase
 		public string professionalId { get => _professionalId; set => _professionalId = value; }
 		public int patientSessionNumber { get => _patientSessionNumber; set => _patientSessionNumber = value; }
 		public string insertionDate { get => _insertionDate; set => _insertionDate = value; }
+		public string updateDate { get => _updateDate; set => _updateDate = value; }
 		public string patientId { get => _patientId; set => _patientId = value; }
 		public int patientAge { get => _patientAge; set => _patientAge = value; }
 		public float patientHeight { get => _patientHeight; set => _patientHeight = value; }
