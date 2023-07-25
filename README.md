@@ -13,7 +13,7 @@ Este projeto é uma API REST escrita em C# para uso no Unity, para comunicação
     - [Buscando Movimentos e Sessões](#buscando-movimentos-e-sessões)
     - [Atualizando e deletando](#atualizando-e-deletando)
   - [Tópicos Avançados](#tópicos-avançados)
-    - [Filtros](#filtros)
+    - [Filtragem](#filtragem)
     - [Paginação](#paginação)
   - [Samples](#samples)
   - [Documentação Completa](#documentação-completa)
@@ -155,12 +155,31 @@ response = await ReBaseClient.Instance.DeleteSession(id);
 ```
 
 ## Tópicos Avançados
-A seguir, serão abordados dois assuntos relevantes para as requisições de listagem: **filtros** e **paginação**.
+A seguir, serão abordados dois assuntos relevantes para as requisições de listagem: **filtragem** e **paginação**.
 
-### Filtros
+### Filtragem
+As requisições de listagem do ReBase, de Movimentos ou de Sessões, suportam alguns filtros. A seguir, estão listados e explicados os filtros suportados por cada uma.
+
+Listagem de Movimentos:
+* **professionalId:** recebe uma `string` que representa o ID do profissional de saúde responsável pelo Movimento;
+* **patientId:** recebe uma `string` que representa o ID do paciente que executou o Movimento;
+* **movementLabel:** recebe uma `string` que representa a propriedade `label` do Movimento;
+* **articulations:** recebe uma lista de `strings` que representam as articulações trabalhadas no Movimento.
+
+Listagem de Sessões:
+* **professionalId:** recebe uma `string` que representa o ID do profissional de saúde responsável pela Sessão;
+* **patientId:** recebe uma `string` que representa o ID do paciente que avaliado durante a Sessão.
+
+A listagem de Sessões pode recebe ainda dois filtros adicionais. Estes, no entanto, não filtrarão a lista de Sessões em si, mas sim as listas de Movimentos das Sessões. São eles:
+* **movementLabel:** recebe uma `string` que representa a propriedade `label` do Movimento;
+* **articulations:** recebe uma lista de `strings` que representam as articulações trabalhadas no Movimento.
+
+Estes filtros podem ser úteis em alguns casos específicos. Um exemplo de uso: listar as Sessões de um paciente específico, mas incluir apenas os Movimentos que trabalharam um grupo específico de articulações.
+
+Vale notar, por fim, que todos os filtros são **aditivos**, ou seja, ao utilizar `n` múltiplos filtros, serão retornados os documentos que satisfaçam **todos** os filtros, ou seja, os documentos que satisfaçam o filtro 1 **E** o filtro 2 **E** ... **E** o filtro n. 
 
 ### Paginação
-As requisições de listagem, tanto de Movimentos quanto de Sessões, suportam paginação. Utilizando paginação, elimina-se a necessidade de carregar todos os items de uma listagem de uma só vez, o que pode significar um ganho de velocidade e desempenho para uma aplicação. O RRS suporta dois tipos de paginação: baseada em **per e page** e baseada em **IDs**.
+As requisições de listagem, tanto de Movimentos quanto de Sessões, também suportam paginação. Utilizando paginação, elimina-se a necessidade de carregar todos os items de uma listagem de uma só vez, o que pode significar um ganho de velocidade e desempenho para uma aplicação. O RRS suporta dois tipos de paginação: baseada em **per e page** e baseada em **IDs**.
 
 O primeiro tipo utiliza dois parâmetros: `per`, que representa a quantidade de itens presentes em cada página, e `page`, que representa qual página deve ser carregada. Desta forma, supondo que quiséssemos carregar 10 elementos por página, para carregar a primeira página usaríamos `{ per: 10, page: 1 }` e receberíamos os primeiros 10 itens da lista. Para carregar a segunda página usaríamos `{ per: 10, page: 2 }` e receberíamos os 10 itens seguintes e assim por diante. Este método é simples de se utilizar e de se entender e permite o carregamento de qualquer página, porém possui uma desvantagem: para recuperar uma página `n`, é necessário recuperar todas as páginas anteriores, o que faz com que as requisições fiquem mais lentas conforme o número `n` da página cresce. Para mitigar este problema, é possível utilizar a paginação baseada em IDs.
 
