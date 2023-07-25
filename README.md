@@ -13,6 +13,7 @@ Este projeto é uma API REST escrita em C# para uso no Unity, para comunicação
     - [Buscando Movimentos e Sessões](#buscando-movimentos-e-sessões)
     - [Atualizando e deletando](#atualizando-e-deletando)
   - [Documentação](#documentação)
+    - [ReBaseClient](#rebaseclient)
     - [Modelos](#modelos)
       - [APIResponse](#apiresponse)
       - [Movement](#movement)
@@ -154,6 +155,38 @@ response = await ReBaseClient.Instance.DeleteSession(id);
 A seguir, estão incluídas tabelas e descrições detalhando todas as classes da API Unity ReBase.
 
 ### ReBaseClient
+Esta classe é responsável por toda a comunicação com o RRS. A classe `ReBaseClient` é uma classe estática que implementa o padrão singleton. As requisições seguem o paradigma [async/await de programação assíncrona](https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/) no lugar de callbacks. Os métodos são do tipo `Task<APIResponse>`. Objetos da classe [Task](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task?view=net-7.0), de forma muito rude, representam um método ainda em execução, portanto é preciso esperar o fim da execução antes de poder acessar seu resultado. É possível aguardar a execução de uma `Task` usando o comando `await`. Ao final da execução das `Tasks`, elas retornarão um objeto da classe [APIResponse](#apiresponse). Exemplos de uso podem ser encontrados na seção [Quick Start:](#quick-start). 
+
+**Atributos:**
+| Atributo     | Tipo                    |
+| :----------- | ----------------------: |
+| **Instance** | **static ReBaseClient** |
+| Retorna a instância singleton do `ReBaseRestClient` |
+
+**Métodos:**
+| Método             | Tipo                        | Parâmetros                         |
+| :----------------- | :-------------------------- | ---------------------------------: |
+| **FetchMovements** | **async Task<APIResponse>** |**string professionalId = "", string patientId = "", string movementLabel = "", string[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = ""** |
+| Recupera uma lista de Movimentos armazenados no RRS. Suporta diversos filtros e paginação |
+| **FindMovement**   | **async Task<APIResponse>** | **string id, bool legacy = false** |
+| Recupera um Movimento específico a partir do ID. O parâmetro `legacy`, se `true`, retorna o Movimento no formato antigo do ReBase |
+| **InsertMovement** | **async Task<APIResponse>** | **[Movement](#movement) movement** |
+| Insere um Movimento no ReBase                                                         |
+| **UpdateMovement** | **async Task<APIResponse>** | **string id, [Movement](#movement) movement**   |
+| **UpdateMovement** | **async Task<APIResponse>** | **[Movement](#movement) movement** |
+| Atualiza um Movimento já existente no ReBase                                          |
+| **DeleteMovement** | **async Task<APIResponse>** | **string id**                      |
+| Exclui um Movimento do ReBase                                                         |
+| **FetchSessions**  | **async Task<APIResponse>** | **string professionalId = "", string patientId = "", string movementLabel = "", string[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = ""** |
+| Recupera uma lista de Sessões armazenadas no RRS. Suporta diversos filtros e paginação |
+| **FindSession**    | **async Task<APIResponse>** | **string id, bool legacy = false** |
+| Recupera uma Sessão específica a partir do ID. O parâmetro `legacy`, se `true`, retorna a Sessão no formato antigo do ReBase |
+| **InsertSession**  | **async Task<APIResponse>** | **[Session](#session) session**    |
+| Insere uma Sessão no ReBase                                                           |
+| **UpdateSession**  | **async Task<APIResponse>** | **[Session](#session) session**    |
+| Atualiza uma Sessão já existente no ReBase                                            |
+| **DeleteSession**  | **async Task<APIResponse>** | **string id, bool deep = false**   |
+| Exclui uma Sessão do ReBase                                                           |
 
 ### Modelos
 
