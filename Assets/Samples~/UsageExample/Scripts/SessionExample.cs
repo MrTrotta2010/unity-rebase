@@ -17,15 +17,15 @@ public class SessionExample : MonoBehaviour
         firstSessionId = "";
 
         session = new Session(
-            title: "Teste de Sessão",
-            description: "Eu sou a primeira Sessão",
+            title: "Teste de Sessï¿½o",
+            description: "Eu sou a primeira Sessï¿½o",
             professionalId: professionalId,
             patientId: patientId
         );
 
         // Insert Session
         APIResponse response;
-        response = await RESTClient.Instance.InsertSession(session);
+        response = await ReBaseClient.Instance.InsertSession(session);
         firstSessionId = response.session?.id;
         Debug.Log($"Inserted: {response}");
 
@@ -33,7 +33,7 @@ public class SessionExample : MonoBehaviour
         for (insertedCount = 0; insertedCount < 2; insertedCount++)
         {
             Movement movement = new Movement(
-                description: "Eu sou um movimento da primeira Sessão",
+                description: "Eu sou um movimento da primeira Sessï¿½o",
                 sessionId: firstSessionId,
                 label: "NewAPITest",
                 fps: Application.targetFrameRate,
@@ -50,12 +50,12 @@ public class SessionExample : MonoBehaviour
                 }
             ));
 
-            response = await RESTClient.Instance.InsertMovement(movement);
+            response = await ReBaseClient.Instance.InsertMovement(movement);
 			Debug.Log($"Inserted: {response}");
 		}
 
         // List Sessions
-        response = await RESTClient.Instance.FetchSessions(professionalId: professionalId, patientId: patientId);
+        response = await ReBaseClient.Instance.FetchSessions(professionalId: professionalId, patientId: patientId);
 		Debug.Log($"Downloaded: {response}");
 
         // Find previously inserted Session
@@ -72,20 +72,20 @@ public class SessionExample : MonoBehaviour
 		if (session.id == default) response = null;
 		else
 		{
-			session.title = "Atualizando a Sessão";
-			response = await RESTClient.Instance.UpdateSession(session);
+			session.title = "Atualizando a Sessï¿½o";
+			response = await ReBaseClient.Instance.UpdateSession(session);
 		}
 		Debug.Log($"Updated: {response}");
 
         // Delete Session
 		string id = response.session.id ?? session.id;
-        response = await RESTClient.Instance.DeleteSession(id);
+        response = await ReBaseClient.Instance.DeleteSession(id);
 		Debug.Log($"Deleted: {response}");
 
         // Insert Session with Movements
 		session = new Session(
-			title: "Teste de Sessão 2",
-			description: "Todos os movimentos da Sessão serão inseridos de uma vez",
+			title: "Teste de Sessï¿½o 2",
+			description: "Todos os movimentos da Sessï¿½o serï¿½o inseridos de uma vez",
 			professionalId: professionalId,
 			patientId: patientId,
 			movements: new Movement[2]
@@ -121,7 +121,7 @@ public class SessionExample : MonoBehaviour
 			}
 		);
 
-		response = await RESTClient.Instance.InsertSession(session);
+		response = await ReBaseClient.Instance.InsertSession(session);
 
 		if (response.session == null) Debug.Log("Couldn't insert Session");
 		else
@@ -129,11 +129,11 @@ public class SessionExample : MonoBehaviour
 			Debug.Log($"Inserted: {response}");
 
 			// Find Session
-			response = await RESTClient.Instance.FindSession(response.session.id);
+			response = await ReBaseClient.Instance.FindSession(response.session.id);
 			Debug.Log($"Found: {response}");
 
 			// Delete Session
-			response = await RESTClient.Instance.DeleteSession(response.session.id);
+			response = await ReBaseClient.Instance.DeleteSession(response.session.id);
 			Debug.Log($"Deleted: {response}");
 		}
 	}

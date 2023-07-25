@@ -27,24 +27,24 @@ public class MovementExample : MonoBehaviour
 		));
 
 		// Insert
-		APIResponse response = await RESTClient.Instance.InsertMovement(movement);
+		APIResponse response = await ReBaseClient.Instance.InsertMovement(movement);
 		Debug.Log($"Inserted: {response}");
 
 		// Update
 		movement.description = "Vamos atualizar pra ver o que acontece";
-		response = await RESTClient.Instance.UpdateMovement(response.movement.id, movement);
+		response = await ReBaseClient.Instance.UpdateMovement(response.movement.id, movement);
 		Debug.Log($"Updated: {response}");
 
 		// Delete
-		response = await RESTClient.Instance.DeleteMovement(response.movement.id);
+		response = await ReBaseClient.Instance.DeleteMovement(response.movement.id);
 		Debug.Log($"Deleted! {response}");
 
 		// Find
-		response = await RESTClient.Instance.FindMovement(response.deletedId);
+		response = await ReBaseClient.Instance.FindMovement(response.deletedId);
 		Debug.Log($"Found? {response}");
 
 		// List
-		response = await RESTClient.Instance.FetchMovements(professionalId: movement.professionalId, patientId: movement.patientId);
+		response = await ReBaseClient.Instance.FetchMovements(professionalId: movement.professionalId, patientId: movement.patientId);
 		Debug.Log($"Downloaded: {response}");
 
 		// Convert SerializableMovements into Movements

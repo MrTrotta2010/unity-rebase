@@ -32,7 +32,7 @@ Este projeto é uma API REST escrita em C# para uso no Unity, para comunicação
 
 
 ## Visão Geral:
-O pacote Unity ReBase contém modelos para Sessões e Movimentos, além de versões serializáveis destas classes. A classe `APIResponse` modela de forma generalizada as respostas enviadas pelo `ReBase REST Server (RRS)`. Todos os modelos se encontram na pasta `Runtime/Models`. Estão presentes também algumas exceções personalizadas, localizadas na pasta `Runtime/Exceptions`. A classe `RESTClient` é responsável pelo envio de requisições ao RRS e se encontra na raiz da paste `Runtime`. Por fim, outras classes diversas encontram-se na pasta `Runtime/Misc`.
+O pacote Unity ReBase contém modelos para Sessões e Movimentos, além de versões serializáveis destas classes. A classe `APIResponse` modela de forma generalizada as respostas enviadas pelo `ReBase REST Server (RRS)`. Todos os modelos se encontram na pasta `Runtime/Models`. Estão presentes também algumas exceções personalizadas, localizadas na pasta `Runtime/Exceptions`. A classe `ReBaseClient` é responsável pelo envio de requisições ao RRS e se encontra na raiz da paste `Runtime`. Por fim, outras classes diversas encontram-se na pasta `Runtime/Misc`.
 
 ## Instalação:
 1. Baixe o arquivo .zip;
@@ -67,9 +67,9 @@ movement.AddRegister(new Register(
     }
 ));
 
-// Utilize a classe singleton RESTClient para inserir o movimento
+// Utilize a classe singleton ReBaseClient para inserir o movimento
 // Todas as requisições são assíncronas.
-APIResponse response = await RESTClient.Instance.InsertMovement(movement);
+APIResponse response = await ReBaseClient.Instance.InsertMovement(movement);
 Debug.Log($"Inserted: {response}");
 ```
 
@@ -115,43 +115,45 @@ session = new Session(
     }
 );
 
-APIResponse response = await RESTClient.Instance.InsertSession(session);
+APIResponse response = await ReBaseClient.Instance.InsertSession(session);
 ```
 
 ### Buscando Movimentos e Sessões
 ```C#
 // É possível encontrar um único Movimento ou listar vários
-APIResponse response = await RESTClient.Instance.FindMovement(id);
+APIResponse response = await ReBaseClient.Instance.FindMovement(id);
 Debug.Log($"Movimento: {response.movement}");
 
 // A listagem permite filtros e suporta paginação
 // Os filtros possíveis são: professionalId (id do profissional de saúde), patientId (id do paciente),
 // movementLabel (identificação do movimento), articulations (articulações incluídas no movimento)
-response = await RESTClient.Instance.FetchMovements(professionalId: "professional", patientId: "patient", page: 1, per: 10);
+response = await ReBaseClient.Instance.FetchMovements(professionalId: "professional", patientId: "patient", page: 1, per: 10);
 Debug.Log($"Movimentos: {response.movements}");
 
 // Da mesma forma, as Sessões podem ser buscas individualmente ou listadas
-response = await RESTClient.Instance.FindSession(id);
+response = await ReBaseClient.Instance.FindSession(id);
 Debug.Log($"Sessão: {response.session}");
 
 // Os filtros suportados pela listagem de Sessão são: professionalId e patientId.
 // Também são aceitos os filtros movementLabel e articulations, mas estes filtram os movimentos das Sessões
-response = await RESTClient.Instance.FetchSessions(professionalId: "professional", patientId: "patient", page: 1, per: 10);
+response = await ReBaseClient.Instance.FetchSessions(professionalId: "professional", patientId: "patient", page: 1, per: 10);
 Debug.Log($"Sessões: {response.sessions}");
 ```
 
 ### Atualizando e deletando
 ```C#
 // São disponibilizados métodos para deletar e excluir Movimentos e Sessões
-APIResponse response = await RESTClient.Instance.UpdateMovement(id, updatedMovement);
-response = await RESTClient.Instance.DeleteMovement(id);
+APIResponse response = await ReBaseClient.Instance.UpdateMovement(id, updatedMovement);
+response = await ReBaseClient.Instance.DeleteMovement(id);
 
-response = await RESTClient.Instance.UpdateSession(id, updatedSession);
-response = await RESTClient.Instance.DeleteSession(id);
+response = await ReBaseClient.Instance.UpdateSession(id, updatedSession);
+response = await ReBaseClient.Instance.DeleteSession(id);
 ```
 
 ## Documentação
 A seguir, estão incluídas tabelas e descrições detalhando todas as classes da API Unity ReBase.
+
+### ReBaseClient
 
 ### Modelos
 

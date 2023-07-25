@@ -20,7 +20,7 @@ public class PaginationExample : MonoBehaviour
     {
         Debug.Log("Movement pagination!");
         Debug.Log("Pagination with 'page' and 'per'");
-        APIResponse response = await RESTClient.Instance.FetchMovements(professionalId: "MrTrotta2010", page: currentPage, per: 2);
+        APIResponse response = await ReBaseClient.Instance.FetchMovements(professionalId: "MrTrotta2010", page: currentPage, per: 2);
         OnFetchMovements(response);
     }
 
@@ -30,7 +30,7 @@ public class PaginationExample : MonoBehaviour
         useIdBasePagination = false;
         Debug.Log("Session pagination!");
         Debug.Log("Pagination with 'page' and 'per'");
-		APIResponse response = await RESTClient.Instance.FetchSessions(professionalId: "MrTrotta2010", page: currentPage, per: 2);
+		APIResponse response = await ReBaseClient.Instance.FetchSessions(professionalId: "MrTrotta2010", page: currentPage, per: 2);
         OnFetchSessions(response);
 	}
 
@@ -47,7 +47,7 @@ public class PaginationExample : MonoBehaviour
                 string previousId = response.movements[response.movements.Length - 1].id;
                 Debug.Log($"The last ID in the list is {previousId}");
                 currentPage++;
-				OnFetchMovements(await RESTClient.Instance.FetchMovements(professionalId: "MrTrotta2010", previousId: previousId, per: 2));
+				OnFetchMovements(await ReBaseClient.Instance.FetchMovements(professionalId: "MrTrotta2010", previousId: previousId, per: 2));
             }
             else
             {
@@ -60,14 +60,14 @@ public class PaginationExample : MonoBehaviour
             if (currentPage < 2)
             {
                 currentPage++;
-				OnFetchMovements(await RESTClient.Instance.FetchMovements(professionalId: "MrTrotta2010", page: currentPage, per: 2));
+				OnFetchMovements(await ReBaseClient.Instance.FetchMovements(professionalId: "MrTrotta2010", page: currentPage, per: 2));
             }
             else
             {
                 currentPage = 1;
                 useIdBasePagination = true;
                 Debug.Log("ID-based pagination");
-                OnFetchMovements(await RESTClient.Instance.FetchMovements(professionalId: "MrTrotta2010", per: 2));
+                OnFetchMovements(await ReBaseClient.Instance.FetchMovements(professionalId: "MrTrotta2010", per: 2));
             }
         }
     }
@@ -85,21 +85,21 @@ public class PaginationExample : MonoBehaviour
             currentPage++;
             string previousId = response.sessions[response.sessions.Length - 1].id;
             Debug.Log($"The last ID in the list is {previousId}");
-			OnFetchSessions(await RESTClient.Instance.FetchSessions(professionalId: "MrTrotta2010", previousId: previousId, per: 2));
+			OnFetchSessions(await ReBaseClient.Instance.FetchSessions(professionalId: "MrTrotta2010", previousId: previousId, per: 2));
         }
         else
         {
             if (currentPage < 2)
             {
                 currentPage++;
-                OnFetchSessions(await RESTClient.Instance.FetchSessions(professionalId: "MrTrotta2010", page: currentPage, per: 2));
+                OnFetchSessions(await ReBaseClient.Instance.FetchSessions(professionalId: "MrTrotta2010", page: currentPage, per: 2));
             }
             else
             {
                 currentPage = 1;
                 useIdBasePagination = true;
                 Debug.Log("ID-based pagination");
-                OnFetchSessions(await RESTClient.Instance.FetchSessions(professionalId: "MrTrotta2010", per: 2));
+                OnFetchSessions(await ReBaseClient.Instance.FetchSessions(professionalId: "MrTrotta2010", per: 2));
             }
         }
     }

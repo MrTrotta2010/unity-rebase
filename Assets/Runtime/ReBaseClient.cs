@@ -7,10 +7,10 @@ using UnityEngine;
 
 namespace ReBase
 {
-	public partial class RESTClient
+	public partial class ReBaseClient
 	{
-		private static readonly RESTClient instance = new RESTClient();
-		public static RESTClient Instance { get { return instance; } }
+		private static readonly ReBaseClient instance = new ReBaseClient();
+		public static ReBaseClient Instance { get { return instance; } }
 
 		private string WEB_URL = "http://200.145.46.235:3030";
 
