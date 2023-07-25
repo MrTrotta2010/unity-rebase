@@ -4,15 +4,17 @@ Este projeto é uma API REST escrita em C# para uso no Unity, para comunicação
 ## Índice
 - [Unity ReBase](#unity-rebase)
   - [Índice](#índice)
-  - [Visão Geral:](#visão-geral)
-  - [Instalação:](#instalação)
-  - [Requisitos:](#requisitos)
-  - [Quick Start:](#quick-start)
-    - [Criando um Movimento:](#criando-um-movimento)
+  - [Visão Geral](#visão-geral)
+  - [Instalação](#instalação)
+  - [Requisitos](#requisitos)
+  - [Quick Start](#quick-start)
+    - [Criando um Movimento](#criando-um-movimento)
     - [Criando uma Sessão](#criando-uma-sessão)
     - [Buscando Movimentos e Sessões](#buscando-movimentos-e-sessões)
     - [Atualizando e deletando](#atualizando-e-deletando)
-  - [Documentação](#documentação)
+  - [Tópicos Avançados](#tópicos-avançados)
+  - [Samples](#samples)
+  - [Documentação Completa](#documentação-completa)
     - [ReBaseClient](#rebaseclient)
     - [Modelos](#modelos)
       - [APIResponse](#apiresponse)
@@ -29,25 +31,24 @@ Este projeto é uma API REST escrita em C# para uso no Unity, para comunicação
         - [PatientData](#patientdata)
         - [MedicalData](#medicaldata)
     - [Exceções](#exceções)
-  - [Samples:](#samples)
 
 
-## Visão Geral:
+## Visão Geral
 O pacote Unity ReBase contém modelos para Sessões e Movimentos, além de versões serializáveis destas classes. A classe `APIResponse` modela de forma generalizada as respostas enviadas pelo `ReBase REST Server (RRS)`. Todos os modelos se encontram na pasta `Runtime/Models`. Estão presentes também algumas exceções personalizadas, localizadas na pasta `Runtime/Exceptions`. A classe `ReBaseClient` é responsável pelo envio de requisições ao RRS e se encontra na raiz da paste `Runtime`. Por fim, outras classes diversas encontram-se na pasta `Runtime/Misc`.
 
-## Instalação:
+## Instalação
 1. Baixe o arquivo .zip;
 2. Extraia a pasta compactada;
 3. No editor do Unity, [instale o pacote a partir do disco](https://docs.unity3d.com/Manual/upm-ui-local.html).
 
-## Requisitos:
-* Este pacote utiliza a biblioteca [Newtonsoft Json 3.2](https://docs.unity3d.com/Packages/com.unity.nuget.newtonsoft-json@3.2/manual/index.html) e portanto suporta o editor **2018.4 ou superior**;
+## Requisitos
+* Este pacote utilia a biblioteca [Newtonsoft Json 3.2](https://docs.unity3d.com/Packages/com.unity.nuget.newtonsoft-json@3.2/manual/index.html) e portanto suporta o editor **2018.4 ou superior**;
 * Este pacote também depende da classe `System.Net.Http` e do paradigma `Async/Await`, por isso requer pelo menos **C# 5** e [uma destas versões do pacote .NET](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=net-7.0#applies-to).
 
-## Quick Start:
+## Quick Start
 Para utilizar a API, basta incluir a biblioteca adicionando `using ReBase` no começo do seu arquivo .cs
 
-### Criando um Movimento:
+### Criando um Movimento
 ```C#
 // Crie um objeto Movement
 Movement movement = new Movement(
@@ -151,7 +152,12 @@ response = await ReBaseClient.Instance.UpdateSession(id, updatedSession);
 response = await ReBaseClient.Instance.DeleteSession(id);
 ```
 
-## Documentação
+## Tópicos Avançados
+
+## Samples
+Este pacote inclui uma cena com alguns exemplos adicionais de utilização da API. A cena e os códigos relacionados se encontram na paste `Samples~/UsageExample`
+
+## Documentação Completa
 A seguir, estão incluídas tabelas e descrições detalhando todas as classes da API Unity ReBase.
 
 ### ReBaseClient
@@ -466,6 +472,3 @@ Esta API define algumas exceções personalizadas para os modelos de dados e cas
 1. **MismatchedArticulationsException:** disparada ao criar um Movimento com Registros que tenham articulações diferentes das definidas no Movimento ou ao adicionar a um Movimento um Registro que tenha articulações diferentes das do Movimento;
 2. **MissingAttributeException:** disparada ao tentar enviar uma requisição ao RRS e algum parâmetro não tenha um atributo obrigatório;
 3. **RepeatedArticulationException:** disparada ao criar um Movimento ou um Registro com uma lista de articulações que contenha articulações repetidas.
-
-## Samples:
-Este pacote inclui uma cena com alguns exemplos adicionais de utilização da API. A cena e os códigos relacionados se encontram na paste `Samples~/UsageExample`
