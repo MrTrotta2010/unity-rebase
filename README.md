@@ -13,6 +13,8 @@ Este projeto é uma API REST escrita em C# para uso no Unity, para comunicação
     - [Buscando Movimentos e Sessões](#buscando-movimentos-e-sessões)
     - [Atualizando e deletando](#atualizando-e-deletando)
   - [Tópicos Avançados](#tópicos-avançados)
+    - [Filtros](#filtros)
+    - [Paginação](#paginação)
   - [Samples](#samples)
   - [Documentação Completa](#documentação-completa)
     - [ReBaseClient](#rebaseclient)
@@ -153,6 +155,18 @@ response = await ReBaseClient.Instance.DeleteSession(id);
 ```
 
 ## Tópicos Avançados
+A seguir, serão abordados dois assuntos relevantes para as requisições de listagem: **filtros** e **paginação**.
+
+### Filtros
+
+### Paginação
+As requisições de listagem, tanto de Movimentos quanto de Sessões, suportam paginação. Utilizando paginação, elimina-se a necessidade de carregar todos os items de uma listagem de uma só vez, o que pode significar um ganho de velocidade e desempenho para uma aplicação. O RRS suporta dois tipos de paginação: baseada em **per e page** e baseada em **IDs**.
+
+O primeiro tipo utiliza dois parâmetros: `per`, que representa a quantidade de itens presentes em cada página, e `page`, que representa qual página deve ser carregada. Desta forma, supondo que quiséssemos carregar 10 elementos por página, para carregar a primeira página usaríamos `{ per: 10, page: 1 }` e receberíamos os primeiros 10 itens da lista. Para carregar a segunda página usaríamos `{ per: 10, page: 2 }` e receberíamos os 10 itens seguintes e assim por diante. Este método é simples de se utilizar e de se entender e permite o carregamento de qualquer página, porém possui uma desvantagem: para recuperar uma página `n`, é necessário recuperar todas as páginas anteriores, o que faz com que as requisições fiquem mais lentas conforme o número `n` da página cresce. Para mitigar este problema, é possível utilizar a paginação baseada em IDs.
+
+A paginação baseada em IDs também depende de dois parâmetros: `per`, a quantidade de itens por página, e `previous_id`, o ID do último item da página anterior. Pela forma como o banco de dados do ReBase é modelado, as listas de Movimentos e de Sessões são ordenadas pelos IDs dos documentos, que são sequenciais. Ou seja, se quisermos recuperar os 10 itens seguintes a um item `i`, basta recuperar os primeiros 10 itens cujo ID seja maior do que o ID de `i`. Explorando essa característica, é possível implementar um método de paginação que permite que todas as páginas sejam recuperadas em tempos equivalentes. Desta forma, para recuperar a primeira página usaríamos `{ per: 10, previous_id: null }`, já que não existe uma página anterior. Supondo que o ID do último item da primeira página seja "ABC", para recuperar a segunda página usaríamos `{ per: 10, previous_id: "ABC" }`. Apesar de tudo, este método de paginação também tem uma desvantagem: para recuperar uma página específica, é necessário ter recuperado todas as páginas anteriores a ela, já que é preciso saber os IDs dos documentos que estão contidos nelas.
+
+Assim, cabe ao desenvolvedor analisar sua aplicação e decidir qual método de paginação deverá ser utilizado (ou se a paginação é mesmo necessária). Aplicações que devem permitir a qualquer momento o acesso a qualquer página, deverão usar a paginação baseada em per e page. Por outro lado, para uma aplicação que precisa exibir uma lista com scroll infinito, por exemplo, na qual os itens são carregados sequencialmente, se beneficiará mais do método baseado em IDs. Para mais informações, [este artigo](https://medium.com/swlh/mongodb-pagination-fast-consistent-ece2a97070f3) pode ser útil. 
 
 ## Samples
 Este pacote inclui uma cena com alguns exemplos adicionais de utilização da API. A cena e os códigos relacionados se encontram na paste `Samples~/UsageExample`
