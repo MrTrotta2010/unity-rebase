@@ -12,7 +12,7 @@ namespace ReBase
 		private static readonly ReBaseClient instance = new ReBaseClient();
 		public static ReBaseClient Instance { get { return instance; } }
 
-		private string WEB_URL = "http://200.145.46.235:3030";
+		private string WEB_URL = "http://projetorastreamento.com.br:3030/";
 
 		private static readonly HttpClient client = new HttpClient();
 
