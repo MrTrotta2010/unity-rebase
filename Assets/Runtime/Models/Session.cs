@@ -20,10 +20,10 @@ namespace ReBase
 		private float _patientHeight;
 		private float _patientWeight;
 		private string _mainComplaint;
-		private string _historyOfCurrentDesease;
-		private string _historyOfPastDesease;
+		private string _historyOfCurrentDisease;
+		private string _historyOfPastDisease;
 		private string _diagnosis;
-		private string _relatedDeseases;
+		private string _relatedDiseases;
 		private string _medications;
 		private string _physicalEvaluation;
 
@@ -43,10 +43,10 @@ namespace ReBase
 		public float patientHeight { get => _patientHeight; set => _patientHeight = value; }
 		public float patientWeight { get => _patientWeight; set => _patientWeight = value; }
 		public string mainComplaint { get => _mainComplaint; set => _mainComplaint = value; }
-		public string historyOfCurrentDesease { get => _historyOfCurrentDesease; set => _historyOfCurrentDesease = value; }
-		public string historyOfPastDesease { get => _historyOfPastDesease; set => _historyOfPastDesease = value; }
+		public string historyOfCurrentDisease { get => _historyOfCurrentDisease; set => _historyOfCurrentDisease = value; }
+		public string historyOfPastDisease { get => _historyOfPastDisease; set => _historyOfPastDisease = value; }
 		public string diagnosis { get => _diagnosis; set => _diagnosis = value; }
-		public string relatedDeseases { get => _relatedDeseases; set => _relatedDeseases = value; }
+		public string relatedDiseases { get => _relatedDiseases; set => _relatedDiseases = value; }
 		public string medications { get => _medications; set => _medications = value; }
 		public string physicalEvaluation { get => _physicalEvaluation; set => _physicalEvaluation = value; }
 		public int numberOfMovements{ get => _numberOfMovements; set => _numberOfMovements = value; }
@@ -67,8 +67,8 @@ namespace ReBase
 
 		public Session(string title = "", string description = "", string professionalId = "", Movement[] movements = null, int patientSessionNumber = 0,
 				string insertionDate ="", string updateDate = "", string patientId = "", int patientAge = 0, float patientHeight = 0f, float patientWeight = 0f,
-				string mainComplaint = "", string historyOfCurrentDesease = "", string historyOfPastDesease = "", string diagnosis = "",
-				string relatedDeseases = "", string medications = "", string physicalEvaluation = "", string id = "", int numberOfMovements = 0)
+				string mainComplaint = "", string historyOfCurrentDisease = "", string historyOfPastDisease = "", string diagnosis = "",
+				string relatedDiseases = "", string medications = "", string physicalEvaluation = "", string id = "", int numberOfMovements = 0)
 		{
 			_id = id;
 			_title = title;
@@ -82,10 +82,10 @@ namespace ReBase
 			_patientHeight = patientHeight;
 			_patientWeight = patientWeight;
 			_mainComplaint = mainComplaint;
-			_historyOfCurrentDesease = historyOfCurrentDesease;
-			_historyOfPastDesease = historyOfPastDesease;
+			_historyOfCurrentDisease = historyOfCurrentDisease;
+			_historyOfPastDisease = historyOfPastDisease;
 			_diagnosis = diagnosis;
-			_relatedDeseases = relatedDeseases;
+			_relatedDiseases = relatedDiseases;
 			_medications = medications;
 			_physicalEvaluation = physicalEvaluation;
 			_numberOfMovements = numberOfMovements;
@@ -145,10 +145,10 @@ namespace ReBase
 			if (session.medicalData != null)
 			{
 				if (session.medicalData.mainComplaint != null) _mainComplaint = session.medicalData.mainComplaint;
-				if (session.medicalData != null && session.medicalData.historyOfCurrentDesease != null) _historyOfCurrentDesease = session.medicalData.historyOfCurrentDesease;
-				if (session.medicalData != null && session.medicalData.historyOfPastDesease != null) _historyOfPastDesease = session.medicalData.historyOfPastDesease;
+				if (session.medicalData != null && session.medicalData.historyOfCurrentDisease != null) _historyOfCurrentDisease = session.medicalData.historyOfCurrentDisease;
+				if (session.medicalData != null && session.medicalData.historyOfPastDisease != null) _historyOfPastDisease = session.medicalData.historyOfPastDisease;
 				if (session.medicalData != null && session.medicalData.diagnosis != null) _diagnosis = session.medicalData.diagnosis;
-				if (session.medicalData != null && session.medicalData.relatedDeseases != null) _relatedDeseases = session.medicalData.relatedDeseases;
+				if (session.medicalData != null && session.medicalData.relatedDiseases != null) _relatedDiseases = session.medicalData.relatedDiseases;
 				if (session.medicalData != null && session.medicalData.medications != null) _medications = session.medicalData.medications;
 				if (session.medicalData != null && session.medicalData.physicalEvaluation != null) _physicalEvaluation = session.medicalData.physicalEvaluation;
 			}
@@ -175,10 +175,10 @@ namespace ReBase
 					$"\"weight\":{_patientWeight}}}," +
 					"\"medicalData\":{" +
 					$"\"mainComplaint\":\"{_mainComplaint}\"," +
-					$"\"historyOfCurrentDesease\":\"{_historyOfCurrentDesease}\"," +
-					$"\"historyOfPastDesease\":\"{_historyOfPastDesease}\"," +
+					$"\"historyOfCurrentDisease\":\"{_historyOfCurrentDisease}\"," +
+					$"\"historyOfPastDisease\":\"{_historyOfPastDisease}\"," +
 					$"\"diagnosis\":\"{_diagnosis}\"," +
-					$"\"relatedDeseases\":\"{_relatedDeseases}\"," +
+					$"\"relatedDiseases\":\"{_relatedDiseases}\"," +
 					$"\"medications\":\"{_medications}\"," +
 					$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}}}}}";
 			}
@@ -202,10 +202,10 @@ namespace ReBase
 					$"\"weight\":{_patientWeight}}}," +
 					"\"medicalData\":{" +
 					$"\"mainComplaint\":\"{_mainComplaint}\"," +
-					$"\"historyOfCurrentDesease\":\"{_historyOfCurrentDesease}\"," +
-					$"\"historyOfPastDesease\":\"{_historyOfPastDesease}\"," +
+					$"\"historyOfCurrentDisease\":\"{_historyOfCurrentDisease}\"," +
+					$"\"historyOfPastDisease\":\"{_historyOfPastDisease}\"," +
 					$"\"diagnosis\":\"{_diagnosis}\"," +
-					$"\"relatedDeseases\":\"{_relatedDeseases}\"," +
+					$"\"relatedDiseases\":\"{_relatedDiseases}\"," +
 					$"\"medications\":\"{_medications}\"," +
 					$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}," +
 					$"\"numberOfMovements\":{_numberOfMovements}," +
@@ -239,10 +239,10 @@ namespace ReBase
 				$"\"weight\":{_patientWeight}}}," +
 				"\"medicalData\":{" +
 				$"\"mainComplaint\":\"{_mainComplaint}\"," +
-				$"\"historyOfCurrentDesease\":\"{_historyOfCurrentDesease}\"," +
-				$"\"historyOfPastDesease\":\"{_historyOfPastDesease}\"," +
+				$"\"historyOfCurrentDisease\":\"{_historyOfCurrentDisease}\"," +
+				$"\"historyOfPastDisease\":\"{_historyOfPastDisease}\"," +
 				$"\"diagnosis\":\"{_diagnosis}\"," +
-				$"\"relatedDeseases\":\"{_relatedDeseases}\"," +
+				$"\"relatedDiseases\":\"{_relatedDiseases}\"," +
 				$"\"medications\":\"{_medications}\"," +
 				$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}," +
 				$"\"numberOfMovements\":{_numberOfMovements}," +

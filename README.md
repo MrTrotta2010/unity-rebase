@@ -395,13 +395,13 @@ Modela uma Sessão do ReBase.
 | Peso do paciente                                 |
 | **mainComplaint**           | **string**         |
 | Queixa principal do paciente                     |
-| **historyOfCurrentDesease** | **string**         |
+| **historyOfCurrentDisease** | **string**         |
 | Histórico da condição atual do paciente          |
-| **historyOfPastDesease**    | **string**         |
+| **historyOfPastDisease**    | **string**         |
 | Histórico de condições anteriores do paciente    |
 | **diagnosis**               | **string**         |
 | Diagnóstico dado ao paciente pelo profissional de saúde |
-| **relatedDeseases**         | **string**         |
+| **relatedDiseases**         | **string**         |
 | Condições relacionadas à do paciente             |
 | **medications**             | **string**         |
 | Medicações das quais o paciente faz uso          |
@@ -498,10 +498,10 @@ Esta classe possui os mesmos atributos da classe `Session` padrão e não possui
 | Atributo                    | Tipo       |
 | :-------------------------- | ---------: |
 | **mainComplaint**           | **string** |
-| **historyOfCurrentDesease** | **string** |
-| **historyOfPastDesease**    | **string** |
+| **historyOfCurrentDisease** | **string** |
+| **historyOfPastDisease**    | **string** |
 | **diagnosis**               | **string** |
-| **relatedDeseases**         | **string** |
+| **relatedDiseases**         | **string** |
 | **medications**             | **string** |
 | **physicalEvaluation**      | **string** |
 

@@ -88,10 +88,10 @@ namespace ReBase
 		public class MedicalData
 		{
 			public string mainComplaint;
-			public string historyOfCurrentDesease;
-			public string historyOfPastDesease;
+			public string historyOfCurrentDisease;
+			public string historyOfPastDisease;
 			public string diagnosis;
-			public string relatedDeseases;
+			public string relatedDiseases;
 			public string medications;
 			public string physicalEvaluation;
 		}
