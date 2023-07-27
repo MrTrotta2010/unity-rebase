@@ -5,6 +5,7 @@ Este projeto é uma API REST escrita em C# para uso no Unity, para comunicação
 - [Unity ReBase](#unity-rebase)
   - [Índice](#índice)
   - [Visão Geral](#visão-geral)
+    - [Sobre o ReBase](#sobre-o-rebase)
   - [Instalação](#instalação)
   - [Requisitos](#requisitos)
   - [Quick Start](#quick-start)
@@ -37,6 +38,11 @@ Este projeto é uma API REST escrita em C# para uso no Unity, para comunicação
 
 ## Visão Geral
 O pacote Unity ReBase contém modelos para Sessões e Movimentos, além de versões serializáveis destas classes. A classe `APIResponse` modela de forma generalizada as respostas enviadas pelo `ReBase REST Server (RRS)`. Todos os modelos se encontram na pasta `Runtime/Models`. Estão presentes também algumas exceções personalizadas, localizadas na pasta `Runtime/Exceptions`. A classe `ReBaseClient` é responsável pelo envio de requisições ao RRS e se encontra na raiz da paste `Runtime`. Por fim, outras classes diversas encontram-se na pasta `Runtime/Misc`.
+
+### Sobre o ReBase
+O ReBase, do inglês *Rehabilitation Database*, é um baco de dados dedicado ao armazenamento de movimentos corporais, com foco em reabilitação neurofuncional e neuromotora. Apesar do enfoque, o ReBase é capaz de armazenar qualquer tipo de movimento corporal gravado por qualquer técnica de captura de movimentos, desde que siga o padrão definido. Para isto serve a API Unity ReBase!
+
+Os **Movimentos** do ReBase representam os movimentos corporais capturados e são compostos por metadados e uma lista de **Articulações**. Cada Articulação possui um lista de **Registros**, que representam as rotações em X, y e z da Articulação a cada instante do Movimento. Os Movimentos podem pertencer a **Sessões**. Cada Sessão também contem metadados e pode conter múltiplos movimentos.
 
 ## Instalação
 1. Baixe o arquivo .zip;
