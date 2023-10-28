@@ -29,7 +29,6 @@ Este projeto é uma API REST escrita em C# para uso no Unity, para comunicação
       - [MetaData](#metadata)
       - [SerializableMovement](#serializablemovement)
         - [AppData](#appdata)
-        - [ArticulationData](#articulationdata)
       - [SerializableSession](#serializablesession)
         - [PatientData](#patientdata)
         - [MedicalData](#medicaldata)
@@ -98,7 +97,7 @@ session = new Session(
             label: "MyMovement",
             fps: Application.targetFrameRate,
             articulations: new string[] { "1", "2" },
-            articulationData: new Register[1] {
+            registers: new Register[1] {
                 new Register(
                     new Dictionary<string, Rotation>()
                     {
@@ -112,7 +111,7 @@ session = new Session(
             label: "MyMovement",
             fps: Application.targetFrameRate,
             articulations: new string[] { "1", "2" },
-            articulationData: new Register[1] {
+            registers: new Register[1] {
                 new Register(
                     new Dictionary<string, Rotation>()
                     {
@@ -308,7 +307,7 @@ Modela um Movimento do ReBase.
 | Dados arbitrários utilizados pela aplicação que gerou o Movimento. Pode ser utilizado pelos usuários da API para armazenar dados no formato que quiserem, como um json ou uma string |
 | **patientId**         | **string**         |
 | Identificação anônima do paciente que realizou o Movimento |
-| **articulationData**  | **List<[Register](#register)>** |
+| **registers**  | **List<[Register](#register)>** |
 | Lista de registros que representam o Movimento em si |
 
 **Métodos:**
@@ -434,7 +433,7 @@ Esta classe modela o objeto `meta` retornado pelo RRS em requisições de listag
 | **total_page_count (alias: totalPageCount)** | **int** |
 
 #### SerializableMovement
-Esta classe possui os mesmos atributos da classe `Movement` padrão e não possui nenhum método. Dentro desta classe estão as subclasses `AppData` e `ArticulationData`, usadas para modelar os atributos `app` e `articulationData`.
+Esta classe possui os mesmos atributos da classe `Movement` padrão e não possui nenhum método. Dentro desta classe está a subclasse `AppData`, usadas para modelar o atributos `app`.
 
 | Atributo              | Tipo                                        |
 | :-------------------- | ------------------------------------------: |
@@ -452,7 +451,7 @@ Esta classe possui os mesmos atributos da classe `Movement` padrão e não possu
 | **insertionDate**     | **string**                                  |
 | **updateDate**        | **string**                                  |
 | **app**               | **[AppData](#appdata)**                     |
-| **articulationData**  | **[ArticulationData](#articulationdata)[]** |
+| **registers**         | **Dictionary<string, float[]>[]**           |
 | **id**                | **string**                                  |
 
 ##### AppData
@@ -460,12 +459,6 @@ Esta classe possui os mesmos atributos da classe `Movement` padrão e não possu
 | :------- | ---------: |
 | **code** | **int**    |
 | **data** | **string** |
-
-##### ArticulationData
-| Atributo         | Tipo          |
-| :--------------- | ------------: |
-| **articulation** | **string**    |
-| **data**         | **float[][]** |
 
 
 #### SerializableSession

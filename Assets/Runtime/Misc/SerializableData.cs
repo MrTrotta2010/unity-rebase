@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ReBase
 {
@@ -10,27 +11,6 @@ namespace ReBase
 		{
 			public int code;
 			public string data;
-		}
-		[Serializable]
-		public class ArticulationData
-		{
-			public string articulation;
-			public float[][] data;
-
-			private string JoinData()
-			{
-				string[] str = new string[data.Length];
-				for (int i = 0; i < data.Length; i++)
-				{
-					str[i] = $"[{string.Join(", ", data[i])}]";
-				}
-				return string.Join(", ", str);
-			}
-
-			public override string ToString()
-			{
-				return $"{{ articulation: {articulation}, data: [{(data != null ? JoinData() : "")}] }}";
-			}
 		}
 		[Serializable]
 		public class DataFrame
@@ -63,13 +43,25 @@ namespace ReBase
 		public string insertionDate;
 		public string updateDate;
 		public AppData app;
-		public ArticulationData[] articulationData;
+		public Dictionary<string, float[]>[] registers;
 
 		public string id { get => _id; set => _id = value; }
 
 		public override string ToString()
 		{
-			return $"{{\n\tid: \"{_id}\",\n\tlabel: \"{label}\",\n\tdescription: \"{description}\",\n\tsessionId: \"{sessionId}\",\n\tprofessionalId: \"{professionalId}\",\n\tpatientId: \"{patientId}\",\n\tdevice: \"{device}\",\n\tfps: {fps},\n\tduration: {duration},\n\tnumberOfRegisters: {numberOfRegisters},\n\tinsertionDate: {insertionDate},\n\tupdateDate: {updateDate},\n\articulations: \"{(articulations == null ? "" : string.Join(",", articulations))}\",\n\tarticulationData: [{(articulationData == null ? "" : $"\n\t\t{string.Join<ArticulationData>(",\n\t\t", articulationData)}")}\n\t]\n}}";
+			string registers_str = "";
+			foreach (Dictionary<string, float[]> register in registers)
+			{
+				registers_str += "\n\t\t\t{ ";
+				foreach (KeyValuePair<string, float[]> kvp in register)
+				{
+					registers_str += $"\"{kvp.Key}\": [{(string.Join("; ", kvp.Value)).Replace(',', '.').Replace(';', ',')}], ";
+				}
+				registers_str.TrimEnd(' ');
+				registers_str.TrimEnd(',');
+				registers_str += " }";
+			}
+			return $"{{\n\tid: \"{_id}\",\n\tlabel: \"{label}\",\n\tdescription: \"{description}\",\n\tsessionId: \"{sessionId}\",\n\tprofessionalId: \"{professionalId}\",\n\tpatientId: \"{patientId}\",\n\tdevice: \"{device}\",\n\tfps: {fps},\n\tduration: {duration},\n\tnumberOfRegisters: {numberOfRegisters},\n\tinsertionDate: {insertionDate},\n\tupdateDate: {updateDate},\n\articulations: \"{(articulations == null ? "" : string.Join(",", articulations))}\",\n\registers: [{(registers_str == "" ? "" : $"\n\t\t{registers_str}")}\n\t]\n}}";
 		}
 	}
 
@@ -88,10 +80,10 @@ namespace ReBase
 		public class MedicalData
 		{
 			public string mainComplaint;
-			public string historyOfCurrentDisease;
-			public string historyOfPastDisease;
+			public string historyOfCurrentDesease;
+			public string historyOfPastDesease;
 			public string diagnosis;
-			public string relatedDiseases;
+			public string relatedDeseases;
 			public string medications;
 			public string physicalEvaluation;
 		}

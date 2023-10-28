@@ -1,6 +1,8 @@
 using System;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 
 namespace ReBase
 {
@@ -26,7 +28,7 @@ namespace ReBase
 		private string _appData;
 
 
-		private List<Register> _articulationData;
+		private List<Register> _registers;
 
 		public string id { get => _id; }
 		public string label { get => _label; set => _label = value; }
@@ -43,19 +45,19 @@ namespace ReBase
 		public int appCode { get => _appCode; set => _appCode = value; }
 		public string appData { get => _appData; set => _appData = value; }
 		public string patientId { get => _patientId; set => _patientId = value; }
-		public List<Register> articulationData
+		public List<Register> registers
 		{
-			get => _articulationData;
+			get => _registers;
 			set
 			{
-				_articulationData = value;
-				numberOfRegisters = _articulationData.Count;
+				_registers = value;
+				numberOfRegisters = _registers.Count;
 			}
 		}
 
 		public Movement(string label = "", string description = "", string device = "", float fps = 30f, string[] articulations = null,
 						string sessionId = "",string professionalId = "", int appCode = 0, string appData = "",
-						string patientId = "", Register[] articulationData = null)
+						string patientId = "", Register[] registers = null)
 		{
 			_label = label;
 			_description = description;
@@ -74,16 +76,16 @@ namespace ReBase
 			_duration = 0f;
 			_numberOfRegisters = 0;
 
-			if (articulationData != null)
+			if (registers != null)
 			{
-				foreach (Register register in articulationData)
-					ValidateArticulationData(register.articulations);
+				foreach (Register register in registers)
+					ValidateRegisters(register.articulations);
 
-				_articulationData = new List<Register>(articulationData);
+				_registers = new List<Register>(registers);
 			}
 			else
 			{
-				_articulationData = new List<Register>();
+				_registers = new List<Register>();
 			}
 		}
 
@@ -100,9 +102,9 @@ namespace ReBase
 
 		public void AddRegister(Register register)
 		{
-			ValidateArticulationData(register.articulations);
+			ValidateRegisters(register.articulations);
 
-			_articulationData.Add(register);
+			_registers.Add(register);
 			_numberOfRegisters += 1;
 			_duration = _numberOfRegisters / _fps;
 		}
@@ -131,7 +133,7 @@ namespace ReBase
 				"\"app\":{" +
 				$"\"code\":{_appCode}," +
 				$"\"data\":\"{_appData}\"}}," +
-				$"\"articulationData\":{SerializeArticulationData()}}}}}";
+				$"\"registers\":{SerializeRegisters()}}}}}";
 		}
 
 		public string ToCreateSessionJson()
@@ -148,7 +150,7 @@ namespace ReBase
 				"\"app\":{" +
 				$"\"code\":{_appCode}," +
 				$"\"data\":\"{_appData}\"}}," +
-				$"\"articulationData\":{SerializeArticulationData()}}}";
+				$"\"registers\":{SerializeRegisters()}}}";
 		}
 
 		public override string ToString()
@@ -170,10 +172,10 @@ namespace ReBase
 				"\"app\":{" +
 				$"\"code\":{_appCode}," +
 				$"\"data\":\"{_appData}\"}}," +
-				$"\"articulationData\":{SerializeArticulationData()}}}}}";
+				$"\"registers\":{SerializeRegisters()}}}}}";
 		}
 
-		private void ValidateArticulationData(string[] registerArticulations)
+		private void ValidateRegisters(string[] registerArticulations)
 		{
 			if (!CompareArticulationLists(_articulations, registerArticulations))
 				throw new MismatchedArticulationsException("Articulation lists do not match", _articulations, registerArticulations);
@@ -205,10 +207,10 @@ namespace ReBase
 			}
 			if (movement.patientId != null) _patientId = movement.patientId;
 
-			_articulationData = ArticulationDataToRegisterList(movement.articulationData);
+			_registers = BuildRegisterList(movement.registers);
 		}
 
-		private string SerializeArticulationData()
+		private string SerializeRegisters()
 		{
 			Dictionary<string, List<Rotation>> aritulationDataDict = new Dictionary<string, List<Rotation>>();
 
@@ -216,7 +218,7 @@ namespace ReBase
 			{
 				aritulationDataDict.Add(articulation, new List<Rotation>());
 			}
-			foreach (Register register in _articulationData)
+			foreach (Register register in _registers)
 			{
 				foreach (string articulation in aritulationDataDict.Keys)
 				{
@@ -242,31 +244,19 @@ namespace ReBase
 			return serializedList.TrimEnd(',') + "]";
 		}
 
-		private List<Register> ArticulationDataToRegisterList(SerializableMovement.ArticulationData[] articulationData)
+		private List<Register> BuildRegisterList(Dictionary<string, float[]>[] registers)
 		{
-			int length = articulationData?.Length > 0 ? (articulationData[0].data?.Length ?? 0) : 0;
 			List<Register> registerList = new List<Register>();
 
-			for (int j = 0; j < length; j++)
+			foreach (Dictionary<string, float[]> register in registers)
 			{
-				Register register = new Register(_articulations);
-				foreach (SerializableMovement.ArticulationData dataObject in articulationData)
-				{
-					if (dataObject.data.Length == 0) continue;
-
-					try
-					{
-						Rotation rotations = new Rotation(dataObject.data[j][0], dataObject.data[j][1], dataObject.data[j][2]);
-						register.SetArticulationRotations(dataObject.articulation, rotations);
-					}
-					catch (Exception ex) when (ex is ArgumentException || ex is NullReferenceException)
-					{
-						continue;
-					}
-				}
-				if (register.isEmpty) continue;
-				registerList.Add(register);
+				string[] articulations = register.Keys.ToArray();
+				Register registerObj = new Register(articulations);
+				foreach (string articulation in articulations)
+					registerObj.SetArticulationRotations(articulation, new Rotation(register[articulation]));
+				registerList.Add(registerObj);
 			}
+
 			return registerList;
 		}
 

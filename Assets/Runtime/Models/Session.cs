@@ -246,7 +246,7 @@ namespace ReBase
 				$"\"medications\":\"{_medications}\"," +
 				$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}," +
 				$"\"numberOfMovements\":{_numberOfMovements}," +
-				$"\"articulationData\":{strMovements}}}}}";
+				$"\"movements\":{strMovements}}}}}";
 		}
 	}
 }

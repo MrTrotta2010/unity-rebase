@@ -94,7 +94,7 @@ public class SessionExample : MonoBehaviour
 					label: "firstMovement",
 					fps: Application.targetFrameRate,
 					articulations: new string[] { "1", "2" },
-					articulationData: new Register[1] {
+					registers: new Register[1] {
 						new Register(
 							new Dictionary<string, Rotation>()
 							{
@@ -108,7 +108,7 @@ public class SessionExample : MonoBehaviour
 					label: "secondMovement",
 					fps: Application.targetFrameRate,
 					articulations: new string[] { "1", "2" },
-					articulationData: new Register[1] {
+					registers: new Register[1] {
 						new Register(
 							new Dictionary<string, Rotation>()
 							{
