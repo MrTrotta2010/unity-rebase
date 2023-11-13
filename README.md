@@ -1,5 +1,5 @@
 # Unity ReBase
-Este projeto é uma API REST escrita em C# para uso no Unity, para comunicação com o ReBase, um banco de dados um banco de dados Apache Cassandra de sessões de reabilitação física.
+Este projeto é uma API escrita em C# para uso no Unity, para comunicação com o ReBase, um banco de dados de sessões de reabilitação física.
 
 ## Índice
 - [Unity ReBase](#unity-rebase)
@@ -36,12 +36,12 @@ Este projeto é uma API REST escrita em C# para uso no Unity, para comunicação
 
 
 ## Visão Geral
-O pacote Unity ReBase contém modelos para Sessões e Movimentos, além de versões serializáveis destas classes. A classe `APIResponse` modela de forma generalizada as respostas enviadas pelo `ReBase REST Server (RRS)`. Todos os modelos se encontram na pasta `Runtime/Models`. Estão presentes também algumas exceções personalizadas, localizadas na pasta `Runtime/Exceptions`. A classe `ReBaseClient` é responsável pelo envio de requisições ao RRS e se encontra na raiz da paste `Runtime`. Por fim, outras classes diversas encontram-se na pasta `Runtime/Misc`.
+O pacote Unity ReBase contém classes-modelo para Sessões e Movimentos, além de versões serializáveis destas classes. A classe `APIResponse` modela de forma generalizada as respostas enviadas pelo `ReBase REST Server (RRS)`. Todos os modelos se encontram na pasta `Runtime/Models`. Estão presentes também algumas exceções personalizadas, localizadas na pasta `Runtime/Exceptions`. A classe `ReBaseClient` é responsável pelo envio de requisições ao RRS e se encontra na raiz da pasta `Runtime`. Por fim, outras classes diversas encontram-se na pasta `Runtime/Misc`.
 
 ### Sobre o ReBase
 O ReBase, do inglês *Rehabilitation Database*, é um baco de dados dedicado ao armazenamento de movimentos corporais, com foco em reabilitação neurofuncional e neuromotora. Apesar do enfoque, o ReBase é capaz de armazenar qualquer tipo de movimento corporal gravado por qualquer técnica de captura de movimentos, desde que siga o padrão definido. Para isto serve a API Unity ReBase!
 
-Os **Movimentos** do ReBase representam os movimentos corporais capturados e são compostos por metadados e uma lista de **Articulações**. Cada Articulação possui um lista de **Registros**, que representam as rotações em X, y e z da Articulação a cada instante do Movimento. Os Movimentos podem pertencer a **Sessões**. Cada Sessão também contem metadados e pode conter múltiplos movimentos.
+Os **Movimentos** do ReBase representam os movimentos corporais capturados e são compostos por metadados, uma lista de *Articulações* e uma lista de **Registros**, que representam as rotações em X, y e z da Articulação a cada instante do Movimento. Os Movimentos podem pertencer a **Sessões**. Cada Sessão também contem metadados e pode conter múltiplos movimentos.
 
 ## Instalação
 1. Baixe o arquivo .zip;
@@ -49,7 +49,7 @@ Os **Movimentos** do ReBase representam os movimentos corporais capturados e sã
 3. No editor do Unity, [instale o pacote a partir do disco](https://docs.unity3d.com/Manual/upm-ui-local.html).
 
 ## Requisitos
-* Este pacote utilia a biblioteca [Newtonsoft Json 3.2](https://docs.unity3d.com/Packages/com.unity.nuget.newtonsoft-json@3.2/manual/index.html) e portanto suporta o editor **2018.4 ou superior**;
+* Este pacote utiliza a biblioteca [Newtonsoft Json 3.2](https://docs.unity3d.com/Packages/com.unity.nuget.newtonsoft-json@3.2/manual/index.html) e portanto suporta o editor **2018.4 ou superior**;
 * Este pacote também depende da classe `System.Net.Http` e do paradigma `Async/Await`, por isso requer pelo menos **C# 5** e [uma destas versões do pacote .NET](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=net-7.0#applies-to).
 
 ## Quick Start
@@ -163,7 +163,7 @@ response = await ReBaseClient.Instance.DeleteSession(id);
 A seguir, serão abordados dois assuntos relevantes para as requisições de listagem: **filtragem** e **paginação**.
 
 ### Filtragem
-As requisições de listagem do ReBase, de Movimentos ou de Sessões, suportam alguns filtros. A seguir, estão listados e explicados os filtros suportados por cada uma.
+As requisições de listagem do ReBase, de Movimentos ou de Sessões, suportam alguns filtros, listados e explicados a seguir.
 
 Listagem de Movimentos:
 * **professionalId:** recebe uma `string` que representa o ID do profissional de saúde responsável pelo Movimento;
