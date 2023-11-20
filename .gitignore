@@ -64,3 +64,6 @@ crashlytics-build.properties
 ProjectSettings/
 UserSettings/
 Packages/
+
+# Releases
+Releases/
