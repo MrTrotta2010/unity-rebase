@@ -36,7 +36,7 @@ Este projeto é uma API escrita em C# para uso no Unity, para comunicação com 
 
 
 ## Visão Geral
-O pacote Unity ReBase contém classes-modelo para Sessões e Movimentos, além de versões serializáveis destas classes. A classe `APIResponse` modela de forma generalizada as respostas enviadas pelo `ReBase REST Server (RRS)`. Todos os modelos se encontram na pasta `Runtime/Models`. Estão presentes também algumas exceções personalizadas, localizadas na pasta `Runtime/Exceptions`. A classe `ReBaseClient` é responsável pelo envio de requisições ao RRS e se encontra na raiz da pasta `Runtime`. Por fim, outras classes diversas encontram-se na pasta `Runtime/Misc`.
+O pacote Unity ReBase contém classes-modelo para Sessões e Movimentos, além de versões serializáveis destas classes. A classe `APIResponse` modela de forma generalizada as respostas enviadas pelo `ReBaseRS`. Todos os modelos se encontram na pasta `Runtime/Models`. Estão presentes também algumas exceções personalizadas, localizadas na pasta `Runtime/Exceptions`. A classe `ReBaseClient` é responsável pelo envio de requisições ao ReBaseRS e se encontra na raiz da pasta `Runtime`. Por fim, outras classes diversas encontram-se na pasta `Runtime/Misc`.
 
 ### Sobre o ReBase
 O ReBase, do inglês *Rehabilitation Database*, é um baco de dados dedicado ao armazenamento de movimentos corporais, com foco em reabilitação neurofuncional e neuromotora. Apesar do enfoque, o ReBase é capaz de armazenar qualquer tipo de movimento corporal gravado por qualquer técnica de captura de movimentos, desde que siga o padrão definido. Para isto serve a API Unity ReBase!
@@ -184,7 +184,7 @@ Estes filtros podem ser úteis em alguns casos específicos. Um exemplo de uso: 
 Vale notar, por fim, que todos os filtros são **aditivos**, ou seja, ao utilizar `n` múltiplos filtros, serão retornados os documentos que satisfaçam **todos** os filtros, ou seja, os documentos que satisfaçam o filtro 1 **E** o filtro 2 **E** ... **E** o filtro n. 
 
 ### Paginação
-As requisições de listagem, tanto de Movimentos quanto de Sessões, também suportam paginação. Utilizando paginação, elimina-se a necessidade de carregar todos os items de uma listagem de uma só vez, o que pode significar um ganho de velocidade e desempenho para uma aplicação. O RRS suporta dois tipos de paginação: baseada em **per e page** e baseada em **IDs**.
+As requisições de listagem, tanto de Movimentos quanto de Sessões, também suportam paginação. Utilizando paginação, elimina-se a necessidade de carregar todos os items de uma listagem de uma só vez, o que pode significar um ganho de velocidade e desempenho para uma aplicação. O ReBaseRS suporta dois tipos de paginação: baseada em **per e page** e baseada em **IDs**.
 
 O primeiro tipo utiliza dois parâmetros: `per`, que representa a quantidade de itens presentes em cada página, e `page`, que representa qual página deve ser carregada. Desta forma, supondo que quiséssemos carregar 10 elementos por página, para carregar a primeira página usaríamos `{ per: 10, page: 1 }` e receberíamos os primeiros 10 itens da lista. Para carregar a segunda página usaríamos `{ per: 10, page: 2 }` e receberíamos os 10 itens seguintes e assim por diante. Este método é simples de se utilizar e de se entender e permite o carregamento de qualquer página, porém possui uma desvantagem: para recuperar uma página `n`, é necessário recuperar todas as páginas anteriores, o que faz com que as requisições fiquem mais lentas conforme o número `n` da página cresce. Para mitigar este problema, é possível utilizar a paginação baseada em IDs.
 
@@ -199,7 +199,7 @@ Este pacote inclui uma cena com alguns exemplos adicionais de utilização da AP
 A seguir, estão incluídas tabelas e descrições detalhando todas as classes da API Unity ReBase.
 
 ### ReBaseClient
-Esta classe é responsável por toda a comunicação com o RRS. A classe `ReBaseClient` é uma classe estática que implementa o padrão singleton. As requisições seguem o paradigma [async/await de programação assíncrona](https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/) no lugar de callbacks. Os métodos são do tipo `Task<APIResponse>`. Objetos da classe [Task](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task?view=net-7.0), de forma muito rude, representam um método ainda em execução, portanto é preciso esperar o fim da execução antes de poder acessar seu resultado. É possível aguardar a execução de uma `Task` usando o comando `await`. Ao final da execução das `Tasks`, elas retornarão um objeto da classe [APIResponse](#apiresponse). Exemplos de uso podem ser encontrados na seção [Quick Start:](#quick-start). 
+Esta classe é responsável por toda a comunicação com o ReBaseRS. A classe `ReBaseClient` é uma classe estática que implementa o padrão singleton. As requisições seguem o paradigma [async/await de programação assíncrona](https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/) no lugar de callbacks. Os métodos são do tipo `Task<APIResponse>`. Objetos da classe [Task](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task?view=net-7.0), de forma muito rude, representam um método ainda em execução, portanto é preciso esperar o fim da execução antes de poder acessar seu resultado. É possível aguardar a execução de uma `Task` usando o comando `await`. Ao final da execução das `Tasks`, elas retornarão um objeto da classe [APIResponse](#apiresponse). Exemplos de uso podem ser encontrados na seção [Quick Start:](#quick-start). 
 
 **Atributos:**
 | Atributo     | Tipo                    |
@@ -211,7 +211,7 @@ Esta classe é responsável por toda a comunicação com o RRS. A classe `ReBase
 | Método             | Tipo                        | Parâmetros                         |
 | :----------------- | :-------------------------- | ---------------------------------: |
 | **FetchMovements** | **async Task<APIResponse>** |**string professionalId = "", string patientId = "", string movementLabel = "", string[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = ""** |
-| Recupera uma lista de Movimentos armazenados no RRS. Suporta diversos filtros e paginação |
+| Recupera uma lista de Movimentos armazenados no ReBaseRS. Suporta diversos filtros e paginação |
 | **FindMovement**   | **async Task<APIResponse>** | **string id, bool legacy = false** |
 | Recupera um Movimento específico a partir do ID. O parâmetro `legacy`, se `true`, retorna o Movimento no formato antigo do ReBase |
 | **InsertMovement** | **async Task<APIResponse>** | **[Movement](#movement) movement** |
@@ -222,7 +222,7 @@ Esta classe é responsável por toda a comunicação com o RRS. A classe `ReBase
 | **DeleteMovement** | **async Task<APIResponse>** | **string id**                      |
 | Exclui um Movimento do ReBase                                                         |
 | **FetchSessions**  | **async Task<APIResponse>** | **string professionalId = "", string patientId = "", string movementLabel = "", string[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = ""** |
-| Recupera uma lista de Sessões armazenadas no RRS. Suporta diversos filtros e paginação |
+| Recupera uma lista de Sessões armazenadas no ReBaseRS. Suporta diversos filtros e paginação |
 | **FindSession**    | **async Task<APIResponse>** | **string id, bool legacy = false** |
 | Recupera uma Sessão específica a partir do ID. O parâmetro `legacy`, se `true`, retorna a Sessão no formato antigo do ReBase |
 | **InsertSession**  | **async Task<APIResponse>** | **[Session](#session) session**    |
@@ -235,7 +235,7 @@ Esta classe é responsável por toda a comunicação com o RRS. A classe `ReBase
 ### Modelos
 
 #### APIResponse
-A classe APIResponse modela uma resposta generalizada do servidor RRS.
+A classe APIResponse modela uma resposta generalizada do servidor ReBaseRS.
 
 **Atributos:**
 | Atributo         | Tipo                       |
@@ -255,15 +255,15 @@ A classe APIResponse modela uma resposta generalizada do servidor RRS.
 | **error**        | **string[]**               |
 | Caso a resposta seja de erro, apresenta o erro em questão |
 | **warning**      | **string[]**               |
-| Apresenta possíveis inconsistências encontradas na requisição pelo RRS, mas que não são críticas a ponto de provocar um erro. Por exemplo, ao criar um Movimento, caso algum campo enviado esteja vazio o RRS completará a requisição, mas retornará um warning correspondente avisando que o campo em questão foi excluído |
+| Apresenta possíveis inconsistências encontradas na requisição pelo ReBaseRS, mas que não são críticas a ponto de provocar um erro. Por exemplo, ao criar um Movimento, caso algum campo enviado esteja vazio o ReBaseRS completará a requisição, mas retornará um warning correspondente avisando que o campo em questão foi excluído |
 | **movements**    | **[SerializableMovement](#serializablemovement)[]** |
-| Possível lista de Movimentos retornada pelo RRS |
+| Possível lista de Movimentos retornada pelo ReBaseRS |
 | **movement**     | **[SerializableMovement](#serializablemovement)**   |
-| Possível Movimento retornado pelo RRS |
+| Possível Movimento retornado pelo ReBaseRS |
 | **sessions**     | **[SerializableSession](#serializablesession)[]**  |
-| Possível lista de Sessão retornada pelo RRS |
+| Possível lista de Sessão retornada pelo ReBaseRS |
 | **session**      | **[SerializableSession](#serializablesession)**    |
-| Possível Sessão retornada pelo RRS**    |
+| Possível Sessão retornada pelo ReBaseRS**    |
 | **deletedId**    | **string**                 |
 | Em requisições do tipo DELETE, esta propriedade contém o ID do documento excluído |
 | **deletedCount** | **int**                    |
@@ -420,10 +420,10 @@ Modela uma Sessão do ReBase.
 | Converte a Sessão para json. O parâmetro update modifica o json gerado: para requisições de criação use update como `false` e para requisições de atualização use update como `true` |
 
 ### Miscelânea
-A seguir, estão documentadas as classes relacionadas à desserialização dos objetos json recebidos como respostas do RRS. Estas classes existem para facilitar a conversão de json para objetos utilizando a biblioteca `Newtonsoft.Json`. Ademais, a classe Serializer é utilizada para centralizar a desserialização das respostas.
+A seguir, estão documentadas as classes relacionadas à desserialização dos objetos json recebidos como respostas do ReBaseRS. Estas classes existem para facilitar a conversão de json para objetos utilizando a biblioteca `Newtonsoft.Json`. Ademais, a classe Serializer é utilizada para centralizar a desserialização das respostas.
 
 #### MetaData
-Esta classe modela o objeto `meta` retornado pelo RRS em requisições de listagem e contém metadados sobre o recurso e sobre paginação.
+Esta classe modela o objeto `meta` retornado pelo ReBaseRS em requisições de listagem e contém metadados sobre o recurso e sobre paginação.
 
 | Atributo                                     | Tipo    |
 | :------------------------------------------- | ------: |
@@ -502,5 +502,5 @@ Esta classe possui os mesmos atributos da classe `Session` padrão e não possui
 Esta API define algumas exceções personalizadas para os modelos de dados e casos de uso do ReBase. São elas:
 
 1. **MismatchedArticulationsException:** disparada ao criar um Movimento com Registros que tenham articulações diferentes das definidas no Movimento ou ao adicionar a um Movimento um Registro que tenha articulações diferentes das do Movimento;
-2. **MissingAttributeException:** disparada ao tentar enviar uma requisição ao RRS e algum parâmetro não tenha um atributo obrigatório;
+2. **MissingAttributeException:** disparada ao tentar enviar uma requisição ao ReBaseRS e algum parâmetro não tenha um atributo obrigatório;
 3. **RepeatedArticulationException:** disparada ao criar um Movimento ou um Registro com uma lista de articulações que contenha articulações repetidas.

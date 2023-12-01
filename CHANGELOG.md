@@ -1,17 +1,21 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+Este formato é baseado em [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.0.html).
+
+## [2.0.2] - 2023-12-01
+
+### Alterado
+- Altera o nome do ReBase REST Server, ou RRS, para apenas **ReBaseRS**.
+
 
 ## [2.0.1] - 2023-11-20
 
-### Fixed
+### Consertado
+- Corrige a palavra 'disease', que estava escrita como 'desease';
+- Corrige a URL do servidor.
 
-- Fixed the word 'diseased', which was written as 'desease';
-- Fixed the server's URL.
-
-### Changed
-
-- Renamed the `articulationData` property in `Movement` to `registers`.
+### Alterado
+- Renomeia a propriedade `articulationData` da classe `Movement` para `registers`.
