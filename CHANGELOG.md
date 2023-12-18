@@ -9,11 +9,11 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.
 
 ### Adicionado
 - Suporte ao parâmetro `deep` em `FetchSessions` e `FindSessions`;
-- Atributo `movement_ids` em `session`, contendo os IDs dos seus Movimentos. Esse campo é retornado nas requisições `fetch_sessions` e `find_session` quando o parâmetro `deep` está ausente ou tem o valor `False`.
-- Indicador da versão atual no topo do arquivo `README.md`
+- Atributo `movement_ids` em `session`, contendo os IDs dos seus Movimentos. Esse campo é retornado nas requisições `fetch_sessions` e `find_session` quando o parâmetro `deep` está ausente ou tem o valor `False`;
+- Indicador da versão atual no topo do arquivo `README.md`.
 
 ### Removido
-- Código inutilizado;
+- Código inutilizado.
 
 ## [2.0.2] - 2023-12-01
 
