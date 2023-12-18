@@ -15,7 +15,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.
 ### Removido
 - Código inutilizado.
 
-### Consertado
+### Corrigido
 - Método `Session.ToJson` incluía o campo `numberOfMovements`, proibido para a criação de Sessões. 
 
 ## [2.0.2] - 2023-12-01
@@ -25,7 +25,7 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.
 
 ## [2.0.1] - 2023-11-20
 
-### Consertado
+### Corrigido
 - Corrige a palavra 'disease', que estava escrita como 'desease';
 - Corrige a URL do servidor.
 
