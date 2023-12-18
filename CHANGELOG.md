@@ -15,6 +15,9 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.
 ### Removido
 - Código inutilizado.
 
+### Consertado
+- Método `Session.ToJson` incluía o campo `numberOfMovements`, proibido para a criação de Sessões. 
+
 ## [2.0.2] - 2023-12-01
 
 ### Alterado

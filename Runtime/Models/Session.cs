@@ -218,7 +218,6 @@ namespace ReBase
 					$"\"relatedDiseases\":\"{_relatedDiseases}\"," +
 					$"\"medications\":\"{_medications}\"," +
 					$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}," +
-					$"\"numberOfMovements\":{_numberOfMovements}," +
 					$"\"movements\":{strMovements}}}}}";
 			}
 		}
