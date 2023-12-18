@@ -46,6 +46,7 @@ namespace ReBase
 
 		private int _numberOfMovements;
 		private List<Movement> _movements;
+		private List<string> _movementIds;
 
 
 		public string id { get => _id; set => _id = value; }
@@ -81,11 +82,17 @@ namespace ReBase
 			get => _movements;
 			set => _movements = value;
 		}
+		public List<string> movementIds
+		{
+			get => _movementIds;
+			set => _movementIds = value;
+		}
 
 		public Session(string title = "", string description = "", string professionalId = "", Movement[] movements = null, int patientSessionNumber = 0,
 				string insertionDate ="", string updateDate = "", string patientId = "", int patientAge = 0, float patientHeight = 0f, float patientWeight = 0f,
 				string mainComplaint = "", string historyOfCurrentDisease = "", string historyOfPastDisease = "", string diagnosis = "",
-				string relatedDiseases = "", string medications = "", string physicalEvaluation = "", string id = "", int numberOfMovements = 0)
+				string relatedDiseases = "", string medications = "", string physicalEvaluation = "", string id = "",
+				string[] movementIds = null, int numberOfMovements = 0)
 		{
 			_id = id;
 			_title = title;
@@ -109,6 +116,9 @@ namespace ReBase
 
 			if (movements != null) _movements = new List<Movement>(movements);
 			else _movements = new List<Movement>();
+
+			if (movementIds != null) _movementIds = new List<string>(movementIds);
+			else _movementIds = new List<string>();
 		}
 
 		public Session(SerializableSession session)
@@ -121,26 +131,6 @@ namespace ReBase
 			SerializableSession auxSession = Serializer.Deserialize<SerializableSession>(sessionJson);
 			ConvertSerializableSession(auxSession);
 		}
-
-		//public Session(
-		//SerializableSession movement)
-		//{
-		//	ConvertSeri
-		//leSession(movement);
-		//}
-
-		//public Session(Legacy sessionJson, bool legacySession = false)
-		//{
-		//	if (legacySession)
-		//	{
-		//		SerializableSession auxSession = JsonUtility.FromJson<SerializableSession>(movementJson);
-		//	}
-		//	else
-		//	{
-		//		LegacySerializableSession auxSession = JsonUtility.FromJson<SerializableSession>(movementJson);
-		//		ConvertSerializableSession(auxSession, legacySessio);
-		//	}
-		//}
 
 		private void ConvertSerializableSession(SerializableSession session)
 		{
@@ -173,6 +163,9 @@ namespace ReBase
 			_movements = new List<Movement>();
 			foreach (SerializableMovement movement in session.movements)
 				_movements.Add(new Movement(movement));
+
+			_movementIds = new List<string>();
+			foreach (string id in session.movementIds) _movementIds.Add(id);
 		}
 
 		public string ToJson(bool update = false)
@@ -242,6 +235,8 @@ namespace ReBase
 			}
 			strMovements = $"{strMovements.TrimEnd(',')}]";
 
+			string strMovementIds = $"[{string.Join(", ", _movementIds)}]";
+
 			return $"{{\"session\":{{\"_id\":\"{_id}\"," +
 				$"\"title\":\"{_title}\"," +
 				$"\"description\":\"{_description}\"," +
@@ -263,7 +258,8 @@ namespace ReBase
 				$"\"medications\":\"{_medications}\"," +
 				$"\"physicalEvaluation\":\"{_physicalEvaluation}\"}}," +
 				$"\"numberOfMovements\":{_numberOfMovements}," +
-				$"\"movements\":{strMovements}}}}}";
+				$"\"movements\":{strMovements}," +
+				$"\"movementIds\":{strMovementIds}}}}}";
 		}
 	}
 }

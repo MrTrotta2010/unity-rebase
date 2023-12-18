@@ -17,8 +17,8 @@ public class SessionExample : MonoBehaviour
         firstSessionId = "";
 
         session = new Session(
-            title: "Teste de Sess�o",
-            description: "Eu sou a primeira Sess�o",
+            title: "Teste de Sessão",
+            description: "Eu sou a primeira Sessão",
             professionalId: professionalId,
             patientId: patientId
         );
@@ -33,7 +33,7 @@ public class SessionExample : MonoBehaviour
         for (insertedCount = 0; insertedCount < 2; insertedCount++)
         {
             Movement movement = new Movement(
-                description: "Eu sou um movimento da primeira Sess�o",
+                description: "Eu sou um movimento da primeira Sessão",
                 sessionId: firstSessionId,
                 label: "NewAPITest",
                 fps: Application.targetFrameRate,
@@ -58,6 +58,10 @@ public class SessionExample : MonoBehaviour
         response = await ReBaseClient.Instance.FetchSessions(professionalId: professionalId, patientId: patientId);
 		Debug.Log($"Downloaded: {response}");
 
+        // List Sessions with deep parameter
+        response = await ReBaseClient.Instance.FetchSessions(professionalId: professionalId, patientId: patientId, bool: true);
+		Debug.Log($"Downloaded: {response}");
+
         // Find previously inserted Session
 		foreach (SerializableSession serializableSession in response.sessions)
 		{
@@ -72,7 +76,7 @@ public class SessionExample : MonoBehaviour
 		if (session.id == default) response = null;
 		else
 		{
-			session.title = "Atualizando a Sess�o";
+			session.title = "Atualizando a Sessão";
 			response = await ReBaseClient.Instance.UpdateSession(session);
 		}
 		Debug.Log($"Updated: {response}");
@@ -84,8 +88,8 @@ public class SessionExample : MonoBehaviour
 
         // Insert Session with Movements
 		session = new Session(
-			title: "Teste de Sess�o 2",
-			description: "Todos os movimentos da Sess�o ser�o inseridos de uma vez",
+			title: "Teste de Sessão 2",
+			description: "Todos os movimentos da Sessão ser�o inseridos de uma vez",
 			professionalId: professionalId,
 			patientId: patientId,
 			movements: new Movement[2]
@@ -130,6 +134,10 @@ public class SessionExample : MonoBehaviour
 
 			// Find Session
 			response = await ReBaseClient.Instance.FindSession(response.session.id);
+			Debug.Log($"Found: {response}");
+
+			// Find Session with deep parameter
+			response = await ReBaseClient.Instance.FindSession(response.session.id, deep: true);
 			Debug.Log($"Found: {response}");
 
 			// Delete Session

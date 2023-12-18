@@ -29,22 +29,6 @@ namespace ReBase
 			public int code;
 			public string data;
 		}
-		[Serializable]
-		public class DataFrame
-		{
-			public float[] data;
-
-			//public float this[int i]
-			//{
-			//	get { return data[i]; }
-			//	set { data[i] = value; }
-			//}
-
-			public override string ToString()
-			{
-				return data != null ? $"[{(string.Join(", ", data))}]" : "";
-			}
-		}
 
 		public string _id;
 		public string label;
@@ -119,12 +103,13 @@ namespace ReBase
 		public MedicalData medicalData;
 
 		public SerializableMovement[] movements;
+		public string[] movementIds;
 
 		public string id { get => _id; set => _id = value; }
 
 		public override string ToString()
 		{
-			return $"{{\n\tid: \"{_id}\",\n\ttitle: \"{title}\",\n\tdescription: {description},\n\tnumberOfMovements: {numberOfMovements},\n\tmovements: [{(movements == null ? "" : $"\n\t\t{string.Join<SerializableMovement>(",\n\t\t\t\t", movements)}\n\t\t")}\n\t\t]\n}}";
+			return $"{{\n\tid: \"{_id}\",\n\ttitle: \"{title}\",\n\tdescription: {description},\n\tnumberOfMovements: {numberOfMovements},\n\tmovementIds: [{(movementIds == null ? "" : $"\n\t\t{string.Join<string>(",\n\t\t\t\t", movementIds)}\n\t\t")}\n\t\t]\n\tmovements: [{(movements == null ? "" : $"\n\t\t{string.Join<SerializableMovement>(",\n\t\t\t\t", movements)}\n\t\t")}\n\t\t]\n}}";
 		}
 	}
 

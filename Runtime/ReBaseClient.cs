@@ -24,7 +24,7 @@ using UnityEngine;
 
 namespace ReBase
 {
-	public partial class ReBaseClient
+	public class ReBaseClient
 	{
 		private static readonly ReBaseClient instance = new ReBaseClient();
 		public static ReBaseClient Instance { get { return instance; } }
@@ -82,18 +82,19 @@ namespace ReBase
 		}
 
 		public async Task<APIResponse> FetchSessions(string professionalId = "", string patientId = "", string movementLabel = "",
-											string[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = "")
+											string[] articulations = null, bool legacy = false, int page = 0, int per = 0,
+											bool deep = false, string previousId = "")
 		{
 			return await SendRequest(Method.GET, Resource.Session, APIResponse.ResponseType.FetchSessions,
-									 query: FormatQueryParams(professionalId, patientId, movementLabel, articulations, page, per, previousId, legacy));
+									 query: FormatQueryParams(professionalId, patientId, movementLabel, articulations, page, per, previousId, legacy, deep));
 		}
 
-		public async Task<APIResponse> FindSession(string id, bool legacy = false)
+		public async Task<APIResponse> FindSession(string id, bool legacy = false, bool deep = false)
 		{
 			if (id == default) throw new MissingAttributeException("session id");
 
 			return await SendRequest(Method.GET, Resource.Session, APIResponse.ResponseType.FindSession,
-									 id, FormatQueryParams(legacy: legacy));
+									 id, FormatQueryParams(legacy: legacy, deep: deep));
 		}
 
 		public async Task<APIResponse> InsertSession(Session session)
