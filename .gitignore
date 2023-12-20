@@ -67,3 +67,6 @@ Packages/
 
 # Releases
 Releases/
+
+# Scripts
+*.sh
