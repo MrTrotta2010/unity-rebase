@@ -1,8 +1,8 @@
-# Unity ReBase [2.1.0]
+# Unity ReBase [2.1.1]
 Este projeto é uma API escrita em C# para uso no Unity, para comunicação com o ReBase, um banco de dados de sessões de reabilitação física.
 
 ## Índice
-- [Unity ReBase \[2.1.0\]](#unity-rebase-210)
+- [Unity ReBase \[2.1.1\]](#unity-rebase-211)
   - [Índice](#índice)
   - [Visão Geral](#visão-geral)
     - [Sobre o ReBase](#sobre-o-rebase)

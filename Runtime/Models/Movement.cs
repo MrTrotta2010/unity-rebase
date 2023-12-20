@@ -229,36 +229,22 @@ namespace ReBase
 
 		private string SerializeRegisters()
 		{
-			Dictionary<string, List<Rotation>> aritulationDataDict = new Dictionary<string, List<Rotation>>();
+			string[] serializedRegisters = new string[numberOfRegisters];
 
-			foreach (string articulation in _articulations)
+			for (int i = 0; i < _registers.Count; i++)
 			{
-				aritulationDataDict.Add(articulation, new List<Rotation>());
-			}
-			foreach (Register register in _registers)
-			{
-				foreach (string articulation in aritulationDataDict.Keys)
+				string[] strRegisterList = new string[_registers[i].articulationCount];
+				int j = 0;
+
+				foreach (string articulation in _registers[i].articulations)
 				{
-					aritulationDataDict[articulation].Add(register.GetArticulationRotations(articulation));
+					strRegisterList[j] = $"\"{articulation}\": [{string.Join(", ", _registers[i].GetArticulationRotations(articulation).ToArray())}]";
+					j++;
 				}
+				serializedRegisters[i] = $"{{{string.Join(", ", strRegisterList)}}}";
 			}
 
-			string serializedList = "[";
-			foreach (KeyValuePair<string, List<Rotation>> items in aritulationDataDict)
-			{
-				serializedList += $"{{\"articulation\":{items.Key},\"data\":[";
-				for (int i = 0; i < items.Value.Count; i++)
-				{
-					Rotation coordinates = items.Value[i];
-					if (coordinates == null) continue;
-
-					serializedList += $"[{coordinates.x},{coordinates.y},{coordinates.z}]";
-					if (i < items.Value.Count - 1) serializedList += ",";
-				}
-				serializedList += "]},";
-			}
-
-			return serializedList.TrimEnd(',') + "]";
+			return $"[{string.Join(", ", serializedRegisters)}]";
 		}
 
 		private List<Register> BuildRegisterList(Dictionary<string, float[]>[] registers)
