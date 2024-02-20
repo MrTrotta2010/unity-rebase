@@ -21,6 +21,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace ReBase
 {
@@ -36,6 +37,32 @@ namespace ReBase
 		private enum Resource { Movement = 0, Session = 1 }
 
 		private enum Method { GET = 0, POST = 1, PUT = 2, DELETE = 3 }
+
+		public void ConfigureUser(string userEmail, string userToken)
+		{
+			if (string.IsNullOrEmpty(userEmail)) throw new ArgumentNullException("userEmail", "user data in ReBaseClient must be a valid string");
+			if (string.IsNullOrEmpty(userToken)) throw new ArgumentNullException("userToken", "user data in ReBaseClient must be a valid string");
+
+			client.DefaultRequestHeaders.Add("rebase-user-email", userEmail);
+			client.DefaultRequestHeaders.Add("rebase-user-token", userToken);
+		}
+
+		private bool userHasBeenConfigured
+		{
+			get
+			{
+				return client.DefaultRequestHeaders.Contains("rebase-user-email")
+					&& client.DefaultRequestHeaders.Contains("rebase-user-token");
+			}
+		}
+
+		public string userEmail {
+			get => client.DefaultRequestHeaders.GetValues("rebase-user-email").ElementAt(0);
+		}
+
+		public string userToken {
+			get => client.DefaultRequestHeaders.GetValues("rebase-user-token").ElementAt(0);
+		}
 
 		public async Task<APIResponse> FetchMovements(string professionalId = "", string patientId = "", string movementLabel = "",
 													  string[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = "")
@@ -154,6 +181,8 @@ namespace ReBase
 
 		private async Task<APIResponse> SendRequest(Method method, Resource resource, APIResponse.ResponseType responseType, string resourceId = null, string query = "", string body = "")
 		{
+			if (!userHasBeenConfigured) throw new UnconfiguredClientException("The user data has no yet been configured for this ReBaseClient");
+
 			string url = resource == Resource.Movement ? $"{WEB_URL}/movement" : $"{WEB_URL}/session";
 			if (resourceId != null) url += $"/{resourceId}";
 			url += query;
