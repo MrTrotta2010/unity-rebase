@@ -5,6 +5,7 @@ using ReBase;
 public class SessionExample : MonoBehaviour
 {
     private Session session;
+	private ReBaseClient client = new ReBaseClient("seu@email.com", "seuToken");
     private int insertedCount = 0;
     private string professionalId = "MrTrotta2010";
     private string patientId = "007";
@@ -25,7 +26,7 @@ public class SessionExample : MonoBehaviour
 
         // Insert Session
         APIResponse response;
-        response = await ReBaseClient.Instance.InsertSession(session);
+        response = await client.InsertSession(session);
         firstSessionId = response.session?.id;
         Debug.Log($"Inserted: {response}");
 
@@ -50,16 +51,16 @@ public class SessionExample : MonoBehaviour
                 }
             ));
 
-            response = await ReBaseClient.Instance.InsertMovement(movement);
+            response = await client.InsertMovement(movement);
 			Debug.Log($"Inserted: {response}");
 		}
 
         // List Sessions
-        response = await ReBaseClient.Instance.FetchSessions(professionalId: professionalId, patientId: patientId);
+        response = await client.FetchSessions(professionalId: professionalId, patientId: patientId);
 		Debug.Log($"Downloaded: {response}");
 
         // List Sessions with deep parameter
-        response = await ReBaseClient.Instance.FetchSessions(professionalId: professionalId, patientId: patientId, bool: true);
+        response = await client.FetchSessions(professionalId: professionalId, patientId: patientId, deep: true);
 		Debug.Log($"Downloaded: {response}");
 
         // Find previously inserted Session
@@ -77,13 +78,13 @@ public class SessionExample : MonoBehaviour
 		else
 		{
 			session.title = "Atualizando a Sessão";
-			response = await ReBaseClient.Instance.UpdateSession(session);
+			response = await client.UpdateSession(session);
 		}
 		Debug.Log($"Updated: {response}");
 
         // Delete Session
 		string id = response.session.id ?? session.id;
-        response = await ReBaseClient.Instance.DeleteSession(id);
+        response = await client.DeleteSession(id);
 		Debug.Log($"Deleted: {response}");
 
         // Insert Session with Movements
@@ -125,7 +126,7 @@ public class SessionExample : MonoBehaviour
 			}
 		);
 
-		response = await ReBaseClient.Instance.InsertSession(session);
+		response = await client.InsertSession(session);
 
 		if (response.session == null) Debug.Log("Couldn't insert Session");
 		else
@@ -133,15 +134,15 @@ public class SessionExample : MonoBehaviour
 			Debug.Log($"Inserted: {response}");
 
 			// Find Session
-			response = await ReBaseClient.Instance.FindSession(response.session.id);
+			response = await client.FindSession(response.session.id);
 			Debug.Log($"Found: {response}");
 
 			// Find Session with deep parameter
-			response = await ReBaseClient.Instance.FindSession(response.session.id, deep: true);
+			response = await client.FindSession(response.session.id, deep: true);
 			Debug.Log($"Found: {response}");
 
 			// Delete Session
-			response = await ReBaseClient.Instance.DeleteSession(response.session.id);
+			response = await client.DeleteSession(response.session.id);
 			Debug.Log($"Deleted: {response}");
 		}
 	}

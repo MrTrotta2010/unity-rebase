@@ -21,21 +21,41 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace ReBase
 {
 	public class ReBaseClient
 	{
-		private static readonly ReBaseClient instance = new ReBaseClient();
-		public static ReBaseClient Instance { get { return instance; } }
+		private readonly string WEB_URL = "http://projetorastreamento.com.br:3030";
 
-		private string WEB_URL = "http://projetorastreamento.com.br:3030";
-
-		private static readonly HttpClient client = new HttpClient();
+		private readonly HttpClient client = new HttpClient();
 
 		private enum Resource { Movement = 0, Session = 1 }
 
 		private enum Method { GET = 0, POST = 1, PUT = 2, DELETE = 3 }
+
+		public ReBaseClient(string userEmail, string userToken)
+		{
+			if (string.IsNullOrEmpty(userEmail)) throw new ArgumentNullException("userEmail", "user data in ReBaseClient must be a valid string");
+			if (string.IsNullOrEmpty(userToken)) throw new ArgumentNullException("userToken", "user data in ReBaseClient must be a valid string");
+
+			client.DefaultRequestHeaders.Add("ReBase-User-Email", userEmail);
+			client.DefaultRequestHeaders.Add("ReBase-User-Token", userToken);
+		}
+
+		~ReBaseClient()
+		{
+			client.Dispose();
+		}
+
+		public string userEmail {
+			get => client.DefaultRequestHeaders.GetValues("ReBase-User-Email").ElementAt(0);
+		}
+
+		public string userToken {
+			get => client.DefaultRequestHeaders.GetValues("ReBase-User-Token").ElementAt(0);
+		}
 
 		public async Task<APIResponse> FetchMovements(string professionalId = "", string patientId = "", string movementLabel = "",
 													  string[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = "")

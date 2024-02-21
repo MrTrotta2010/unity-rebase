@@ -161,11 +161,17 @@ namespace ReBase
 			}
 
 			_movements = new List<Movement>();
-			foreach (SerializableMovement movement in session.movements)
-				_movements.Add(new Movement(movement));
+			if (session.movements != null)
+			{
+				foreach (SerializableMovement movement in session.movements)
+					_movements.Add(new Movement(movement));
+			}
 
 			_movementIds = new List<string>();
-			foreach (string id in session.movementIds) _movementIds.Add(id);
+			if (session.movementIds != null)
+			{
+				foreach (string id in session.movementIds) _movementIds.Add(id);
+			}
 		}
 
 		public string ToJson(bool update = false)

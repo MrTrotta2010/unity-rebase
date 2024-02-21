@@ -1,14 +1,15 @@
-# Unity ReBase [2.1.1]
+# Unity ReBase [2.2.0]
 Este projeto é uma API escrita em C# para uso no Unity, para comunicação com o ReBase, um banco de dados de sessões de reabilitação física.
 
 ## Índice
-- [Unity ReBase \[2.1.1\]](#unity-rebase-211)
+- [Unity ReBase \[2.2.0\]](#unity-rebase-220)
   - [Índice](#índice)
   - [Visão Geral](#visão-geral)
     - [Sobre o ReBase](#sobre-o-rebase)
   - [Instalação](#instalação)
   - [Requisitos](#requisitos)
   - [Quick Start](#quick-start)
+    - [Inicializando o ReBaseClient](#inicializando-o-rebaseclient)
     - [Criando um Movimento](#criando-um-movimento)
     - [Criando uma Sessão](#criando-uma-sessão)
     - [Buscando Movimentos e Sessões](#buscando-movimentos-e-sessões)
@@ -43,6 +44,8 @@ O ReBase, do inglês *Rehabilitation Database*, é um baco de dados dedicado ao 
 
 Os **Movimentos** do ReBase representam os movimentos corporais capturados e são compostos por metadados, uma lista de *Articulações* e uma lista de **Registros**, que representam as rotações em X, y e z da Articulação a cada instante do Movimento. Os Movimentos podem pertencer a **Sessões**. Cada Sessão também contem metadados e pode conter múltiplos movimentos.
 
+Todos os usuários que desejarem acessar o ReBase precisam ter um token de autenticação cadastrados no sistema. Para receber um token, o usuário deve entrar em contato com o time de desenvolvimento através dos emails `mrtrotta2010@gmail.com` ou `diegocolombodias@gmail.com` e enviar o endereço de email que deseja cadastrar.
+
 ## Instalação
 1. Baixe o arquivo .zip;
 2. Extraia a pasta compactada;
@@ -50,10 +53,17 @@ Os **Movimentos** do ReBase representam os movimentos corporais capturados e sã
 
 ## Requisitos
 * Este pacote utiliza a biblioteca [Newtonsoft Json 3.2](https://docs.unity3d.com/Packages/com.unity.nuget.newtonsoft-json@3.2/manual/index.html) e portanto suporta o editor **2018.4 ou superior**;
-* Este pacote também depende da classe `System.Net.Http` e do paradigma `Async/Await`, por isso requer pelo menos **C# 5** e [uma destas versões do pacote .NET](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=net-7.0#applies-to).
+* Este pacote também depende da classe `System.Net.Http` e do paradigma `Async/Await`, por isso requer pelo menos **C# 5** e [uma destas versões do pacote .NET](https://learn.microsoft.com/en-us/dotnet/api/system.net.http.httpclient?view=net-7.0#applies-to);
+* É necessário ter seu email e token de autenticação já cadastrados no ReBase.
 
 ## Quick Start
 Para utilizar a API, basta incluir a biblioteca adicionando `using ReBase` no começo do seu arquivo .cs
+
+### Inicializando o ReBaseClient
+```C#
+// Inicialize o cliente do ReBase com seu email e token previamente cadastrados
+ReBaseClient client = new ReBaseClient("exemplo@gmail.com", "tokenExemplo");
+```
 
 ### Criando um Movimento
 ```C#
@@ -78,7 +88,7 @@ movement.AddRegister(new Register(
 
 // Utilize a classe singleton ReBaseClient para inserir o movimento
 // Todas as requisições são assíncronas.
-APIResponse response = await ReBaseClient.Instance.InsertMovement(movement);
+APIResponse response = await client.InsertMovement(movement);
 Debug.Log($"Inserted: {response}");
 ```
 
@@ -124,39 +134,39 @@ session = new Session(
     }
 );
 
-APIResponse response = await ReBaseClient.Instance.InsertSession(session);
+APIResponse response = await client.InsertSession(session);
 ```
 
 ### Buscando Movimentos e Sessões
 ```C#
 // É possível encontrar um único Movimento ou listar vários
-APIResponse response = await ReBaseClient.Instance.FindMovement(id);
+APIResponse response = await client.FindMovement(id);
 Debug.Log($"Movimento: {response.movement}");
 
 // A listagem permite filtros e suporta paginação
 // Os filtros possíveis são: professionalId (id do profissional de saúde), patientId (id do paciente),
 // movementLabel (identificação do movimento), articulations (articulações incluídas no movimento)
-response = await ReBaseClient.Instance.FetchMovements(professionalId: "professional", patientId: "patient", page: 1, per: 10);
+response = await client.FetchMovements(professionalId: "professional", patientId: "patient", page: 1, per: 10);
 Debug.Log($"Movimentos: {response.movements}");
 
 // Da mesma forma, as Sessões podem ser buscas individualmente ou listadas
-response = await ReBaseClient.Instance.FindSession(id);
+response = await client.FindSession(id);
 Debug.Log($"Sessão: {response.session}");
 
 // Os filtros suportados pela listagem de Sessão são: professionalId e patientId.
 // Também são aceitos os filtros movementLabel e articulations, mas estes filtram os movimentos das Sessões
-response = await ReBaseClient.Instance.FetchSessions(professionalId: "professional", patientId: "patient", page: 1, per: 10);
+response = await client.FetchSessions(professionalId: "professional", patientId: "patient", page: 1, per: 10);
 Debug.Log($"Sessões: {response.sessions}");
 ```
 
 ### Atualizando e deletando
 ```C#
 // São disponibilizados métodos para deletar e excluir Movimentos e Sessões
-APIResponse response = await ReBaseClient.Instance.UpdateMovement(id, updatedMovement);
-response = await ReBaseClient.Instance.DeleteMovement(id);
+APIResponse response = await client.UpdateMovement(id, updatedMovement);
+response = await client.DeleteMovement(id);
 
-response = await ReBaseClient.Instance.UpdateSession(id, updatedSession);
-response = await ReBaseClient.Instance.DeleteSession(id);
+response = await client.UpdateSession(id, updatedSession);
+response = await client.DeleteSession(id);
 ```
 
 ## Tópicos Avançados
@@ -199,13 +209,15 @@ Este pacote inclui uma cena com alguns exemplos adicionais de utilização da AP
 A seguir, estão incluídas tabelas e descrições detalhando todas as classes da API Unity ReBase.
 
 ### ReBaseClient
-Esta classe é responsável por toda a comunicação com o ReBaseRS. A classe `ReBaseClient` é uma classe estática que implementa o padrão singleton. As requisições seguem o paradigma [async/await de programação assíncrona](https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/) no lugar de callbacks. Os métodos são do tipo `Task<APIResponse>`. Objetos da classe [Task](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task?view=net-7.0), de forma muito rude, representam um método ainda em execução, portanto é preciso esperar o fim da execução antes de poder acessar seu resultado. É possível aguardar a execução de uma `Task` usando o comando `await`. Ao final da execução das `Tasks`, elas retornarão um objeto da classe [APIResponse](#apiresponse). Exemplos de uso podem ser encontrados na seção [Quick Start:](#quick-start). 
+Esta classe é responsável por toda a comunicação com o ReBaseRS. As requisições seguem o paradigma [async/await de programação assíncrona](https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/) no lugar de callbacks. Os métodos são do tipo `Task<APIResponse>`. Objetos da classe [Task](https://learn.microsoft.com/en-us/dotnet/api/system.threading.tasks.task?view=net-7.0), de forma muito rude, representam um método ainda em execução, portanto é preciso esperar o fim da execução antes de poder acessar seu resultado. É possível aguardar a execução de uma `Task` usando o comando `await`. Ao final da execução das `Tasks`, elas retornarão um objeto da classe [APIResponse](#apiresponse). Exemplos de uso podem ser encontrados na seção [Quick Start:](#quick-start). 
 
 **Atributos:**
-| Atributo     | Tipo                    |
-| :----------- | ----------------------: |
-| **Instance** | **static ReBaseClient** |
-| Retorna a instância singleton do `ReBaseRestClient` |
+| Atributo      | Tipo       |
+| :------------ | ---------: |
+| **userEmail** | **string** |
+| Retorna o email do usuário configurado na inicialização |
+| **userToken** | **string** |
+| Retorna o token do usuário configurado na inicialização |
 
 **Métodos:**
 | Método             | Tipo                        | Parâmetros                         |
