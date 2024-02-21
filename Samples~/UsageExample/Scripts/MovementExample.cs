@@ -5,6 +5,7 @@ using System;
 
 public class MovementExample : MonoBehaviour
 {
+	private ReBaseClient client = new ReBaseClient("seu@email.com", "seuToken");
 	private Movement movement;
 
 	public async void RunMovementExample()
@@ -27,24 +28,24 @@ public class MovementExample : MonoBehaviour
 		));
 
 		// Insert
-		APIResponse response = await ReBaseClient.Instance.InsertMovement(movement);
+		APIResponse response = await client.InsertMovement(movement);
 		Debug.Log($"Inserted: {response}");
 
 		// Update
 		movement.description = "Vamos atualizar pra ver o que acontece";
-		response = await ReBaseClient.Instance.UpdateMovement(response.movement.id, movement);
+		response = await client.UpdateMovement(response.movement.id, movement);
 		Debug.Log($"Updated: {response}");
 
 		// Delete
-		response = await ReBaseClient.Instance.DeleteMovement(response.movement.id);
+		response = await client.DeleteMovement(response.movement.id);
 		Debug.Log($"Deleted! {response}");
 
 		// Find
-		response = await ReBaseClient.Instance.FindMovement(response.deletedId);
+		response = await client.FindMovement(response.deletedId);
 		Debug.Log($"Found? {response}");
 
 		// List
-		response = await ReBaseClient.Instance.FetchMovements(professionalId: movement.professionalId, patientId: movement.patientId);
+		response = await client.FetchMovements(professionalId: movement.professionalId, patientId: movement.patientId, page: 1, per: 3);
 		Debug.Log($"Downloaded: {response}");
 
 		// Convert SerializableMovements into Movements
