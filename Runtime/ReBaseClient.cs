@@ -40,8 +40,8 @@ namespace ReBase
 			if (string.IsNullOrEmpty(userEmail)) throw new ArgumentNullException("userEmail", "user data in ReBaseClient must be a valid string");
 			if (string.IsNullOrEmpty(userToken)) throw new ArgumentNullException("userToken", "user data in ReBaseClient must be a valid string");
 
-			client.DefaultRequestHeaders.Add("rebase-user-email", userEmail);
-			client.DefaultRequestHeaders.Add("rebase-user-token", userToken);
+			client.DefaultRequestHeaders.Add("ReBase-User-Email", userEmail);
+			client.DefaultRequestHeaders.Add("ReBase-User-Token", userToken);
 		}
 
 		~ReBaseClient()
@@ -50,11 +50,11 @@ namespace ReBase
 		}
 
 		public string userEmail {
-			get => client.DefaultRequestHeaders.GetValues("rebase-user-email").ElementAt(0);
+			get => client.DefaultRequestHeaders.GetValues("ReBase-User-Email").ElementAt(0);
 		}
 
 		public string userToken {
-			get => client.DefaultRequestHeaders.GetValues("rebase-user-token").ElementAt(0);
+			get => client.DefaultRequestHeaders.GetValues("ReBase-User-Token").ElementAt(0);
 		}
 
 		public async Task<APIResponse> FetchMovements(string professionalId = "", string patientId = "", string movementLabel = "",

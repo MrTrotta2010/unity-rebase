@@ -5,6 +5,13 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 Este formato é baseado em [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2024-02-21
+
+### Alterado
+- A partir deste update, **qualquer usuário que quiser acessar o ReBase precisa ter um token de autenticação cadastrado no sistema**. Para receber um token, o usuário deve entrar em contato com o time de desenvolvimento através dos emails `mrtrotta2010@gmail.com` ou `diegocolombodias@gmail.com` e enviar o endereço de email que deseja cadastrar;
+- [BREAKING] A classe `ReBaseClient` deixa de ser singleton e passar a requerer inicialização com o email e o token cadastrados do usuário;
+- No cabeçalho das requisições agora são enviados o email cadastrado e o token do usuário nos headers **"ReBase-User-Email"** e **"ReBase-User-Token"**.
+
 ## [2.1.1] - 2023-12-20
 
 ### Corrigido
