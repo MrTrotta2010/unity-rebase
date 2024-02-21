@@ -7,6 +7,10 @@ e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.
 
 ## [2.2.0] - 2024-02-21
 
+### Corrigido
+- Agora, ao criar um Movimento com Registros, mas sem valor em `numberOfMovements`, o valor de `numberOfMovements` será automaticamente atualizado com a quantidade de Registros existentes;
+- Erro ao desserializar uma Sessão recebida do servidor que não tivesse valor para `movements` ou `movementIds`.
+
 ### Alterado
 - A partir deste update, **qualquer usuário que quiser acessar o ReBase precisa ter um token de autenticação cadastrado no sistema**. Para receber um token, o usuário deve entrar em contato com o time de desenvolvimento através dos emails `mrtrotta2010@gmail.com` ou `diegocolombodias@gmail.com` e enviar o endereço de email que deseja cadastrar;
 - [BREAKING] A classe `ReBaseClient` deixa de ser singleton e passar a requerer inicialização com o email e o token cadastrados do usuário;
