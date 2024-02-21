@@ -18,7 +18,6 @@
 using System;
 using System.Globalization;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace ReBase
@@ -99,6 +98,7 @@ namespace ReBase
 					ValidateRegisters(register.articulations);
 
 				_registers = new List<Register>(registers);
+				_numberOfRegisters = _registers.Count;
 			}
 			else
 			{
