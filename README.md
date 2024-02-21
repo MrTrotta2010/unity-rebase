@@ -34,6 +34,7 @@ Este projeto é uma API escrita em C# para uso no Unity, para comunicação com 
         - [PatientData](#patientdata)
         - [MedicalData](#medicaldata)
     - [Exceções](#exceções)
+  - [Contato](#contato)
 
 
 ## Visão Geral
@@ -516,3 +517,7 @@ Esta API define algumas exceções personalizadas para os modelos de dados e cas
 1. **MismatchedArticulationsException:** disparada ao criar um Movimento com Registros que tenham articulações diferentes das definidas no Movimento ou ao adicionar a um Movimento um Registro que tenha articulações diferentes das do Movimento;
 2. **MissingAttributeException:** disparada ao tentar enviar uma requisição ao ReBaseRS e algum parâmetro não tenha um atributo obrigatório;
 3. **RepeatedArticulationException:** disparada ao criar um Movimento ou um Registro com uma lista de articulações que contenha articulações repetidas.
+
+## Contato
+* **Tiago Trotta**: *mrtrotta2010@gmail.com*
+* **Diego Dias**: *diegocolombodias@gmail.com*
