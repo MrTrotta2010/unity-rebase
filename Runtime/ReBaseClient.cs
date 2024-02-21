@@ -27,18 +27,15 @@ namespace ReBase
 {
 	public class ReBaseClient
 	{
-		private static readonly ReBaseClient instance = new ReBaseClient();
-		public static ReBaseClient Instance { get { return instance; } }
-
 		private string WEB_URL = "http://projetorastreamento.com.br:3030";
 
-		private static readonly HttpClient client = new HttpClient();
+		private readonly HttpClient client = new HttpClient();
 
 		private enum Resource { Movement = 0, Session = 1 }
 
 		private enum Method { GET = 0, POST = 1, PUT = 2, DELETE = 3 }
 
-		public void ConfigureUser(string userEmail, string userToken)
+		public ReBaseClient(string userEmail, string userToken)
 		{
 			if (string.IsNullOrEmpty(userEmail)) throw new ArgumentNullException("userEmail", "user data in ReBaseClient must be a valid string");
 			if (string.IsNullOrEmpty(userToken)) throw new ArgumentNullException("userToken", "user data in ReBaseClient must be a valid string");
@@ -47,13 +44,9 @@ namespace ReBase
 			client.DefaultRequestHeaders.Add("rebase-user-token", userToken);
 		}
 
-		private bool userHasBeenConfigured
+		~ReBaseClient()
 		{
-			get
-			{
-				return client.DefaultRequestHeaders.Contains("rebase-user-email")
-					&& client.DefaultRequestHeaders.Contains("rebase-user-token");
-			}
+			client.Dispose();
 		}
 
 		public string userEmail {
@@ -181,8 +174,6 @@ namespace ReBase
 
 		private async Task<APIResponse> SendRequest(Method method, Resource resource, APIResponse.ResponseType responseType, string resourceId = null, string query = "", string body = "")
 		{
-			if (!userHasBeenConfigured) throw new UnconfiguredClientException("The user data has no yet been configured for this ReBaseClient");
-
 			string url = resource == Resource.Movement ? $"{WEB_URL}/movement" : $"{WEB_URL}/session";
 			if (resourceId != null) url += $"/{resourceId}";
 			url += query;
