@@ -27,7 +27,7 @@ namespace ReBase
 {
 	public class ReBaseClient
 	{
-		private string WEB_URL = "http://projetorastreamento.com.br:3030";
+		private readonly string WEB_URL = "http://projetorastreamento.com.br:3030";
 
 		private readonly HttpClient client = new HttpClient();
 
