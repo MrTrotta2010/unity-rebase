@@ -31,7 +31,7 @@ namespace ReBase
 
 		private readonly HttpClient client = new HttpClient();
 
-		private enum Resource { Movement = 0, Session = 1 }
+		private enum Resource { Movement = 0, Session = 1, Authentication = 2 }
 
 		private enum Method { GET = 0, POST = 1, PUT = 2, DELETE = 3 }
 
@@ -55,6 +55,11 @@ namespace ReBase
 
 		public string userToken {
 			get => client.DefaultRequestHeaders.GetValues("ReBase-User-Token").ElementAt(0);
+		}
+
+		public async Task<APIResponse> Authenticate()
+		{
+			return await SendRequest(Method.GET, Resource.Authentication, APIResponse.ResponseType.Authentication);
 		}
 
 		public async Task<APIResponse> FetchMovements(string professionalId = "", string patientId = "", string movementLabel = "",
@@ -174,7 +179,12 @@ namespace ReBase
 
 		private async Task<APIResponse> SendRequest(Method method, Resource resource, APIResponse.ResponseType responseType, string resourceId = null, string query = "", string body = "")
 		{
-			string url = resource == Resource.Movement ? $"{WEB_URL}/movement" : $"{WEB_URL}/session";
+			string url = WEB_URL;
+
+			if (resource == Resource.Movement) url += "/movement";
+			else if (resource == Resource.Session) url += "/session";
+			else url += "/auth";
+
 			if (resourceId != null) url += $"/{resourceId}";
 			url += query;
 
@@ -218,7 +228,6 @@ namespace ReBase
 
 		private APIResponse NewAPIResponse(APIResponse.ResponseType responseType, string response, long responseCode, int responseStatus)
 		{
-			Debug.Log(response);
 			APIResponse responseObject;
 
 			try

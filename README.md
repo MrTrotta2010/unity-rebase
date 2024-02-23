@@ -1,8 +1,8 @@
-# Unity ReBase [2.2.0]
+# Unity ReBase [2.2.1]
 Este projeto é uma API escrita em C# para uso no Unity, para comunicação com o ReBase, um banco de dados de sessões de reabilitação física.
 
 ## Índice
-- [Unity ReBase \[2.2.0\]](#unity-rebase-220)
+- [Unity ReBase \[2.2.1\]](#unity-rebase-221)
   - [Índice](#índice)
   - [Visão Geral](#visão-geral)
     - [Sobre o ReBase](#sobre-o-rebase)
@@ -223,6 +223,8 @@ Esta classe é responsável por toda a comunicação com o ReBaseRS. As requisi�
 **Métodos:**
 | Método             | Tipo                        | Parâmetros                         |
 | :----------------- | :-------------------------- | ---------------------------------: |
+| **Authenticate**   | **async Task<APIResponse>** |                                    |
+| Envia uma requisição de autenticação que não executa nenhum operação sobre o banco de dados. O envio desta requisição não é obrigatório, visto que todas as outras requisições também realizam autenticação |
 | **FetchMovements** | **async Task<APIResponse>** |**string professionalId = "", string patientId = "", string movementLabel = "", string[] articulations = null, bool legacy = false, int page = 0, int per = 0, string previousId = ""** |
 | Recupera uma lista de Movimentos armazenados no ReBaseRS. Suporta diversos filtros e paginação |
 | **FindMovement**   | **async Task<APIResponse>** | **string id, bool legacy = false** |

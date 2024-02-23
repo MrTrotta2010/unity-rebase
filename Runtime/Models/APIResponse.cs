@@ -31,7 +31,8 @@ namespace ReBase
 			InsertSession = 8,
 			UpdateSession = 9,
 			DeleteSession = 10,
-			APIError = 11
+			APIError = 11,
+			Authentication = 12
 		}
 
 		public ResponseType responseType;

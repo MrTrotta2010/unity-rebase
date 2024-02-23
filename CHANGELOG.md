@@ -5,6 +5,11 @@ Todas as mudanças notáveis deste projeto serão documentadas neste arquivo.
 Este formato é baseado em [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 e este projeto adere ao [Versionamento Semântico](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2024-02-22
+
+### Adicionado
+- Método `Authenticate` em `ReBaseClient`, que pode ser utilizado para tentar autenticar um usuário sem executar nenhuma operação sobre o banco de dados.
+
 ## [2.2.0] - 2024-02-21
 
 ### Corrigido
